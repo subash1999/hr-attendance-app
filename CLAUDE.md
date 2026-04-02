@@ -49,6 +49,7 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 - Never add Co-Authored-By lines to git commit messages
 - Always run /simplify command before committing code
 - Alert when Claude needs more context and compact context to perform a task
+- Never use magic strings or numbers in code — always use named constants from `@willdesign-hr/types` constants module
 - Prefer querying NotebookLM MCP for requirement, design, or contract lookups to save context tokens — fall back to reading spec files directly only when NotebookLM is unavailable
 
 ## Steering Configuration

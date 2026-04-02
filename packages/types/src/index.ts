@@ -131,6 +131,7 @@ export {
   DocumentVerificationStatuses,
   AuditActions,
   ReferenceTypes,
+  ATTENDANCE,
   AllowanceTypes,
   JP_LABOR,
   HOURS,

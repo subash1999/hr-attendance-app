@@ -104,8 +104,8 @@
   - Write TDD tests: manager accessing direct report (allow), manager accessing non-report (deny), employee accessing own data (allow), employee accessing other's salary (deny), Super Admin accessing anything (allow)
   - _Requirements: 5.2, 5.3, 5.8, 5.9, 16.3_
 
-- [ ] 6. Attendance and hours tracking
-- [ ] 6.1 Build the 3-state attendance state machine with transition validation
+- [x] 6. Attendance and hours tracking
+- [x] 6.1 Build the 3-state attendance state machine with transition validation
   - Implement the state machine as a pure function: given current state and action, return new state or error
   - Valid transitions: IDLE→CLOCKED_IN, CLOCKED_IN→IDLE, CLOCKED_IN→ON_BREAK, ON_BREAK→CLOCKED_IN
   - Invalid transitions return an error message including the current state and last event timestamp
@@ -113,7 +113,7 @@
   - Write TDD tests for all valid transitions, all invalid transitions, multiple sessions, error messages with timestamps
   - _Requirements: 1.12, 7.2, 1.13_
 
-- [ ] 6.2 (P) Build the configurable keyword matcher for multi-language attendance messages
+- [x] 6.2 (P) Build the configurable keyword matcher for multi-language attendance messages
   - Implement matching logic that takes a Slack message and an array of keyword configurations, returns the matched action or no-match
   - Support English and Japanese keyword sets: clock-in (hello, hi, おはよう), break (break, 休憩), back (back, 戻り), clock-out (bye, おつかれ)
   - Keywords stored as configurable data (not hardcoded), loadable from policy/config
@@ -122,7 +122,7 @@
   - Write TDD tests for each language, mixed-language, no-match, case insensitivity, language/help commands
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.7, 1.10, 1.11_
 
-- [ ] 6.3 Implement the attendance service that orchestrates event processing with idempotency and audit logging
+- [x] 6.3 Implement the attendance service that orchestrates event processing with idempotency and audit logging
   - Accept an attendance action with employee ID, timestamp, and source (slack/web)
   - Look up current state, validate transition, persist new event + updated state + audit entry as a single atomic operation
   - Enforce 60-second idempotency window: reject duplicate actions from the same user within the window
@@ -132,7 +132,7 @@
   - Write TDD tests: valid flow, idempotency rejection, cross-timezone storage, web edit audit trail
   - _Requirements: 1.5, 1.6, 1.14, 7.1, 7.6, 18.1, 18.3_
 
-- [ ] 6.4 (P) Implement the hours calculator for daily, weekly, and monthly totals
+- [x] 6.4 (P) Implement the hours calculator for daily, weekly, and monthly totals
   - Daily calculation: sum all work sessions minus break durations plus leave credits for the date
   - Cross-midnight rule: all hours for a session count toward the clock-in date
   - Weekly calculation: sum daily hours for Monday through Sunday

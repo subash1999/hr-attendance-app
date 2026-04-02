@@ -184,6 +184,11 @@ export const HOURS = {
   MONTHLY_PART_TIME: 80,
 } as const;
 
+// ─── Attendance System ───
+export const ATTENDANCE = {
+  IDEMPOTENCY_WINDOW_MS: 60_000,
+} as const;
+
 // ─── Probation ───
 export const PROBATION = {
   DEFAULT_DURATION_MONTHS: 3,
