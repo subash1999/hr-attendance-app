@@ -1,4 +1,13 @@
 import type { RawPolicy } from "@willdesign-hr/types";
+import {
+  WorkArrangements,
+  TimeTypes,
+  TerminationHandlings,
+  JP_LABOR,
+  HOURS,
+  PROBATION,
+  PAYMENT,
+} from "@willdesign-hr/types";
 
 /**
  * Company-wide defaults (org level).
@@ -6,11 +15,11 @@ import type { RawPolicy } from "@willdesign-hr/types";
  */
 export const orgPolicy: RawPolicy = {
   hours: {
-    dailyMinimum: 8,
-    weeklyMinimum: 40,
-    monthlyMinimum: 160,
-    workArrangement: "OFFICE",
-    timeType: "FIXED",
+    dailyMinimum: HOURS.DAILY_MINIMUM,
+    weeklyMinimum: HOURS.WEEKLY_MINIMUM,
+    monthlyMinimum: HOURS.MONTHLY_FULL_TIME,
+    workArrangement: WorkArrangements.OFFICE,
+    timeType: TimeTypes.FIXED,
     coreHoursStart: "10:00",
     coreHoursEnd: "15:00",
   },
@@ -38,19 +47,19 @@ export const orgPolicy: RawPolicy = {
       "MENSTRUAL",
       "COMPANY_SPECIFIC",
     ],
-    mandatoryUsageDays: 5,
-    terminationHandling: "LABOR_LAW",
+    mandatoryUsageDays: JP_LABOR.MANDATORY_LEAVE_DAYS,
+    terminationHandling: TerminationHandlings.LABOR_LAW,
   },
   overtime: {
     deemedHours: 0,
     rates: {
-      standard: 1.25,
-      lateNight: 0.25,
-      holiday: 1.35,
-      excess60h: 1.5,
+      standard: JP_LABOR.OVERTIME_RATE_STANDARD,
+      lateNight: JP_LABOR.OVERTIME_RATE_LATE_NIGHT,
+      holiday: JP_LABOR.OVERTIME_RATE_HOLIDAY,
+      excess60h: JP_LABOR.OVERTIME_RATE_EXCESS_60H,
     },
-    monthlyLimit: 45,
-    yearlyLimit: 360,
+    monthlyLimit: JP_LABOR.MONTHLY_OVERTIME_LIMIT,
+    yearlyLimit: JP_LABOR.YEARLY_OVERTIME_LIMIT,
   },
   compensation: {
     salaryType: "MONTHLY",
@@ -66,9 +75,9 @@ export const orgPolicy: RawPolicy = {
     commissionTracking: false,
   },
   probation: {
-    durationMonths: 3,
+    durationMonths: PROBATION.DEFAULT_DURATION_MONTHS,
     leaveAllowed: false,
-    noticePeriodDays: 14,
+    noticePeriodDays: PROBATION.DEFAULT_NOTICE_DAYS,
   },
   flags: {
     dailyThreshold: true,
@@ -77,9 +86,9 @@ export const orgPolicy: RawPolicy = {
     gracePeriodMinutes: 15,
   },
   payment: {
-    deadlineDay: 31,
-    alertDaysBefore: 5,
-    settlementDeadlineDay: 15,
+    deadlineDay: PAYMENT.JP_DEADLINE_DAY,
+    alertDaysBefore: PAYMENT.ALERT_DAYS_BEFORE,
+    settlementDeadlineDay: PAYMENT.SETTLEMENT_DEADLINE_DAY,
   },
   report: {
     submissionDeadline: "18:00",

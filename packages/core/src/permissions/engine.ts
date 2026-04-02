@@ -1,15 +1,16 @@
 import type { AuthContext, AuthorizationResult, ResourceContext, Role } from "@willdesign-hr/types";
+import { Roles, SensitivityLevels } from "@willdesign-hr/types";
 
 export const ROLE_HIERARCHY: readonly Role[] = [
-  "EMPLOYEE",
-  "MANAGER",
-  "HR_MANAGER",
-  "ADMIN",
-  "SUPER_ADMIN",
+  Roles.EMPLOYEE,
+  Roles.MANAGER,
+  Roles.HR_MANAGER,
+  Roles.ADMIN,
+  Roles.SUPER_ADMIN,
 ] as const;
 
 function isSuperAdmin(role: Role): boolean {
-  return role === "SUPER_ADMIN";
+  return role === Roles.SUPER_ADMIN;
 }
 
 export function getRoleLevel(role: Role): number {
@@ -40,35 +41,30 @@ export function authorize(
     return { allowed: true, reason: "super_admin bypass" };
   }
 
-  // Admin has full access
-  if (hasMinimumRole(actor.actorRole, "ADMIN")) {
+  if (hasMinimumRole(actor.actorRole, Roles.ADMIN)) {
     return { allowed: true, reason: "admin role grants full access" };
   }
 
-  // Resource owner can always access their own data
   if (actor.actorId === resource.resourceOwnerId) {
     return { allowed: true, reason: "own resource access" };
   }
 
-  // PUBLIC data is visible to all authenticated users
-  if (resource.sensitivityLevel === "PUBLIC") {
+  if (resource.sensitivityLevel === SensitivityLevels.PUBLIC) {
     return { allowed: true, reason: "public data" };
   }
 
-  // Manager can access direct reports' data
   if (
-    actor.actorRole === "MANAGER" ||
-    actor.actorRole === "HR_MANAGER"
+    actor.actorRole === Roles.MANAGER ||
+    actor.actorRole === Roles.HR_MANAGER
   ) {
     if (resource.ownerManagerId === actor.actorId) {
       return { allowed: true, reason: "manager of resource owner" };
     }
   }
 
-  // CONFIDENTIAL/SENSITIVE data requires manager+ relationship or admin
   if (
-    resource.sensitivityLevel === "CONFIDENTIAL" ||
-    resource.sensitivityLevel === "SENSITIVE"
+    resource.sensitivityLevel === SensitivityLevels.CONFIDENTIAL ||
+    resource.sensitivityLevel === SensitivityLevels.SENSITIVE
   ) {
     return {
       allowed: false,
@@ -76,7 +72,6 @@ export function authorize(
     };
   }
 
-  // INTERNAL data — deny if not owner, not manager, not admin
   return {
     allowed: false,
     reason: "insufficient access: not owner, not manager of owner, not admin",

@@ -1,10 +1,11 @@
 import type { RawPolicy } from "@willdesign-hr/types";
+import { WorkArrangements, TerminationHandlings, HOURS, PAYMENT } from "@willdesign-hr/types";
 
 /** Nepal unpaid intern — tracked hours, no pay, no leave. */
 export const npUnpaidInternPolicy: RawPolicy = {
   hours: {
-    monthlyMinimum: 80,
-    workArrangement: "REMOTE",
+    monthlyMinimum: HOURS.MONTHLY_PART_TIME,
+    workArrangement: WorkArrangements.REMOTE,
   },
   leave: {
     accrualSchedule: [],
@@ -13,7 +14,7 @@ export const npUnpaidInternPolicy: RawPolicy = {
     carryOverMonths: 0,
     leaveTypes: [],
     mandatoryUsageDays: 0,
-    terminationHandling: "FORFEIT",
+    terminationHandling: TerminationHandlings.FORFEIT,
   },
   overtime: {
     deemedHours: 0,
@@ -27,8 +28,8 @@ export const npUnpaidInternPolicy: RawPolicy = {
     commissionTracking: false,
   },
   payment: {
-    deadlineDay: 15,
-    alertDaysBefore: 5,
-    settlementDeadlineDay: 15,
+    deadlineDay: PAYMENT.NP_DEADLINE_DAY,
+    alertDaysBefore: PAYMENT.ALERT_DAYS_BEFORE,
+    settlementDeadlineDay: PAYMENT.SETTLEMENT_DEADLINE_DAY,
   },
 };

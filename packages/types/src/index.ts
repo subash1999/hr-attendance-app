@@ -108,3 +108,18 @@ export type { Result } from "./result.js";
 export type { MonthlySummary } from "./monthly-summary.js";
 
 export type { AttendanceStateRecord } from "./attendance-state.js";
+
+export {
+  Roles,
+  SensitivityLevels,
+  AttendanceActions,
+  AttendanceStates,
+  WorkArrangements,
+  TimeTypes,
+  TerminationHandlings,
+  LeaveRequestStatuses,
+  JP_LABOR,
+  HOURS,
+  PROBATION,
+  PAYMENT,
+} from "./constants.js";

@@ -1,9 +1,10 @@
 import type { RawPolicy } from "@willdesign-hr/types";
+import { WorkArrangements, TerminationHandlings, PAYMENT } from "@willdesign-hr/types";
 
 /** Shared Nepal contractor policy base — remote, FORFEIT leave, flat rates. */
 export const npBasePolicy: RawPolicy = {
   hours: {
-    workArrangement: "REMOTE",
+    workArrangement: WorkArrangements.REMOTE,
   },
   leave: {
     accrualSchedule: [{ tenureMonths: 3, daysGranted: 1 }],
@@ -12,7 +13,7 @@ export const npBasePolicy: RawPolicy = {
     carryOverMonths: 0,
     leaveTypes: ["PAID", "UNPAID"],
     mandatoryUsageDays: 0,
-    terminationHandling: "FORFEIT",
+    terminationHandling: TerminationHandlings.FORFEIT,
   },
   overtime: {
     deemedHours: 0,
@@ -26,8 +27,8 @@ export const npBasePolicy: RawPolicy = {
     commissionTracking: false,
   },
   payment: {
-    deadlineDay: 15,
-    alertDaysBefore: 5,
-    settlementDeadlineDay: 15,
+    deadlineDay: PAYMENT.NP_DEADLINE_DAY,
+    alertDaysBefore: PAYMENT.ALERT_DAYS_BEFORE,
+    settlementDeadlineDay: PAYMENT.SETTLEMENT_DEADLINE_DAY,
   },
 };

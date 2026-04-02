@@ -1,9 +1,10 @@
 import type { RawPolicy } from "@willdesign-hr/types";
+import { HOURS } from "@willdesign-hr/types";
 
 /** パートタイム — JP part-time. Pro-rata hours, salary type hourly. */
 export const jpParttimePolicy: RawPolicy = {
   hours: {
-    monthlyMinimum: 80,
+    monthlyMinimum: HOURS.MONTHLY_PART_TIME,
   },
   compensation: {
     salaryType: "HOURLY",
