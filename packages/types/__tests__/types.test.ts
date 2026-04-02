@@ -1,94 +1,42 @@
-import { describe, it, expect, expectTypeOf } from "vitest";
+import { describe, it, expect } from "vitest";
 import type {
-  Employee,
-  EmploymentType,
-  Region,
-  EmployeeStatus,
-  AttendanceAction,
-  AttendanceState,
-  AttendanceEvent,
-  AttendanceSession,
-  LeaveRequest,
-  LeaveRequestStatus,
-  LeaveType,
-  LeaveBalance,
-  SalaryRecord,
-  SalaryChangeType,
-  SalaryType,
-  Currency,
-  AllowanceItem,
-  PayrollBreakdown,
-  DailyReport,
-  ReportReference,
-  Flag,
-  FlagLevel,
-  FlagResolution,
-  BankEntry,
-  Holiday,
-  AuditEntry,
-  AuditSource,
-  Role,
-  AuthContext,
-  ResourceContext,
-  SensitivityLevel,
-  AuthorizationResult,
-  EffectivePolicy,
-  HoursPolicy,
-  LeavePolicy,
-  OvertimePolicy,
-  CompensationPolicy,
-  ProbationPolicy,
-  FlagPolicy,
-  RawPolicy,
-  Override,
-  OverridePeriod,
-  Document,
-  DocumentVerificationStatus,
-  TerminationType,
-  OffboardingRecord,
-  LegalObligation,
-  Result,
-  PaymentPolicy,
-  ReportPolicy,
+  Employee, EmploymentType, Region, EmployeeStatus,
+  AttendanceAction, AttendanceState, AttendanceEvent,
+  LeaveRequest, LeaveRequestStatus, LeaveType, SalaryRecord, SalaryChangeType, Currency,
+  PayrollBreakdown, DailyReport, Flag, FlagLevel, FlagResolution, BankEntry, Holiday,
+  AuditEntry, Role, AuthContext, ResourceContext, SensitivityLevel,
+  EffectivePolicy, Override, OverridePeriod, Document, DocumentVerificationStatus,
+  TerminationType, OffboardingRecord, Result,
 } from "@willdesign-hr/types";
 import {
-  Roles,
-  SensitivityLevels,
-  AttendanceActions,
-  AttendanceStates,
-  WorkArrangements,
-  TimeTypes,
-  TerminationHandlings,
-  LeaveRequestStatuses,
-  SalaryTypes,
+  Roles, SensitivityLevels, EmploymentTypes, EmployeeStatuses, Regions,
+  AttendanceActions, AttendanceStates, LeaveTypes, LeaveRequestStatuses,
+  SalaryTypes, SalaryChangeTypes, Currencies, FlagLevels, FlagResolutions,
+  TerminationTypes, DocumentVerificationStatuses, AuditActions, ReferenceTypes,
+  WorkArrangements, TimeTypes, TerminationHandlings, JP_LABOR, HOURS, PROBATION, PAYMENT,
 } from "@willdesign-hr/types";
 
 describe("Employee types", () => {
   it("should define all employment types for JP and NP", () => {
     const jpTypes: EmploymentType[] = [
-      "JP_FULL_TIME",
-      "JP_CONTRACT",
-      "JP_OUTSOURCED",
-      "JP_PART_TIME",
-      "JP_SALES",
-      "JP_INTERN",
+      EmploymentTypes.JP_FULL_TIME, EmploymentTypes.JP_CONTRACT,
+      EmploymentTypes.JP_OUTSOURCED, EmploymentTypes.JP_PART_TIME,
+      EmploymentTypes.JP_SALES, EmploymentTypes.JP_INTERN,
     ];
     const npTypes: EmploymentType[] = [
-      "NP_FULL_TIME",
-      "NP_PAID_INTERN",
-      "NP_UNPAID_INTERN",
+      EmploymentTypes.NP_FULL_TIME, EmploymentTypes.NP_PAID_INTERN, EmploymentTypes.NP_UNPAID_INTERN,
     ];
     expect(jpTypes).toHaveLength(6);
     expect(npTypes).toHaveLength(3);
   });
 
   it("should define regions", () => {
-    const regions: Region[] = ["JP", "NP"];
+    const regions: Region[] = [Regions.JP, Regions.NP];
     expect(regions).toHaveLength(2);
   });
 
   it("should define employee statuses", () => {
-    const statuses: EmployeeStatus[] = ["ACTIVE", "INACTIVE"];
+    const statuses: EmployeeStatus[] = [EmployeeStatuses.ACTIVE, EmployeeStatuses.INACTIVE];
     expect(statuses).toHaveLength(2);
   });
 
@@ -98,31 +46,31 @@ describe("Employee types", () => {
       name: "Taro Yamada",
       email: "taro@willdesign.com",
       slackId: "U12345",
-      employmentType: "JP_FULL_TIME",
-      region: "JP",
+      employmentType: EmploymentTypes.JP_FULL_TIME,
+      region: Regions.JP,
       timezone: "Asia/Tokyo",
       languagePreference: "ja",
       managerId: "EMP#000",
-      status: "ACTIVE",
+      status: EmployeeStatuses.ACTIVE,
       joinDate: "2024-01-15",
       probationEndDate: "2024-04-15",
       createdAt: "2024-01-15T00:00:00Z",
       updatedAt: "2024-01-15T00:00:00Z",
     };
     expect(emp.id).toBe("EMP#001");
-    expect(emp.region).toBe("JP");
+    expect(emp.region).toBe(Regions.JP);
   });
 });
 
 describe("Attendance types", () => {
   it("should define all actions and states", () => {
     const actions: AttendanceAction[] = [
-      AttendanceActions.CLOCK_IN,
-      AttendanceActions.CLOCK_OUT,
-      AttendanceActions.BREAK_START,
-      AttendanceActions.BREAK_END,
+      AttendanceActions.CLOCK_IN, AttendanceActions.CLOCK_OUT,
+      AttendanceActions.BREAK_START, AttendanceActions.BREAK_END,
     ];
-    const states: AttendanceState[] = [AttendanceStates.IDLE, AttendanceStates.CLOCKED_IN, AttendanceStates.ON_BREAK];
+    const states: AttendanceState[] = [
+      AttendanceStates.IDLE, AttendanceStates.CLOCKED_IN, AttendanceStates.ON_BREAK,
+    ];
     expect(actions).toHaveLength(4);
     expect(states).toHaveLength(3);
   });
@@ -144,7 +92,9 @@ describe("Attendance types", () => {
 
 describe("Leave types", () => {
   it("should define request statuses", () => {
-    const statuses: LeaveRequestStatus[] = [LeaveRequestStatuses.PENDING, LeaveRequestStatuses.APPROVED, LeaveRequestStatuses.REJECTED];
+    const statuses: LeaveRequestStatus[] = [
+      LeaveRequestStatuses.PENDING, LeaveRequestStatuses.APPROVED, LeaveRequestStatuses.REJECTED,
+    ];
     expect(statuses).toHaveLength(3);
   });
 
@@ -152,7 +102,7 @@ describe("Leave types", () => {
     const req: LeaveRequest = {
       id: "LEAVE#001",
       employeeId: "EMP#001",
-      leaveType: "PAID",
+      leaveType: LeaveTypes.PAID,
       startDate: "2024-02-01",
       endDate: "2024-02-02",
       status: LeaveRequestStatuses.PENDING,
@@ -167,17 +117,14 @@ describe("Leave types", () => {
 describe("Payroll types", () => {
   it("should define salary change types", () => {
     const types: SalaryChangeType[] = [
-      "INITIAL",
-      "PROBATION_END",
-      "REVIEW",
-      "PROMOTION",
-      "ADJUSTMENT",
+      SalaryChangeTypes.INITIAL, SalaryChangeTypes.PROBATION_END,
+      SalaryChangeTypes.REVIEW, SalaryChangeTypes.PROMOTION, SalaryChangeTypes.ADJUSTMENT,
     ];
     expect(types).toHaveLength(5);
   });
 
   it("should define currencies", () => {
-    const currencies: Currency[] = ["JPY", "NPR"];
+    const currencies: Currency[] = [Currencies.JPY, Currencies.NPR];
     expect(currencies).toHaveLength(2);
   });
 
@@ -186,9 +133,9 @@ describe("Payroll types", () => {
       id: "SALARY#001",
       employeeId: "EMP#001",
       amount: 300000,
-      currency: "JPY",
+      currency: Currencies.JPY,
       salaryType: SalaryTypes.MONTHLY,
-      changeType: "INITIAL",
+      changeType: SalaryChangeTypes.INITIAL,
       effectiveFrom: "2024-01-15",
       agreementDocumentId: "DOC#001",
       createdAt: "2024-01-15T00:00:00Z",
@@ -210,7 +157,7 @@ describe("Payroll types", () => {
       blendingDetails: null,
       transferFees: 0,
       netAmount: 300000,
-      currency: "JPY",
+      currency: Currencies.JPY,
       jpyEquivalent: null,
       exchangeRate: null,
       exchangeRateDate: null,
@@ -229,8 +176,8 @@ describe("Report types", () => {
       today: "Will work on feature Y",
       blockers: "None",
       references: [
-        { type: "JIRA", id: "HR-123" },
-        { type: "GITHUB_PR", id: "willdesign/hr#45" },
+        { type: ReferenceTypes.JIRA, id: "HR-123" },
+        { type: ReferenceTypes.GITHUB_PR, id: "willdesign/hr#45" },
       ],
       version: 1,
       slackMessageTs: "1705312000.000100",
@@ -243,13 +190,10 @@ describe("Report types", () => {
 
 describe("Flag types", () => {
   it("should define all flag levels and resolutions", () => {
-    const levels: FlagLevel[] = ["DAILY", "WEEKLY", "MONTHLY"];
+    const levels: FlagLevel[] = [FlagLevels.DAILY, FlagLevels.WEEKLY, FlagLevels.MONTHLY];
     const resolutions: FlagResolution[] = [
-      "NO_PENALTY",
-      "DEDUCT_FULL",
-      "USE_BANK",
-      "PARTIAL_BANK",
-      "DISCUSS",
+      FlagResolutions.NO_PENALTY, FlagResolutions.DEDUCT_FULL,
+      FlagResolutions.USE_BANK, FlagResolutions.PARTIAL_BANK, FlagResolutions.DISCUSS,
     ];
     expect(levels).toHaveLength(3);
     expect(resolutions).toHaveLength(5);
@@ -280,11 +224,11 @@ describe("Holiday types", () => {
       date: "2024-01-01",
       name: "New Year's Day",
       nameJa: "元日",
-      region: "JP",
+      region: Regions.JP,
       year: 2024,
       isSubstitute: false,
     };
-    expect(h.region).toBe("JP");
+    expect(h.region).toBe(Regions.JP);
   });
 });
 
@@ -294,7 +238,7 @@ describe("Audit types", () => {
       id: "AUDIT#001",
       targetId: "EMP#001",
       targetType: "EMPLOYEE",
-      action: "UPDATE",
+      action: AuditActions.UPDATE,
       actorId: "EMP#000",
       source: "web",
       before: { name: "Old Name" },
@@ -308,21 +252,15 @@ describe("Audit types", () => {
 describe("Permission types", () => {
   it("should define default roles", () => {
     const roles: Role[] = [
-      Roles.EMPLOYEE,
-      Roles.MANAGER,
-      Roles.HR_MANAGER,
-      Roles.ADMIN,
-      Roles.SUPER_ADMIN,
+      Roles.EMPLOYEE, Roles.MANAGER, Roles.HR_MANAGER, Roles.ADMIN, Roles.SUPER_ADMIN,
     ];
     expect(roles).toHaveLength(5);
   });
 
   it("should define sensitivity levels", () => {
     const levels: SensitivityLevel[] = [
-      SensitivityLevels.PUBLIC,
-      SensitivityLevels.INTERNAL,
-      SensitivityLevels.SENSITIVE,
-      SensitivityLevels.CONFIDENTIAL,
+      SensitivityLevels.PUBLIC, SensitivityLevels.INTERNAL,
+      SensitivityLevels.SENSITIVE, SensitivityLevels.CONFIDENTIAL,
     ];
     expect(levels).toHaveLength(4);
   });
@@ -348,9 +286,9 @@ describe("Policy types", () => {
   it("should define effective policy with all domains", () => {
     const policy: EffectivePolicy = {
       hours: {
-        dailyMinimum: 8,
-        weeklyMinimum: 40,
-        monthlyMinimum: 160,
+        dailyMinimum: HOURS.DAILY_MINIMUM,
+        weeklyMinimum: HOURS.WEEKLY_MINIMUM,
+        monthlyMinimum: HOURS.MONTHLY_FULL_TIME,
         workArrangement: WorkArrangements.OFFICE,
         timeType: TimeTypes.FIXED,
         coreHoursStart: "10:00",
@@ -361,15 +299,20 @@ describe("Policy types", () => {
         startConditionMonths: 6,
         annualCap: 20,
         carryOverMonths: 24,
-        leaveTypes: ["PAID", "UNPAID"],
-        mandatoryUsageDays: 5,
+        leaveTypes: [LeaveTypes.PAID, LeaveTypes.UNPAID],
+        mandatoryUsageDays: JP_LABOR.MANDATORY_LEAVE_DAYS,
         terminationHandling: TerminationHandlings.LABOR_LAW,
       },
       overtime: {
-        deemedHours: 45,
-        rates: { standard: 1.25, lateNight: 0.25, holiday: 1.35, excess60h: 1.5 },
-        monthlyLimit: 45,
-        yearlyLimit: 360,
+        deemedHours: JP_LABOR.DEEMED_OVERTIME_HOURS,
+        rates: {
+          standard: JP_LABOR.OVERTIME_RATE_STANDARD,
+          lateNight: JP_LABOR.OVERTIME_RATE_LATE_NIGHT,
+          holiday: JP_LABOR.OVERTIME_RATE_HOLIDAY,
+          excess60h: JP_LABOR.OVERTIME_RATE_EXCESS_60H,
+        },
+        monthlyLimit: JP_LABOR.MONTHLY_OVERTIME_LIMIT,
+        yearlyLimit: JP_LABOR.YEARLY_OVERTIME_LIMIT,
       },
       compensation: {
         salaryType: SalaryTypes.MONTHLY,
@@ -378,9 +321,9 @@ describe("Policy types", () => {
         commissionTracking: false,
       },
       probation: {
-        durationMonths: 3,
+        durationMonths: PROBATION.DEFAULT_DURATION_MONTHS,
         leaveAllowed: false,
-        noticePeriodDays: 14,
+        noticePeriodDays: PROBATION.DEFAULT_NOTICE_DAYS,
       },
       flags: {
         dailyThreshold: true,
@@ -389,26 +332,26 @@ describe("Policy types", () => {
         gracePeriodMinutes: 15,
       },
       payment: {
-        deadlineDay: 31,
-        alertDaysBefore: 5,
-        settlementDeadlineDay: 15,
+        deadlineDay: PAYMENT.JP_DEADLINE_DAY,
+        alertDaysBefore: PAYMENT.ALERT_DAYS_BEFORE,
+        settlementDeadlineDay: PAYMENT.SETTLEMENT_DEADLINE_DAY,
       },
       report: {
         submissionDeadline: "18:00",
         reminderTime: "17:00",
       },
     };
-    expect(policy.hours.monthlyMinimum).toBe(160);
-    expect(policy.overtime.deemedHours).toBe(45);
+    expect(policy.hours.monthlyMinimum).toBe(HOURS.MONTHLY_FULL_TIME);
+    expect(policy.overtime.deemedHours).toBe(JP_LABOR.DEEMED_OVERTIME_HOURS);
   });
 });
 
 describe("Document types", () => {
   it("should define verification statuses", () => {
     const statuses: DocumentVerificationStatus[] = [
-      "PENDING",
-      "VERIFIED",
-      "REJECTED",
+      DocumentVerificationStatuses.PENDING,
+      DocumentVerificationStatuses.VERIFIED,
+      DocumentVerificationStatuses.REJECTED,
     ];
     expect(statuses).toHaveLength(3);
   });
@@ -420,20 +363,18 @@ describe("Document types", () => {
       fileName: "contract.pdf",
       fileType: "application/pdf",
       s3Key: "documents/EMP#001/contract.pdf",
-      verificationStatus: LeaveRequestStatuses.PENDING,
+      verificationStatus: DocumentVerificationStatuses.PENDING,
       uploadedAt: "2024-01-15T00:00:00Z",
     };
-    expect(doc.verificationStatus).toBe(LeaveRequestStatuses.PENDING);
+    expect(doc.verificationStatus).toBe(DocumentVerificationStatuses.PENDING);
   });
 });
 
 describe("Onboarding/Offboarding types", () => {
   it("should define termination types", () => {
     const types: TerminationType[] = [
-      "WITHOUT_CAUSE",
-      "FOR_CAUSE",
-      "MUTUAL",
-      "RESIGNATION",
+      TerminationTypes.WITHOUT_CAUSE, TerminationTypes.FOR_CAUSE,
+      TerminationTypes.MUTUAL, TerminationTypes.RESIGNATION,
     ];
     expect(types).toHaveLength(4);
   });
@@ -441,18 +382,14 @@ describe("Onboarding/Offboarding types", () => {
   it("should create an offboarding record", () => {
     const record: OffboardingRecord = {
       employeeId: "EMP#001",
-      terminationType: "WITHOUT_CAUSE",
+      terminationType: TerminationTypes.WITHOUT_CAUSE,
       terminationDate: "2024-06-30",
       noticePeriodBuyout: true,
       buyoutAmount: 300000,
       settlementDeadline: "2024-07-15",
       curePeriodExpiry: null,
       legalObligations: [
-        {
-          type: "CONFIDENTIALITY",
-          description: "2-year NDA",
-          expiresAt: "2026-06-30",
-        },
+        { type: "CONFIDENTIALITY", description: "2-year NDA", expiresAt: "2026-06-30" },
       ],
       createdAt: "2024-06-01T00:00:00Z",
     };
@@ -463,31 +400,21 @@ describe("Onboarding/Offboarding types", () => {
 
 describe("Result type", () => {
   it("should create success result", () => {
-    const result: Result<string, Error> = {
-      success: true,
-      data: "hello",
-    };
+    const result: Result<string, Error> = { success: true, data: "hello" };
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data).toBe("hello");
-    }
+    if (result.success) expect(result.data).toBe("hello");
   });
 
   it("should create error result", () => {
-    const result: Result<string, string> = {
-      success: false,
-      error: "something went wrong",
-    };
+    const result: Result<string, string> = { success: false, error: "something went wrong" };
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error).toBe("something went wrong");
-    }
+    if (!result.success) expect(result.error).toBe("something went wrong");
   });
 });
 
 describe("Override types", () => {
   it("should define period types", () => {
-    const periods: OverridePeriod[] = ["DAILY", "WEEKLY", "MONTHLY"];
+    const periods: OverridePeriod[] = [FlagLevels.DAILY, FlagLevels.WEEKLY, FlagLevels.MONTHLY];
     expect(periods).toHaveLength(3);
   });
 
@@ -495,7 +422,7 @@ describe("Override types", () => {
     const override: Override = {
       id: "OVR#001",
       employeeId: "EMP#001",
-      period: "MONTHLY",
+      period: FlagLevels.MONTHLY,
       yearMonth: "2024-02",
       requiredHours: 120,
       reason: "Quota redistribution",

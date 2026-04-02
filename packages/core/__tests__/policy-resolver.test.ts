@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { deepMergePolicy, resolveCascade } from "../src/policies/resolver.js";
 import type { RawPolicy, LeaveType } from "@willdesign-hr/types";
+import { LeaveTypes, JP_LABOR } from "@willdesign-hr/types";
 
 describe("deepMergePolicy", () => {
   it("returns base when override is empty", () => {
@@ -19,13 +20,13 @@ describe("deepMergePolicy", () => {
 
   it("replaces arrays entirely (not append)", () => {
     const base: RawPolicy = {
-      leave: { leaveTypes: ["PAID", "UNPAID", "SHIFT_PERMISSION"] as LeaveType[] },
+      leave: { leaveTypes: [LeaveTypes.PAID, LeaveTypes.UNPAID, LeaveTypes.SHIFT_PERMISSION] as LeaveType[] },
     };
     const override: RawPolicy = {
-      leave: { leaveTypes: ["PAID"] as LeaveType[] },
+      leave: { leaveTypes: [LeaveTypes.PAID] as LeaveType[] },
     };
     const result = deepMergePolicy(base, override);
-    expect(result.leave?.leaveTypes).toEqual(["PAID"]);
+    expect(result.leave?.leaveTypes).toEqual([LeaveTypes.PAID]);
   });
 
   it("adds new domains from override", () => {

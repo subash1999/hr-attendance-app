@@ -1,5 +1,5 @@
 import type { RawPolicy } from "@willdesign-hr/types";
-import { TerminationHandlings } from "@willdesign-hr/types";
+import { LeaveTypes, TerminationHandlings } from "@willdesign-hr/types";
 
 /** 業務委託 — JP outsourced contractor. No overtime tracking, no leave. */
 export const jpOutsourcedPolicy: RawPolicy = {
@@ -13,7 +13,7 @@ export const jpOutsourcedPolicy: RawPolicy = {
     startConditionMonths: 0,
     annualCap: 0,
     carryOverMonths: 0,
-    leaveTypes: ["UNPAID"],
+    leaveTypes: [LeaveTypes.UNPAID],
     mandatoryUsageDays: 0,
     terminationHandling: TerminationHandlings.FORFEIT,
   },

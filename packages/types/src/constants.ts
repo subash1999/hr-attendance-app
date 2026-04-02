@@ -15,6 +15,29 @@ export const SensitivityLevels = {
   CONFIDENTIAL: "CONFIDENTIAL",
 } as const;
 
+// ─── Employment ───
+export const EmploymentTypes = {
+  JP_FULL_TIME: "JP_FULL_TIME",
+  JP_CONTRACT: "JP_CONTRACT",
+  JP_OUTSOURCED: "JP_OUTSOURCED",
+  JP_PART_TIME: "JP_PART_TIME",
+  JP_SALES: "JP_SALES",
+  JP_INTERN: "JP_INTERN",
+  NP_FULL_TIME: "NP_FULL_TIME",
+  NP_PAID_INTERN: "NP_PAID_INTERN",
+  NP_UNPAID_INTERN: "NP_UNPAID_INTERN",
+} as const;
+
+export const EmployeeStatuses = {
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+} as const;
+
+export const Regions = {
+  JP: "JP",
+  NP: "NP",
+} as const;
+
 // ─── Attendance ───
 export const AttendanceActions = {
   CLOCK_IN: "CLOCK_IN",
@@ -43,6 +66,18 @@ export const TimeTypes = {
 } as const;
 
 // ─── Leave ───
+export const LeaveTypes = {
+  PAID: "PAID",
+  UNPAID: "UNPAID",
+  SHIFT_PERMISSION: "SHIFT_PERMISSION",
+  CREDITED_ABSENCE: "CREDITED_ABSENCE",
+  BEREAVEMENT: "BEREAVEMENT",
+  MATERNITY: "MATERNITY",
+  NURSING: "NURSING",
+  MENSTRUAL: "MENSTRUAL",
+  COMPANY_SPECIFIC: "COMPANY_SPECIFIC",
+} as const;
+
 export const TerminationHandlings = {
   FORFEIT: "FORFEIT",
   LABOR_LAW: "LABOR_LAW",
@@ -54,11 +89,79 @@ export const LeaveRequestStatuses = {
   REJECTED: "REJECTED",
 } as const;
 
-// ─── Salary ───
+// ─── Salary & Payroll ───
 export const SalaryTypes = {
   MONTHLY: "MONTHLY",
   ANNUAL: "ANNUAL",
   HOURLY: "HOURLY",
+} as const;
+
+export const SalaryChangeTypes = {
+  INITIAL: "INITIAL",
+  PROBATION_END: "PROBATION_END",
+  REVIEW: "REVIEW",
+  PROMOTION: "PROMOTION",
+  ADJUSTMENT: "ADJUSTMENT",
+} as const;
+
+export const Currencies = {
+  JPY: "JPY",
+  NPR: "NPR",
+} as const;
+
+// ─── Flags ───
+export const FlagLevels = {
+  DAILY: "DAILY",
+  WEEKLY: "WEEKLY",
+  MONTHLY: "MONTHLY",
+} as const;
+
+export const FlagResolutions = {
+  NO_PENALTY: "NO_PENALTY",
+  DEDUCT_FULL: "DEDUCT_FULL",
+  USE_BANK: "USE_BANK",
+  PARTIAL_BANK: "PARTIAL_BANK",
+  DISCUSS: "DISCUSS",
+} as const;
+
+// ─── Termination ───
+export const TerminationTypes = {
+  WITHOUT_CAUSE: "WITHOUT_CAUSE",
+  FOR_CAUSE: "FOR_CAUSE",
+  MUTUAL: "MUTUAL",
+  RESIGNATION: "RESIGNATION",
+} as const;
+
+// ─── Documents ───
+export const DocumentVerificationStatuses = {
+  PENDING: "PENDING",
+  VERIFIED: "VERIFIED",
+  REJECTED: "REJECTED",
+} as const;
+
+// ─── Audit ───
+export const AuditActions = {
+  CREATE: "CREATE",
+  UPDATE: "UPDATE",
+  DELETE: "DELETE",
+  APPROVE: "APPROVE",
+  REJECT: "REJECT",
+  RESOLVE: "RESOLVE",
+} as const;
+
+// ─── References ───
+export const ReferenceTypes = {
+  JIRA: "JIRA",
+  GITHUB_PR: "GITHUB_PR",
+  GITHUB_ISSUE: "GITHUB_ISSUE",
+  OTHER: "OTHER",
+} as const;
+
+// ─── Allowance Types ───
+export const AllowanceTypes = {
+  TRANSPORTATION: "TRANSPORTATION",
+  HOUSING: "HOUSING",
+  POSITION: "POSITION",
 } as const;
 
 // ─── JP Labor Law Constants ───
