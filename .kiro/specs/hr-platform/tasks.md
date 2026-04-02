@@ -84,8 +84,8 @@
   - Report policy: daily report submission deadline time per team/group (configurable), reminder trigger time
   - _Requirements: 4.5, 17.1, 17.2, 10.15, 2.5_
 
-- [ ] 5. Permission engine
-- [ ] 5.1 Implement the RBAC system with a 5-level role hierarchy and support for custom roles with granular permissions
+- [x] 5. Permission engine
+- [x] 5.1 Implement the RBAC system with a 5-level role hierarchy and support for custom roles with granular permissions
   - Define the default role hierarchy: EMPLOYEE < MANAGER < HR_MANAGER < ADMIN < SUPER_ADMIN
   - Implement role comparison that respects hierarchy ordering
   - Support custom roles with explicitly listed permission strings (e.g., "payroll:read", "leave:approve", "holiday:manage")
@@ -95,7 +95,7 @@
   - Write TDD tests for hierarchy checks, custom role permissions, Super Admin override, multiple admins
   - _Requirements: 5.1, 5.4, 5.5, 5.6, 5.7_
 
-- [ ] 5.2 Implement the ABAC system that evaluates reporting chain, resource ownership, and data sensitivity
+- [x] 5.2 Implement the ABAC system that evaluates reporting chain, resource ownership, and data sensitivity
   - Build attribute evaluation: given an actor context and resource context, determine if the actor has access
   - Manager scope: a manager can only access data for employees where manager_id matches their own ID
   - Resource ownership: employees can access their own data regardless of role

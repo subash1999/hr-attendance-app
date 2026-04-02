@@ -28,3 +28,11 @@ export type {
 } from "./repositories/index.js";
 
 export { deepMergePolicy, resolveCascade } from "./policies/resolver.js";
+
+export {
+  ROLE_HIERARCHY,
+  getRoleLevel,
+  hasMinimumRole,
+  hasPermission,
+  authorize,
+} from "./permissions/engine.js";
