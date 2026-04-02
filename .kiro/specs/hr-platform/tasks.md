@@ -143,8 +143,8 @@
   - Write TDD tests: normal day, cross-midnight, multiple sessions, holidays reducing requirements, holiday work at 1.0x, open session handling
   - _Requirements: 1.13, 7.3, 7.4, 7.5, 15.4, 7.9_
 
-- [ ] 7. Leave management
-- [ ] 7.1 Implement the leave service with request lifecycle, balance enforcement, and approval workflow
+- [x] 7. Leave management
+- [x] 7.1 Implement the leave service with request lifecycle, balance enforcement, and approval workflow
   - Create leave request: validate employee has sufficient balance for paid leave; reject with suggestion of unpaid/shift if balance is zero
   - Enforce no-negative-balance rule: paid leave blocked when balance reaches zero
   - Approval workflow: manager approves/rejects, system updates status, deducts balance for paid leave, creates audit entry
@@ -153,7 +153,7 @@
   - Write TDD tests: sufficient balance approval, zero balance rejection with suggestion, multi-day leave, approval flow, audit trail
   - _Requirements: 9.1, 9.3, 9.5, 9.7_
 
-- [ ] 7.2 (P) Implement leave accrual calculation with policy-cascaded rules and carry-over logic
+- [x] 7.2 (P) Implement leave accrual calculation with policy-cascaded rules and carry-over logic
   - Accrual follows cascading policy: company default → group → employee
   - Nepal contractors: 1 day/month after 3-month probation, cap 20, forfeit on termination
   - Japan employees: JP labor law schedule (10 days at 6 months, scaling to 20 at 6.5 years), 2-year carry-over

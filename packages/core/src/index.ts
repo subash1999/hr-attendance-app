@@ -45,3 +45,8 @@ export { AttendanceService } from "./attendance/service.js";
 export type { ProcessEventInput } from "./attendance/service.js";
 export { calculateDailyHours } from "./attendance/hours-calculator.js";
 export type { HoursBreakdown } from "./attendance/hours-calculator.js";
+
+export { LeaveService } from "./leave/service.js";
+export type { CreateLeaveRequestInput } from "./leave/service.js";
+export { calculateAccrual, getJpAccrualDays, getNpAccrualDays, getMandatoryLeaveStatus } from "./leave/accrual.js";
+export type { AccrualInput, AccrualResult, MandatoryLeaveStatus } from "./leave/accrual.js";
