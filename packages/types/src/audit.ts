@@ -12,7 +12,7 @@ export interface AuditEntry {
   readonly id: string;
   readonly targetId: string;
   readonly targetType: string;
-  readonly action: string;
+  readonly action: AuditAction;
   readonly actorId: string;
   readonly source: AuditSource;
   readonly before: Record<string, unknown> | null;

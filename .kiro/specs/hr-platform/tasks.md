@@ -35,8 +35,8 @@
   - Result type: discriminated union for success/error returns
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 7.1, 9.1, 10.2, 10.10, 18.1, 5.1, 4.5_
 
-- [ ] 3. Core repository interfaces (ports)
-- [ ] 3.1 (P) Define all repository interfaces in the core package with zero AWS dependencies
+- [x] 3. Core repository interfaces (ports)
+- [x] 3.1 (P) Define all repository interfaces in the core package with zero AWS dependencies
   - EmployeeRepository: find by ID, find by Slack ID, find by manager ID, find all with status filter, create, update
   - AttendanceRepository: get/save state, save event, get events by date and month, get unclosed sessions
   - LeaveRepository: CRUD, find by employee, find pending, update status

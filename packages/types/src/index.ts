@@ -104,3 +104,7 @@ export type {
 } from "./onboarding.js";
 
 export type { Result } from "./result.js";
+
+export type { MonthlySummary } from "./monthly-summary.js";
+
+export type { AttendanceStateRecord } from "./attendance-state.js";
