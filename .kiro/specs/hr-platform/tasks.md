@@ -1,7 +1,7 @@
 # Implementation Plan — WillDesign HR Platform
 
-- [ ] 1. Monorepo scaffolding and project configuration
-- [ ] 1.1 Initialize the npm workspace monorepo with all packages (core, types, data, api, slack, web, infra) and configure shared TypeScript strict-mode settings, path aliases, and Vitest workspace
+- [x] 1. Monorepo scaffolding and project configuration
+- [x] 1.1 Initialize the npm workspace monorepo with all packages (core, types, data, api, slack, web, infra) and configure shared TypeScript strict-mode settings, path aliases, and Vitest workspace
   - Create root package.json with workspace definitions for all seven packages
   - Configure shared tsconfig.base.json with strict mode, path aliases, and composite project references
   - Set up Vitest workspace configuration so tests run per-package
@@ -9,7 +9,7 @@
   - Initialize each package with its own package.json, tsconfig.json extending base, and entry point
   - _Requirements: 19.1, 19.4, 19.5_
 
-- [ ] 1.2 (P) Set up the CDK infrastructure project with environment-aware stack definitions
+- [x] 1.2 (P) Set up the CDK infrastructure project with environment-aware stack definitions
   - Initialize the infra package with AWS CDK and TypeScript
   - Create a shared environment configuration that distinguishes dev (develop branch) and prod (main branch) resource names
   - Define placeholder stacks: database, api, slack, web, auth, scheduler, email
