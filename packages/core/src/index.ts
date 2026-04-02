@@ -26,3 +26,5 @@ export type {
   AuthProviderAdapter,
   CreateAuthUserInput,
 } from "./repositories/index.js";
+
+export { deepMergePolicy, resolveCascade } from "./policies/resolver.js";

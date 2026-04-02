@@ -55,8 +55,8 @@
   - AuthProviderAdapter: create user, disable user, delete user, set temporary password, update attributes
   - _Requirements: 19.4, 4.4, 21.2_
 
-- [ ] 4. Policy engine
-- [ ] 4.1 Implement the 3-level cascade policy resolver as a pure function that deep-merges company, group, and employee policy layers
+- [x] 4. Policy engine
+- [x] 4.1 Implement the 3-level cascade policy resolver as a pure function that deep-merges company, group, and employee policy layers
   - Build a deep-merge utility that handles nested objects: lower levels override higher levels field-by-field. Arrays are REPLACED (not appended) — if a group defines an allowance list, it replaces the company-wide list entirely. This prevents unintended duplication of allowance types or leave types across cascade levels
   - Implement the resolver that accepts company, group, and user policy data and returns a fully resolved effective policy
   - Support effective_from date filtering so policies activate only after their configured date
@@ -64,7 +64,7 @@
   - Write TDD tests: single-level, two-level, three-level cascades, missing levels, date-based filtering, deeply nested overrides
   - _Requirements: 4.1, 4.3, 4.4, 4.6_
 
-- [ ] 4.2 (P) Create seed policy data for Japanese labor law and Nepal contractor defaults
+- [x] 4.2 (P) Create seed policy data for Japanese labor law and Nepal contractor defaults
   - Build the company-level org.json seed with default values for hours (daily/weekly/monthly minimums), leave (JP standard schedule, NP 1 day/month after 3 months), overtime (JP rates: 1.25x, late night +0.25x, holiday 1.35x, 60h+ 1.5x), compensation, probation (3 months default), and flag configuration
   - Create group-level seed files for each employment type: JP full-time, JP contract, JP outsourced, JP part-time, JP sales, JP intern, NP full-time, NP paid intern, NP unpaid intern
   - Each group file contains only the fields that differ from the company default (sparse overrides)
@@ -73,7 +73,7 @@
   - Write tests verifying seed data resolves correctly through the cascade
   - _Requirements: 4.2, 4.5, 4.7, 8.3, 8.5_
 
-- [ ] 4.3 Define the policy coverage schema ensuring all configurable domains are represented
+- [x] 4.3 Define the policy coverage schema ensuring all configurable domains are represented
   - Hours policy: daily/weekly/monthly minimums, work arrangement (remote/office/hybrid), time type (fixed/flex/full-flex), core hours
   - Leave policy: accrual schedule, start condition, cap, carry-over rules, leave types list, mandatory usage rules (JP 5-day), termination handling
   - Overtime policy: deemed overtime hours, pay rates by category, tracking thresholds
