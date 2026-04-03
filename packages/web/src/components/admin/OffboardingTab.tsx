@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Card, Modal, Badge, ButtonDanger, ButtonSecondary, FormField } from "../ui";
 import { useEmployees, useOffboard } from "../../hooks/queries";
 import { useToast } from "../ui/Toast";
-import { TerminationTypes } from "@hr-attendance-app/types";
+import { TerminationTypes, EmployeeStatuses } from "@hr-attendance-app/types";
 
 export function OffboardingTab() {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export function OffboardingTab() {
   const [noticeBuyout, setNoticeBuyout] = useState(false);
   const [curePeriodDate, setCurePeriodDate] = useState("");
 
-  const activeEmployees = employees?.filter((e) => e.status === "ACTIVE") ?? [];
+  const activeEmployees = employees?.filter((e) => e.status === EmployeeStatuses.ACTIVE) ?? [];
   const selected = activeEmployees.find((e) => e.id === selectedId);
 
   const handleOffboard = () => {

@@ -180,14 +180,14 @@
 
 ## Phase 5: Team Page (Manager)
 
-- [ ] 5. Build team page with manager dashboard
-- [ ] 5.1 Build team overview with member grid and status
+- [x] 5. Build team page with manager dashboard
+- [x] 5.1 Build team overview with member grid and status
   - Card grid showing team members: name, avatar placeholder (CSS initials), employment type, region, current clock status badge (Idle/Working/Break), today's hours
   - Click member name navigates to an employee detail view with attendance history, hours summary, flag history, and bank balance
   - Responsive: card grid on desktop → stacked cards on tablet → compact list with expandable detail rows on mobile
   - _Requirements: 9.1, 9.6, 9.7_
 
-- [ ] 5.2 Build unified approval queue
+- [x] 5.2 Build unified approval queue
   - Single list showing pending items across all categories with type badge (Leave/Flag/Bank)
   - Leave approval: show request details (type, dates, reason, remaining balance), approve/reject buttons calling leave mutation
   - Flag resolution: show flag details (period, expected vs actual hours, deficit), resolution dropdown (NO_PENALTY, DEDUCT_FULL, USE_BANK, PARTIAL_BANK, DISCUSS), bank offset hours input for USE_BANK/PARTIAL_BANK with available balance preview
@@ -195,13 +195,13 @@
   - Remove item from queue on successful action
   - _Requirements: 9.2, 9.3, 11.3, 11.4, 11.5, 12.5_
 
-- [ ] 5.3 (P) Build team leave calendar
+- [x] 5.3 (P) Build team leave calendar
   - Monthly calendar showing approved leave across direct reports
   - Each leave rendered as colored marker per employee
   - Employees see "name — on leave" only; managers see leave type details (PAID/UNPAID/etc.)
   - _Requirements: 9.4, 17.4_
 
-- [ ] 5.4 (P) Build team reports viewer
+- [x] 5.4 (P) Build team reports viewer
   - Date picker + employee filter dropdown
   - Daily report list showing employee name, report text, JIRA/GitHub references as clickable links
   - References parsed from DailyReport.references array: JIRA IDs as project links, GitHub PRs as repo#number links
