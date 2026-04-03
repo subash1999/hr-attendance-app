@@ -6,17 +6,17 @@ import { PayrollPage } from "./PayrollPage";
 describe("PayrollPage", () => {
   it("renders payroll breakdown section", () => {
     renderWithProviders(<PayrollPage />);
-    expect(screen.getByText(/payroll breakdown/i)).toBeInTheDocument();
+    expect(screen.getByText("Payroll Breakdown")).toBeInTheDocument();
   });
 
   it("renders month selector", () => {
     renderWithProviders(<PayrollPage />);
-    expect(screen.getByLabelText(/month/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Month")).toBeInTheDocument();
   });
 
   it("renders salary components", () => {
     renderWithProviders(<PayrollPage />);
-    expect(screen.getByText(/base salary/i)).toBeInTheDocument();
-    expect(screen.getByText(/net amount/i)).toBeInTheDocument();
+    expect(screen.getByText("Base Salary")).toBeInTheDocument();
+    expect(screen.getByText("Net Amount")).toBeInTheDocument();
   });
 });

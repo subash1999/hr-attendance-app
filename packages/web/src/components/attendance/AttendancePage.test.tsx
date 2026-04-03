@@ -6,7 +6,7 @@ import { AttendancePage } from "./AttendancePage";
 describe("AttendancePage", () => {
   it("renders attendance history section", () => {
     renderWithProviders(<AttendancePage />);
-    expect(screen.getByText(/attendance history/i)).toBeInTheDocument();
+    expect(screen.getByText("Attendance History")).toBeInTheDocument();
   });
 
   it("renders web clock-in controls", () => {
@@ -16,6 +16,6 @@ describe("AttendancePage", () => {
 
   it("renders team leave calendar section", () => {
     renderWithProviders(<AttendancePage />);
-    expect(screen.getByText(/team calendar/i)).toBeInTheDocument();
+    expect(screen.getByText("Team Calendar")).toBeInTheDocument();
   });
 });

@@ -4,12 +4,12 @@ import { renderWithProviders } from "../../test/render";
 import { AdminPage } from "./AdminPage";
 
 describe("AdminPage", () => {
-  it("renders onboarding section", () => {
+  it("renders onboarding tab", () => {
     renderWithProviders(<AdminPage />);
     expect(screen.getByRole("button", { name: "Onboarding" })).toBeInTheDocument();
   });
 
-  it("renders offboarding section", () => {
+  it("renders offboarding tab", () => {
     renderWithProviders(<AdminPage />);
     expect(screen.getByRole("button", { name: "Offboarding" })).toBeInTheDocument();
   });

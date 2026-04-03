@@ -6,7 +6,7 @@ import { SettingsPage } from "./SettingsPage";
 describe("SettingsPage", () => {
   it("renders language selector", () => {
     renderWithProviders(<SettingsPage />);
-    expect(screen.getByLabelText(/language/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Language")).toBeInTheDocument();
   });
 
   it("renders profile section", () => {

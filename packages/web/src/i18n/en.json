@@ -2,5 +2,12 @@
   "app": { "title": "WillDesign HR" },
   "nav": { "dashboard": "Dashboard", "attendance": "Attendance", "leave": "Leave", "reports": "Reports", "payroll": "Payroll", "team": "Team", "admin": "Admin", "settings": "Settings" },
   "auth": { "login": "Log In", "logout": "Log Out", "loading": "Loading..." },
-  "dashboard": { "clockIn": "Clock In", "clockOut": "Clock Out", "break": "Break", "back": "Back", "hoursToday": "Hours Today", "hoursWeek": "This Week", "hoursMonth": "This Month", "leaveBalance": "Leave Balance" }
+  "dashboard": { "clockIn": "Clock In", "clockOut": "Clock Out", "break": "Break", "back": "Back", "hoursToday": "Hours Today", "hoursWeek": "This Week", "hoursMonth": "This Month", "leaveBalance": "Leave Balance", "pending": "Pending", "noPending": "No pending actions" },
+  "attendance": { "history": "Attendance History", "noRecords": "No attendance records yet", "teamCalendar": "Team Calendar", "noLeaves": "No scheduled leaves" },
+  "leave": { "newRequest": "New Request", "myRequests": "My Requests", "noRequests": "No leave requests", "leaveType": "Leave Type", "startDate": "Start Date", "endDate": "End Date", "submit": "Submit Request", "paid": "Paid Leave", "unpaid": "Unpaid Leave", "shiftPermission": "Shift Permission" },
+  "reports": { "dailyReport": "Daily Report", "yesterday": "Yesterday", "today": "Today", "blockers": "Blockers", "submit": "Submit Report", "history": "Report History", "noReports": "No reports submitted", "yesterdayPlaceholder": "What did you accomplish yesterday?", "todayPlaceholder": "What will you work on today?", "blockersPlaceholder": "Any blockers?" },
+  "payroll": { "breakdown": "Payroll Breakdown", "month": "Month", "baseSalary": "Base Salary", "overtime": "Overtime", "allowances": "Allowances", "deductions": "Deductions", "netAmount": "Net Amount" },
+  "team": { "overview": "Team Overview", "noMembers": "No team members loaded", "flags": "Flags", "noFlags": "No pending flags", "surplusBanking": "Surplus Banking", "noSurplus": "No surplus requests", "missingReports": "Missing Reports", "allSubmitted": "All reports submitted" },
+  "admin": { "onboarding": "Onboarding", "onboardingDesc": "Create a new employee record", "offboarding": "Offboarding", "offboardingDesc": "Process employee exit", "policies": "Policies", "policiesDesc": "Manage policy configurations", "roles": "Roles", "rolesDesc": "Manage custom roles and permissions", "holidays": "Holidays", "holidaysDesc": "Manage regional holiday calendars" },
+  "settings": { "profile": "Profile", "profileDesc": "Profile information loaded from your account", "preferences": "Preferences", "language": "Language" }
 }

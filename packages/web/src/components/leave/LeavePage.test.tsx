@@ -6,22 +6,22 @@ import { LeavePage } from "./LeavePage";
 describe("LeavePage", () => {
   it("renders leave request form", () => {
     renderWithProviders(<LeavePage />);
-    expect(screen.getByText(/new request/i)).toBeInTheDocument();
+    expect(screen.getByText("New Request")).toBeInTheDocument();
   });
 
   it("renders leave request list", () => {
     renderWithProviders(<LeavePage />);
-    expect(screen.getByText(/my requests/i)).toBeInTheDocument();
+    expect(screen.getByText("My Requests")).toBeInTheDocument();
   });
 
   it("renders date picker inputs", () => {
     renderWithProviders(<LeavePage />);
-    expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Start Date")).toBeInTheDocument();
+    expect(screen.getByLabelText("End Date")).toBeInTheDocument();
   });
 
   it("renders leave type selector", () => {
     renderWithProviders(<LeavePage />);
-    expect(screen.getByLabelText(/leave type/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Leave Type")).toBeInTheDocument();
   });
 });

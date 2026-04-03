@@ -6,18 +6,18 @@ import { ReportsPage } from "./ReportsPage";
 describe("ReportsPage", () => {
   it("renders report submission form", () => {
     renderWithProviders(<ReportsPage />);
-    expect(screen.getByText(/daily report/i)).toBeInTheDocument();
+    expect(screen.getByText("Daily Report")).toBeInTheDocument();
   });
 
   it("renders yesterday/today/blockers fields", () => {
     renderWithProviders(<ReportsPage />);
-    expect(screen.getByLabelText(/yesterday/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/today/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/blockers/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Yesterday")).toBeInTheDocument();
+    expect(screen.getByLabelText("Today")).toBeInTheDocument();
+    expect(screen.getByLabelText("Blockers")).toBeInTheDocument();
   });
 
   it("renders report history section", () => {
     renderWithProviders(<ReportsPage />);
-    expect(screen.getByText(/report history/i)).toBeInTheDocument();
+    expect(screen.getByText("Report History")).toBeInTheDocument();
   });
 });

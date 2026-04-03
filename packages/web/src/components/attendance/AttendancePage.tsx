@@ -33,13 +33,13 @@ export function AttendancePage() {
       </Card>
 
       <Card>
-        <SectionTitle>Attendance History</SectionTitle>
-        <TextMuted>No attendance records yet</TextMuted>
+        <SectionTitle>{t("attendance.history")}</SectionTitle>
+        <TextMuted>{t("attendance.noRecords")}</TextMuted>
       </Card>
 
       <Card>
-        <SectionTitle>Team Calendar</SectionTitle>
-        <TextMuted>No scheduled leaves</TextMuted>
+        <SectionTitle>{t("attendance.teamCalendar")}</SectionTitle>
+        <TextMuted>{t("attendance.noLeaves")}</TextMuted>
       </Card>
     </PageLayout>
   );

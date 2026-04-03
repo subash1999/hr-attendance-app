@@ -11,14 +11,14 @@ describe("DashboardPage", () => {
 
   it("renders hours summary cards", () => {
     renderWithProviders(<DashboardPage />);
-    expect(screen.getByText(/hours today/i)).toBeInTheDocument();
-    expect(screen.getByText(/this week/i)).toBeInTheDocument();
-    expect(screen.getByText(/this month/i)).toBeInTheDocument();
+    expect(screen.getByText("Hours Today")).toBeInTheDocument();
+    expect(screen.getByText("This Week")).toBeInTheDocument();
+    expect(screen.getByText("This Month")).toBeInTheDocument();
   });
 
   it("renders leave balance card", () => {
     renderWithProviders(<DashboardPage />);
-    expect(screen.getByText(/leave balance/i)).toBeInTheDocument();
+    expect(screen.getByText("Leave Balance")).toBeInTheDocument();
   });
 
   it("renders pending actions section", () => {

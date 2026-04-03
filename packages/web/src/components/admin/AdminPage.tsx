@@ -1,16 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { Card, PageLayout, SectionTitle, TextMuted } from "../../theme/primitives";
 
-const ADMIN_TABS = [
-  { id: "onboarding", label: "Onboarding" },
-  { id: "offboarding", label: "Offboarding" },
-  { id: "policies", label: "Policies" },
-  { id: "roles", label: "Roles" },
-  { id: "holidays", label: "Holidays" },
-] as const;
-
-type AdminTab = (typeof ADMIN_TABS)[number]["id"];
+const ADMIN_TAB_IDS = ["onboarding", "offboarding", "policies", "roles", "holidays"] as const;
+type AdminTab = (typeof ADMIN_TAB_IDS)[number];
 
 const TabNav = styled.nav`
   display: flex;
@@ -35,74 +29,27 @@ const Tab = styled.button<{ $active: boolean }>`
 `;
 
 export function AdminPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<AdminTab>("onboarding");
 
   return (
     <PageLayout>
       <TabNav>
-        {ADMIN_TABS.map((tab) => (
+        {ADMIN_TAB_IDS.map((id) => (
           <Tab
-            key={tab.id}
-            $active={activeTab === tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            key={id}
+            $active={activeTab === id}
+            onClick={() => setActiveTab(id)}
           >
-            {tab.label}
+            {t(`admin.${id}`)}
           </Tab>
         ))}
       </TabNav>
 
       <Card>
-        {activeTab === "onboarding" && <OnboardingPanel />}
-        {activeTab === "offboarding" && <OffboardingPanel />}
-        {activeTab === "policies" && <PoliciesPanel />}
-        {activeTab === "roles" && <RolesPanel />}
-        {activeTab === "holidays" && <HolidaysPanel />}
+        <SectionTitle>{t(`admin.${activeTab}`)}</SectionTitle>
+        <TextMuted>{t(`admin.${activeTab}Desc`)}</TextMuted>
       </Card>
     </PageLayout>
-  );
-}
-
-function OnboardingPanel() {
-  return (
-    <div>
-      <SectionTitle>Onboarding</SectionTitle>
-      <TextMuted>Create a new employee record</TextMuted>
-    </div>
-  );
-}
-
-function OffboardingPanel() {
-  return (
-    <div>
-      <SectionTitle>Offboarding</SectionTitle>
-      <TextMuted>Process employee exit</TextMuted>
-    </div>
-  );
-}
-
-function PoliciesPanel() {
-  return (
-    <div>
-      <SectionTitle>Policies</SectionTitle>
-      <TextMuted>Manage policy configurations</TextMuted>
-    </div>
-  );
-}
-
-function RolesPanel() {
-  return (
-    <div>
-      <SectionTitle>Roles</SectionTitle>
-      <TextMuted>Manage custom roles and permissions</TextMuted>
-    </div>
-  );
-}
-
-function HolidaysPanel() {
-  return (
-    <div>
-      <SectionTitle>Holidays</SectionTitle>
-      <TextMuted>Manage regional holiday calendars</TextMuted>
-    </div>
   );
 }

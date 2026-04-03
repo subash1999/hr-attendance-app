@@ -1,26 +1,29 @@
+import { useTranslation } from "react-i18next";
 import { Card, PageLayout, SectionTitle, TextMuted } from "../../theme/primitives";
 
 export function TeamPage() {
+  const { t } = useTranslation();
+
   return (
     <PageLayout>
       <Card>
-        <SectionTitle>Team Overview</SectionTitle>
-        <TextMuted>No team members loaded</TextMuted>
+        <SectionTitle>{t("team.overview")}</SectionTitle>
+        <TextMuted>{t("team.noMembers")}</TextMuted>
       </Card>
 
       <Card>
-        <SectionTitle>Flags</SectionTitle>
-        <TextMuted>No pending flags</TextMuted>
+        <SectionTitle>{t("team.flags")}</SectionTitle>
+        <TextMuted>{t("team.noFlags")}</TextMuted>
       </Card>
 
       <Card>
-        <SectionTitle>Surplus Banking</SectionTitle>
-        <TextMuted>No surplus requests</TextMuted>
+        <SectionTitle>{t("team.surplusBanking")}</SectionTitle>
+        <TextMuted>{t("team.noSurplus")}</TextMuted>
       </Card>
 
       <Card>
-        <SectionTitle>Missing Reports</SectionTitle>
-        <TextMuted>All reports submitted</TextMuted>
+        <SectionTitle>{t("team.missingReports")}</SectionTitle>
+        <TextMuted>{t("team.allSubmitted")}</TextMuted>
       </Card>
     </PageLayout>
   );

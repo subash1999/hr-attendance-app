@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { Card, PageLayout, SectionTitle, FormField } from "../../theme/primitives";
+import { isoToLocalMonth } from "../../utils/date";
 
 const PayrollTable = styled.table`
   width: 100%;
@@ -25,17 +27,15 @@ const TotalRow = styled.tr`
 `;
 
 export function PayrollPage() {
-  const now = new Date();
-  const [month, setMonth] = useState(
-    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`,
-  );
+  const { t } = useTranslation();
+  const [month, setMonth] = useState(isoToLocalMonth(new Date().toISOString()));
 
   return (
     <PageLayout>
       <Card>
-        <SectionTitle>Payroll Breakdown</SectionTitle>
+        <SectionTitle>{t("payroll.breakdown")}</SectionTitle>
         <FormField>
-          <label htmlFor="payroll-month">Month</label>
+          <label htmlFor="payroll-month">{t("payroll.month")}</label>
           <input
             type="month"
             id="payroll-month"
@@ -49,23 +49,23 @@ export function PayrollPage() {
         <PayrollTable>
           <tbody>
             <tr>
-              <td>Base Salary</td>
+              <td>{t("payroll.baseSalary")}</td>
               <AmountCell>—</AmountCell>
             </tr>
             <tr>
-              <td>Overtime</td>
+              <td>{t("payroll.overtime")}</td>
               <AmountCell>—</AmountCell>
             </tr>
             <tr>
-              <td>Allowances</td>
+              <td>{t("payroll.allowances")}</td>
               <AmountCell>—</AmountCell>
             </tr>
             <tr>
-              <td>Deductions</td>
+              <td>{t("payroll.deductions")}</td>
               <AmountCell>—</AmountCell>
             </tr>
             <TotalRow>
-              <td>Net Amount</td>
+              <td>{t("payroll.netAmount")}</td>
               <AmountCell>—</AmountCell>
             </TotalRow>
           </tbody>

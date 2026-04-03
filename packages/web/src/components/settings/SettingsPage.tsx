@@ -8,7 +8,7 @@ const SUPPORTED_LANGUAGES = [
 ] as const;
 
 export function SettingsPage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -17,14 +17,14 @@ export function SettingsPage() {
   return (
     <PageLayout>
       <Card>
-        <SectionTitle>Profile</SectionTitle>
-        <TextMuted>Profile information loaded from your account</TextMuted>
+        <SectionTitle>{t("settings.profile")}</SectionTitle>
+        <TextMuted>{t("settings.profileDesc")}</TextMuted>
       </Card>
 
       <Card>
-        <SectionTitle>Preferences</SectionTitle>
+        <SectionTitle>{t("settings.preferences")}</SectionTitle>
         <FormField>
-          <label htmlFor="settings-language">Language</label>
+          <label htmlFor="settings-language">{t("settings.language")}</label>
           <select
             id="settings-language"
             value={i18n.language}

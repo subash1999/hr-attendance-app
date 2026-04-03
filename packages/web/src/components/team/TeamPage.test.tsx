@@ -6,7 +6,7 @@ import { TeamPage } from "./TeamPage";
 describe("TeamPage", () => {
   it("renders team hours overview", () => {
     renderWithProviders(<TeamPage />);
-    expect(screen.getByText(/team overview/i)).toBeInTheDocument();
+    expect(screen.getByText("Team Overview")).toBeInTheDocument();
   });
 
   it("renders flag management section", () => {
@@ -21,6 +21,6 @@ describe("TeamPage", () => {
 
   it("renders missing reports tracker", () => {
     renderWithProviders(<TeamPage />);
-    expect(screen.getByText(/missing reports/i)).toBeInTheDocument();
+    expect(screen.getByText("Missing Reports")).toBeInTheDocument();
   });
 });

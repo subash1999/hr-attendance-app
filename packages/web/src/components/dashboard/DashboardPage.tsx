@@ -85,8 +85,8 @@ export function DashboardPage() {
       </StatsGrid>
 
       <Card>
-        <PendingTitle>Pending</PendingTitle>
-        <TextMuted>No pending actions</TextMuted>
+        <PendingTitle>{t("dashboard.pending")}</PendingTitle>
+        <TextMuted>{t("dashboard.noPending")}</TextMuted>
       </Card>
     </PageLayout>
   );
