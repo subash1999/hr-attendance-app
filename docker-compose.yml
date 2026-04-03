@@ -9,3 +9,42 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  api:
+    image: node:20-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    ports:
+      - "3001:3001"
+    environment:
+      - DYNAMODB_ENDPOINT=http://dynamodb:8000
+      - DYNAMODB_TABLE_NAME=hr-attendance-app-dev-table
+      - AWS_REGION=ap-northeast-1
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - NODE_ENV=development
+      - DEPLOYMENT_MODE=single
+    command: >
+      sh -c "npm run dev:setup && npm run dev:api"
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+
+  web:
+    image: node:20-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3001
+    command: npm run dev:web
+    depends_on:
+      - api
+
+volumes:
+  node_modules:
