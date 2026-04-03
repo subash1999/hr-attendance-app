@@ -86,9 +86,11 @@ export type {
   FlagPolicy,
   PaymentPolicy,
   ReportPolicy,
+  SalaryStatementPolicy,
   EffectivePolicy,
   RawPolicy,
 } from "./policy.js";
+export { DEFAULT_SALARY_STATEMENT } from "./policy.js";
 
 export type {
   OverridePeriod,
@@ -109,6 +111,9 @@ export type {
 } from "./onboarding.js";
 
 export type { Result } from "./result.js";
+
+export type { DeploymentMode, TenantContext } from "./tenant.js";
+export { DEFAULT_TENANT_ID } from "./tenant.js";
 
 export type { MonthlySummary } from "./monthly-summary.js";
 
@@ -190,7 +195,17 @@ export type {
 
 export { KeyPrefixes, KeyPatterns } from "./key-patterns.js";
 
-export { AppBranding } from "./branding.js";
+export { AppBranding, createBranding } from "./branding.js";
+export type { Branding } from "./branding.js";
+
+export {
+  AppConfigSchema, BrandingConfigSchema, DeploymentConfigSchema,
+  RegionEntrySchema, SlackConfigSchema, parseAppConfig,
+} from "./app-config.js";
+export type {
+  AppConfig, BrandingConfig, DeploymentConfig,
+  RegionEntry, SlackConfig,
+} from "./app-config.js";
 
 export {
   nowIso, nowMs, todayDate, currentYear,

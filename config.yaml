@@ -1,0 +1,32 @@
+# HR Attendance App Configuration
+# This is the single source of truth for deployment and branding settings.
+# See docs/reference/config.md for full schema reference.
+
+app:
+  appName: "HR Attendance App"
+  appShortName: "HR App"
+  themeColor: "#58C2D9"
+  # logo: "./assets/logo.png"
+
+deployment:
+  mode: single              # single | multi
+  awsRegion: ap-northeast-1
+  stage: dev                # dev | prod
+  accountingCurrency: JPY   # company-wide home currency for payroll equivalents
+  # domain: hr.example.com
+  # certificateArn: arn:aws:acm:...
+
+slack:
+  # appId: A0XXXXXXX
+  # Secrets (signing secret, bot token) stored in AWS SSM, not here
+
+regions:
+  - name: "Japan"
+    code: JP
+    timezone: Asia/Tokyo
+    currency: JPY
+
+  - name: "Nepal"
+    code: NP
+    timezone: Asia/Kathmandu
+    currency: NPR

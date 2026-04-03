@@ -77,6 +77,38 @@ export interface ReportPolicy {
   readonly reminderTime: string;
 }
 
+export const DEFAULT_SALARY_STATEMENT: SalaryStatementPolicy = {
+  title: "Salary Statement",
+  footer: "This is an automated statement. Please contact HR for any questions.",
+  greeting: "Dear",
+  headerBgColor: "#000000",
+  headerTextColor: "#FFFFFF",
+  accentColor: "#58C2D9",
+  showOvertimePay: true,
+  showAllowances: true,
+  showBonus: true,
+  showCommission: true,
+  showDeficitDeduction: true,
+  showTransferFees: true,
+  showExchangeRate: true,
+};
+
+export interface SalaryStatementPolicy {
+  readonly title: string;
+  readonly footer: string;
+  readonly greeting: string;
+  readonly headerBgColor: string;
+  readonly headerTextColor: string;
+  readonly accentColor: string;
+  readonly showOvertimePay: boolean;
+  readonly showAllowances: boolean;
+  readonly showBonus: boolean;
+  readonly showCommission: boolean;
+  readonly showDeficitDeduction: boolean;
+  readonly showTransferFees: boolean;
+  readonly showExchangeRate: boolean;
+}
+
 export interface EffectivePolicy {
   readonly hours: HoursPolicy;
   readonly leave: LeavePolicy;
@@ -86,6 +118,7 @@ export interface EffectivePolicy {
   readonly flags: FlagPolicy;
   readonly payment: PaymentPolicy;
   readonly report: ReportPolicy;
+  readonly salaryStatement: SalaryStatementPolicy;
 }
 
 export interface RawPolicy {
@@ -97,5 +130,6 @@ export interface RawPolicy {
   readonly flags?: Partial<FlagPolicy>;
   readonly payment?: Partial<PaymentPolicy>;
   readonly report?: Partial<ReportPolicy>;
+  readonly salaryStatement?: Partial<SalaryStatementPolicy>;
   readonly effectiveFrom?: string;
 }
