@@ -13,7 +13,7 @@ const DEFAULT_DEBOUNCE = 300;
 export function SearchInput({
   value,
   onChange,
-  placeholder = "Search...",
+  placeholder,
   debounceMs = DEFAULT_DEBOUNCE,
 }: SearchInputProps) {
   const [local, setLocal] = useState(value);

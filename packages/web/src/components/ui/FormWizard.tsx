@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { FormProvider, useForm, type FieldValues, type UseFormReturn, type Resolver } from "react-hook-form";
+import { useState, useMemo } from "react";
+import { FormProvider, useForm, type FieldValues, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import type { ZodObject, ZodRawShape } from "zod";
 import styled from "styled-components";
+import { ButtonAccent, ButtonSecondary } from "./primitives";
 
 interface FormWizardStep {
   readonly label: string;
   readonly schema: ZodObject<ZodRawShape>;
-  readonly render: (form: UseFormReturn) => React.ReactNode;
+  readonly fields: readonly string[];
+  readonly render: (form: ReturnType<typeof useForm>) => React.ReactNode;
 }
 
 interface FormWizardProps {
@@ -21,20 +24,28 @@ export function FormWizard({
   onSubmit,
   isSubmitting = false,
 }: FormWizardProps) {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
-  const step = steps[currentStep];
+
+  const fullSchema = useMemo(() => {
+    const [first, ...rest] = steps;
+    return rest.reduce((acc, s) => acc.merge(s.schema), first!.schema);
+  }, [steps]);
 
   const form = useForm({
-    resolver: step ? zodResolver(step.schema) as unknown as Resolver<FieldValues> : undefined,
+    resolver: zodResolver(fullSchema) as unknown as Resolver<FieldValues>,
     mode: "onTouched",
   });
 
+  const step = steps[currentStep];
   if (!step) return null;
 
   const isLast = currentStep === steps.length - 1;
 
   async function handleNext() {
-    const valid = await form.trigger();
+    const currentStepData = steps[currentStep];
+    if (!currentStepData) return;
+    const valid = await form.trigger(currentStepData.fields as string[]);
     if (!valid) return;
 
     if (isLast) {
@@ -68,13 +79,13 @@ export function FormWizard({
 
         <Actions>
           {currentStep > 0 && (
-            <BackButton type="button" onClick={handleBack}>
-              Back
-            </BackButton>
+            <BackBtn type="button" onClick={handleBack}>
+              {t("common.back")}
+            </BackBtn>
           )}
-          <NextButton type="button" onClick={handleNext} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : isLast ? "Submit" : "Next"}
-          </NextButton>
+          <NextBtn type="button" onClick={handleNext} disabled={isSubmitting}>
+            {isSubmitting ? t("common.submitting") : isLast ? t("common.submit") : t("common.next")}
+          </NextBtn>
         </Actions>
       </Wrapper>
     </FormProvider>
@@ -132,40 +143,10 @@ const Actions = styled.div`
   gap: ${({ theme }) => theme.space.sm};
 `;
 
-const BackButton = styled.button`
+const BackBtn = styled(ButtonSecondary)`
   padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.lg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radii.sm};
-  background: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  cursor: pointer;
-  min-height: 44px;
-  transition: all ${({ theme }) => theme.transition};
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.surface};
-  }
 `;
 
-const NextButton = styled.button`
+const NextBtn = styled(ButtonAccent)`
   padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.lg};
-  border: none;
-  border-radius: ${({ theme }) => theme.radii.sm};
-  background: ${({ theme }) => theme.colors.accent};
-  color: ${({ theme }) => theme.colors.textInverse};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  cursor: pointer;
-  min-height: 44px;
-  transition: all ${({ theme }) => theme.transition};
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.hover};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
 `;

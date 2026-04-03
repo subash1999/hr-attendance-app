@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { DayPicker } from "react-day-picker";
+import { dateToDateStr } from "@hr-attendance-app/types";
 import styled from "styled-components";
 
 export interface CalendarEvent {
@@ -22,15 +24,15 @@ export function Calendar({
   month,
   onMonthChange,
 }: CalendarProps) {
-  const modifiers = highlightedDates
-    ? {
-        highlighted: (date: Date) => highlightedDates.has(date.toISOString().slice(0, 10)),
-      }
-    : undefined;
+  const modifiers = useMemo(() => {
+    if (!highlightedDates) return undefined;
+    return { highlighted: (date: Date) => highlightedDates.has(dateToDateStr(date)) };
+  }, [highlightedDates]);
 
-  const modifiersClassNames = highlightedDates
-    ? { highlighted: "rdp-day_highlighted" }
-    : undefined;
+  const modifiersClassNames = useMemo(
+    () => (highlightedDates ? { highlighted: "rdp-day_highlighted" } : undefined),
+    [highlightedDates],
+  );
 
   return (
     <CalendarWrapper>

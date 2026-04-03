@@ -15,8 +15,9 @@ const SIZE_MAP = { sm: "420px", md: "560px", lg: "720px" } as const;
 export function Modal({ isOpen, onClose, title, size = "md", children }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
-  // Focus trap + keyboard handling
   useEffect(() => {
     if (!isOpen) return;
 
@@ -25,7 +26,7 @@ export function Modal({ isOpen, onClose, title, size = "md", children }: ModalPr
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -47,19 +48,20 @@ export function Modal({ isOpen, onClose, title, size = "md", children }: ModalPr
     };
 
     document.addEventListener("keydown", handleKeyDown);
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      document.body.style.overflow = prevOverflow;
       previousFocus.current?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return createPortal(
-    <Backdrop onClick={onClose}>
+    <Backdrop onClick={() => onCloseRef.current()}>
       <Dialog
         ref={dialogRef}
         $maxWidth={SIZE_MAP[size]}
@@ -71,7 +73,7 @@ export function Modal({ isOpen, onClose, title, size = "md", children }: ModalPr
       >
         <Header>
           <Title>{title}</Title>
-          <CloseButton onClick={onClose} aria-label="Close dialog">
+          <CloseButton onClick={() => onCloseRef.current()} aria-label="Close dialog">
             ×
           </CloseButton>
         </Header>

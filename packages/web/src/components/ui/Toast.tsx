@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useState, useEffect, type React
 import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 
-type ToastVariant = "success" | "error" | "info" | "warning";
+type ToastVariant = "success" | "danger" | "info" | "warning";
 
 interface ToastItem {
   readonly id: string;
@@ -84,7 +84,7 @@ const slideIn = keyframes`
 
 const VARIANT_COLORS: Record<ToastVariant, { bg: string; border: string }> = {
   success: { bg: "successLight", border: "success" },
-  error: { bg: "errorLight", border: "error" },
+  danger: { bg: "errorLight", border: "error" },
   info: { bg: "infoLight", border: "info" },
   warning: { bg: "warningLight", border: "warning" },
 };
