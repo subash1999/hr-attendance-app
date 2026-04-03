@@ -28,7 +28,7 @@ export type {
   CreateAuthUserInput,
 } from "./repositories/index.js";
 
-export { deepMergePolicy, resolveCascade } from "./policies/resolver.js";
+export { deepMergePolicy, resolveCascade, resolveCascadeWithRegion } from "./policies/resolver.js";
 
 export {
   ROLE_HIERARCHY,
@@ -109,3 +109,16 @@ export { ReportService } from "./reports/service.js";
 export type { ReportServiceDeps } from "./reports/service.js";
 export { AuditService } from "./audit/service.js";
 export type { AuditServiceDeps } from "./audit/service.js";
+
+// ─── Config ───
+export { loadConfigFromObject, getDefaultConfig } from "./config/loader.js";
+
+// ─── Regions ───
+export { RegionRegistry, regionRegistry, jpRegionConfig, npRegionConfig } from "./regions/index.js";
+export type {
+  RegionConfig,
+  OvertimeStrategy,
+  LeaveAccrualStrategy,
+  HolidayGeneratorStrategy,
+  PayrollDeductionStrategy,
+} from "./regions/index.js";

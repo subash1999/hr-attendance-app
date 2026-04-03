@@ -1,4 +1,4 @@
-export type Region = "JP" | "NP";
+export type Region = "JP" | "NP" | (string & {});
 
 export type EmployeeStatus = "ACTIVE" | "INACTIVE";
 
@@ -11,7 +11,8 @@ export type EmploymentType =
   | "JP_INTERN"
   | "NP_FULL_TIME"
   | "NP_PAID_INTERN"
-  | "NP_UNPAID_INTERN";
+  | "NP_UNPAID_INTERN"
+  | (string & {});
 
 export type LanguagePreference = "en" | "ja" | "ne";
 

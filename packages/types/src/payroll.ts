@@ -1,4 +1,4 @@
-export type Currency = "JPY" | "NPR";
+export type Currency = "JPY" | "NPR" | (string & {});
 
 export type SalaryType = "MONTHLY" | "ANNUAL" | "HOURLY";
 
@@ -50,7 +50,8 @@ export interface PayrollBreakdown {
   readonly transferFees: number;
   readonly netAmount: number;
   readonly currency: Currency;
-  readonly jpyEquivalent: number | null;
+  /** Equivalent in the company's accounting currency (from config.deployment.accountingCurrency). */
+  readonly homeCurrencyEquivalent: number | null;
   readonly exchangeRate: number | null;
   readonly exchangeRateDate: string | null;
 }

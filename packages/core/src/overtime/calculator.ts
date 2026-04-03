@@ -15,6 +15,8 @@ export interface OvertimePayInput {
   readonly hourlyRate: number;
   readonly rates: OvertimeRates;
   readonly monthlyOvertimeTotal: number;
+  /** Threshold above which excess rate applies. Defaults to JP 60h if omitted. */
+  readonly excessOvertimeThreshold?: number;
 }
 
 export interface OvertimePayResult {
@@ -26,15 +28,16 @@ export interface OvertimePayResult {
 }
 
 /**
- * Calculate overtime pay by category per JP labor law rates.
+ * Calculate overtime pay by category.
+ * excessOvertimeThreshold defaults to JP_LABOR.EXCESS_OVERTIME_THRESHOLD for backward compat.
  */
 export function calculateOvertimePay(input: OvertimePayInput): OvertimePayResult {
   const standardPay = input.regularHours * input.hourlyRate * input.rates.standard;
   const lateNightPay = input.lateNightHours * input.hourlyRate * (input.rates.standard + input.rates.lateNight);
   const holidayPay = input.holidayHours * input.hourlyRate * input.rates.holiday;
 
-  // Hours exceeding 60h/month get the excess rate
-  const excess60hHours = Math.max(0, input.monthlyOvertimeTotal - JP_LABOR.EXCESS_OVERTIME_THRESHOLD);
+  const threshold = input.excessOvertimeThreshold ?? JP_LABOR.EXCESS_OVERTIME_THRESHOLD;
+  const excess60hHours = Math.max(0, input.monthlyOvertimeTotal - threshold);
   const excess60hPay = excess60hHours * input.hourlyRate * input.rates.excess60h;
 
   return {
@@ -70,6 +73,8 @@ export interface AgreementLimitsInput {
   readonly yearlyHours: number;
   readonly monthlyLimit: number;
   readonly yearlyLimit: number;
+  /** Warning utilization threshold (0-1). Defaults to JP 0.85 if omitted. */
+  readonly warningUtilization?: number;
 }
 
 export interface AgreementLimitsResult {
@@ -82,17 +87,18 @@ export interface AgreementLimitsResult {
 }
 
 /**
- * Check 36 Agreement limits and generate warnings.
- * Warning triggers at 85% utilization.
+ * Check agreement limits and generate warnings.
+ * warningUtilization defaults to JP_LABOR.OVERTIME_WARNING_UTILIZATION for backward compat.
  */
 export function check36AgreementLimits(input: AgreementLimitsInput): AgreementLimitsResult {
+  const warningThreshold = input.warningUtilization ?? JP_LABOR.OVERTIME_WARNING_UTILIZATION;
   const monthlyUtil = input.monthlyLimit > 0 ? input.monthlyHours / input.monthlyLimit : 0;
   const yearlyUtil = input.yearlyLimit > 0 ? input.yearlyHours / input.yearlyLimit : 0;
 
   return {
-    monthlyWarning: monthlyUtil >= JP_LABOR.OVERTIME_WARNING_UTILIZATION && monthlyUtil < 1,
+    monthlyWarning: monthlyUtil >= warningThreshold && monthlyUtil < 1,
     monthlyExceeded: input.monthlyHours >= input.monthlyLimit,
-    yearlyWarning: yearlyUtil >= JP_LABOR.OVERTIME_WARNING_UTILIZATION && yearlyUtil < 1,
+    yearlyWarning: yearlyUtil >= warningThreshold && yearlyUtil < 1,
     yearlyExceeded: input.yearlyHours >= input.yearlyLimit,
     monthlyUtilization: monthlyUtil,
     yearlyUtilization: yearlyUtil,

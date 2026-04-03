@@ -70,3 +70,32 @@ export function resolveCascade(
 
   return result;
 }
+
+/**
+ * 4-level cascade: region → company → group → employee.
+ * Region defaults provide the base, company overrides region, etc.
+ * Null layers are skipped. effectiveFrom filtering applied per override layer.
+ */
+export function resolveCascadeWithRegion(
+  regionDefaults: RawPolicy,
+  company: RawPolicy | null,
+  group: RawPolicy | null,
+  user: RawPolicy | null,
+  referenceDate?: Date,
+): RawPolicy {
+  let result = regionDefaults;
+
+  if (company && isEffective(company, referenceDate)) {
+    result = deepMergePolicy(result, company);
+  }
+
+  if (group && isEffective(group, referenceDate)) {
+    result = deepMergePolicy(result, group);
+  }
+
+  if (user && isEffective(user, referenceDate)) {
+    result = deepMergePolicy(result, user);
+  }
+
+  return result;
+}
