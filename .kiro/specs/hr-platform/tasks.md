@@ -364,8 +364,8 @@
   - Create environment-specific deployments (dev/prod)
   - _Requirements: 19.3, 19.6, 19.7_
 
-- [ ] 14. Slack integration
-- [ ] 14.1 Implement the Slack ack Lambda with fast event acknowledgment and SQS enqueue
+- [x] 14. Slack integration
+- [x] 14.1 Implement the Slack ack Lambda with fast event acknowledgment and SQS enqueue
   - Use @slack/bolt with AwsLambdaReceiver for Slack signature verification and event parsing
   - Acknowledge all events with HTTP 200 within 200ms
   - Determine channel **purpose** (attendance, reporting, or both) from channel config — channels are mapped by purpose, NOT by team/group. A single channel can contain members from multiple teams and employment types
@@ -374,7 +374,7 @@
   - Write unit tests for event classification and SQS enqueue
   - _Requirements: 1.5, 1.8_
 
-- [ ] 14.2 Implement the Slack processor Lambda that handles attendance messages
+- [x] 14.2 Implement the Slack processor Lambda that handles attendance messages
   - Consume events from SQS queue
   - Look up employee by Slack ID from the event — the employee profile provides team, group, region, language preference, and policy group. This is the source of truth, NOT the channel
   - Match message text against keyword configurations for the employee's preferred language
@@ -386,7 +386,7 @@
   - Write integration tests for full message-to-reply flow
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.9, 1.12, 1.15_
 
-- [ ] 14.3 (P) Implement the Slack processor handlers for daily reports, language changes, and guidebook
+- [x] 14.3 (P) Implement the Slack processor handlers for daily reports, language changes, and guidebook
   - Daily report handler: parse message as report, extract JIRA/GitHub references, save via report service, warn if no references found
   - Message edit handler: detect message_changed events, create new report version preserving previous versions
   - Language change handler: match "lang en", "lang ja", "言語 en" etc., update employee language preference, confirm in new language
@@ -394,7 +394,7 @@
   - Write tests for each handler
   - _Requirements: 2.1, 2.2, 2.3, 1.10, 1.11_
 
-- [ ] 14.4 Implement the CDK Slack stack with dual-Lambda pattern and SQS
+- [x] 14.4 Implement the CDK Slack stack with dual-Lambda pattern and SQS
   - Create the ack Lambda with API Gateway endpoint registered as Slack Events API URL
   - Create the processor Lambda triggered by SQS
   - Configure SQS Standard queue with DLQ (maxReceiveCount: 3)

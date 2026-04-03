@@ -1,4 +1,10 @@
 // @willdesign-hr/slack — Slack integration (Ack Lambda + SQS Processor)
-// Attendance + daily reports via message-based interaction
 
-export {};
+export {
+  classifyChannel,
+  buildAttendanceReply,
+  buildErrorReply,
+  buildGuidebookMessage,
+  CHANNEL_PURPOSES,
+} from "./events/handlers.js";
+export type { ChannelPurpose } from "./events/handlers.js";

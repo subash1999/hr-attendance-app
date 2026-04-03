@@ -28,7 +28,7 @@ new ApiStack(app, `${config.prefix}-api`, config, {
   userPoolId: "placeholder-pool-id",
   userPoolArn: "arn:aws:cognito-idp:ap-northeast-1:000000000000:userpool/placeholder",
 });
-new SlackStack(app, `${config.prefix}-slack`, config, { env });
+new SlackStack(app, `${config.prefix}-slack`, config, { env, table: dbStack.table });
 new WebStack(app, `${config.prefix}-web`, config, { env });
 new SchedulerStack(app, `${config.prefix}-scheduler`, config, { env });
 new EmailStack(app, `${config.prefix}-email`, config, { env });
