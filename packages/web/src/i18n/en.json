@@ -1,0 +1,6 @@
+{
+  "app": { "title": "WillDesign HR" },
+  "nav": { "dashboard": "Dashboard", "attendance": "Attendance", "leave": "Leave", "reports": "Reports", "payroll": "Payroll", "team": "Team", "admin": "Admin", "settings": "Settings" },
+  "auth": { "login": "Log In", "logout": "Log Out", "loading": "Loading..." },
+  "dashboard": { "clockIn": "Clock In", "clockOut": "Clock Out", "break": "Break", "back": "Back", "hoursToday": "Hours Today", "hoursWeek": "This Week", "hoursMonth": "This Month", "leaveBalance": "Leave Balance" }
+}

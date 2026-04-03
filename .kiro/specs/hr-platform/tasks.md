@@ -402,8 +402,8 @@
   - Configure both Lambdas with appropriate IAM roles, environment variables (Slack tokens, DynamoDB table name), and Node.js 20 runtime
   - _Requirements: 1.5, 19.3, 19.7_
 
-- [ ] 15. Web application theme, layout, and authentication
-- [ ] 15.1 Set up the React project with Vite, routing, authentication flow, and i18n configuration
+- [x] 15. Web application theme, layout, and authentication
+- [x] 15.1 Set up the React project with Vite, routing, authentication flow, and i18n configuration
   - Initialize the web package with React 18, Vite 5, React Router v6, and react-i18next
   - Configure Cognito Hosted UI integration for login/signup flows
   - Store JWT tokens in memory only (not localStorage) for XSS protection
@@ -413,7 +413,7 @@
   - Implement role-based route guards: redirect unauthenticated users to login, restrict admin routes
   - _Requirements: 3.5, 19.4, 22.6_
 
-- [ ] 15.2 Implement the WillDesign brand theme with CSS design tokens and responsive layout shell
+- [x] 15.2 Implement the WillDesign brand theme with CSS design tokens and responsive layout shell
   - Create the theme CSS file with all design tokens as custom properties: colors (primary #000, accent #58C2D9, success #40DEC5, warning #E2498A, etc.), typography (Silom for headings, system sans-serif for body), spacing, radii, and transitions
   - Build the application layout shell: sidebar navigation with WillDesign logo (linking to dashboard), main content area, responsive behavior (mobile bottom nav < 640px, collapsible sidebar 640-1024px, full sidebar > 1024px)
   - Apply the light, modern, minimalist aesthetic: high contrast black/white with cyan accents, clean card-based layouts, generous whitespace, subtle border radii (4-12px), smooth 150ms transitions
