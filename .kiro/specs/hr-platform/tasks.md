@@ -556,8 +556,8 @@
   - Configure workspace-aware builds: only rebuild changed packages and their dependents
   - _Requirements: 19.2, 19.6_
 
-- [ ] 20. End-to-end integration and scalability verification
-- [ ] 20.1 Write end-to-end tests covering the primary user flows across Slack, API, and web
+- [x] 20. End-to-end integration and scalability verification
+- [x] 20.1 Write end-to-end tests covering the primary user flows across Slack, API, and web
   - Slack attendance flow: simulate Slack event → ack Lambda → SQS → processor → DynamoDB → Slack reply
   - Leave workflow: web request → API → leave service → DynamoDB → manager approval → balance update → notification
   - Payroll calculation: attendance events accumulated → monthly cron → payroll breakdown → salary email
@@ -565,7 +565,7 @@
   - Flag resolution with bank offset: monthly cron → flag → manager resolves with bank → no deduction
   - _Requirements: 19.5_
 
-- [ ] 20.2 (P) Verify scalability targets and region-extensibility
+- [x] 20.2 (P) Verify scalability targets and region-extensibility
   - Confirm DynamoDB schema supports 100+ users without architectural changes (load test with simulated data)
   - Verify new employment types, roles, and policy groups can be added via configuration only — no code changes
   - Confirm adding a new region (beyond Japan and Nepal) requires only: new policy group JSON, new holiday calendar, employee region attribute — no schema migration
