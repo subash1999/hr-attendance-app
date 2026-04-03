@@ -124,9 +124,9 @@
 
 ## Phase 4: Admin Core Pages
 
-- [ ] 4. Build Admin section content components
+- [x] 4. Build Admin section content components
   - Admin shell redesigned: sidebar nav (desktop) + card grid (mobile) — committed separately
-- [ ] 4.1 Build admin onboarding section with multi-step form
+- [x] 4.1 Build admin onboarding section with multi-step form
   - Create 3-step onboarding wizard: Personal Info (name, email, slackId, language) → Employment (type, region, manager, join date) → Salary (amount, currency, salary type)
   - Employment type dropdown auto-suggests default policy group as read-only hint
   - Manager field: searchable combobox filtering active employees
@@ -135,7 +135,7 @@
   - Ensure form is fully usable on tablet (768px) and mobile (375px) with stacked single-column layout
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-- [ ] 4.2 Build admin offboarding tab with settlement preview
+- [x] 4.2 Build admin offboarding tab with settlement preview
   - Create employee selector (searchable, active employees only)
   - On "Offboard" click: open modal with settlement preview showing pro-rata salary, unused leave handling, pending flag deductions, notice period buyout option, and net amount
   - Collect termination type (WITHOUT_CAUSE, FOR_CAUSE, MUTUAL, RESIGNATION), last working date, exit notes
@@ -144,7 +144,7 @@
   - Cancel returns to form without state change
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-- [ ] 4.3 Build admin policy builder tab
+- [x] 4.3 Build admin policy builder tab
   - Left panel: list of all policy groups with names
   - Right panel: resolved effective policy with cascade visualization (stacked cards: company → group → employee, changed values highlighted with source badge)
   - 9 tabbed sections for policy domains: Hours, Leave, Overtime, Compensation, Probation, Flags, Payment, Report, Salary Statement
@@ -153,7 +153,7 @@
   - Display warning with affected employee count if policy change conflicts with existing configurations
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
 
-- [ ] 4.4 (P) Build admin holiday calendar tab
+- [x] 4.4 (P) Build admin holiday calendar tab
   - Region filter tabs (JP / NP) switching displayed holidays
   - Calendar grid with holiday markers: blue dots for seeded (Japan national), green dots for custom
   - "Add Holiday" button opens modal form: date picker, name (en), name (ja, optional), region, substitute holiday toggle
@@ -161,7 +161,7 @@
   - Responsive: calendar grid on desktop/tablet, scrollable list view on mobile
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
-- [ ] 4.5 (P) Build admin roles and permissions tab
+- [x] 4.5 (P) Build admin roles and permissions tab
   - Role list showing all defined roles with permission count and user count badges
   - On role select: grouped permission picker (checkboxes organized by domain: attendance, leave, payroll, flags, bank, admin, reports, holidays)
   - Super Admin permissions shown as locked (non-toggleable checkboxes)
@@ -169,7 +169,7 @@
   - New role creation form: name, description, and grouped permission picker
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
 
-- [ ] 4.6 Extend attendance lock tab with group and employee scopes
+- [x] 4.6 Extend attendance lock tab with group and employee scopes
   - Add 3 scope tabs below month picker: Company | Group | Employee
   - Company tab: preserve existing single toggle functionality
   - Group tab: DataTable listing employment groups with lock/unlock toggle per row and lock status badge

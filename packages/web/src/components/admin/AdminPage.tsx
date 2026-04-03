@@ -2,6 +2,11 @@ import { useState, useCallback, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import styled, { css } from "styled-components";
 import { PageLayout, SectionTitle as BaseSectionTitle } from "../ui";
+import { OnboardingTab } from "./OnboardingTab";
+import { OffboardingTab } from "./OffboardingTab";
+import { PolicyTab } from "./PolicyTab";
+import { RolesTab } from "./RolesTab";
+import { HolidayTab } from "./HolidayTab";
 import { AttendanceLockTab } from "./AttendanceLockTab";
 
 type AdminSection = "onboarding" | "offboarding" | "policies" | "roles" | "holidays" | "locks";
@@ -27,10 +32,18 @@ const EMPTY_STATE_MIN_HEIGHT = "400px";
 
 function getSectionContent(section: AdminSection): ReactNode {
   switch (section) {
+    case "onboarding":
+      return <OnboardingTab />;
+    case "offboarding":
+      return <OffboardingTab />;
+    case "policies":
+      return <PolicyTab />;
+    case "roles":
+      return <RolesTab />;
+    case "holidays":
+      return <HolidayTab />;
     case "locks":
       return <AttendanceLockTab />;
-    default:
-      return null;
   }
 }
 
