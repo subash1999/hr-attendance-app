@@ -9,19 +9,90 @@ import { useAuth } from "../../hooks/useAuth";
 interface NavItemConfig {
   readonly path: string;
   readonly labelKey: string;
+  readonly icon: string;
   readonly requiredPermission?: Permission;
 }
 
 const ALL_NAV_ITEMS: readonly NavItemConfig[] = [
-  { path: ROUTES.DASHBOARD, labelKey: "nav.dashboard" },
-  { path: ROUTES.ATTENDANCE, labelKey: "nav.attendance" },
-  { path: ROUTES.LEAVE, labelKey: "nav.leave" },
-  { path: ROUTES.REPORTS, labelKey: "nav.reports" },
-  { path: ROUTES.PAYROLL, labelKey: "nav.payroll" },
-  { path: ROUTES.TEAM, labelKey: "nav.team", requiredPermission: Permissions.LEAVE_APPROVE },
-  { path: ROUTES.ADMIN, labelKey: "nav.admin", requiredPermission: Permissions.ONBOARD },
-  { path: ROUTES.SETTINGS, labelKey: "nav.settings" },
+  { path: ROUTES.DASHBOARD, labelKey: "nav.dashboard", icon: "⊞" },
+  { path: ROUTES.ATTENDANCE, labelKey: "nav.attendance", icon: "◷" },
+  { path: ROUTES.LEAVE, labelKey: "nav.leave", icon: "◫" },
+  { path: ROUTES.REPORTS, labelKey: "nav.reports", icon: "▤" },
+  { path: ROUTES.PAYROLL, labelKey: "nav.payroll", icon: "¤" },
+  { path: ROUTES.TEAM, labelKey: "nav.team", icon: "⊡", requiredPermission: Permissions.LEAVE_APPROVE },
+  { path: ROUTES.ADMIN, labelKey: "nav.admin", icon: "⊛", requiredPermission: Permissions.ONBOARD },
+  { path: ROUTES.SETTINGS, labelKey: "nav.settings", icon: "⊘" },
 ];
+
+export function Layout() {
+  const { t } = useTranslation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { permissions } = useAuth();
+
+  const navItems = useMemo(
+    () => ALL_NAV_ITEMS.filter((item) =>
+      !item.requiredPermission || permissions.includes(item.requiredPermission),
+    ),
+    [permissions],
+  );
+
+  return (
+    <LayoutShell>
+      <Sidebar $open={sidebarOpen}>
+        <SidebarHeader>
+          <LogoLink to={ROUTES.DASHBOARD} onClick={() => setSidebarOpen(false)}>
+            <LogoText>{t("app.title")}</LogoText>
+          </LogoLink>
+        </SidebarHeader>
+        <SidebarNav>
+          {navItems.map((item) => (
+            <SidebarNavItem
+              key={item.path}
+              to={item.path}
+              end={item.path === ROUTES.DASHBOARD}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <NavIcon aria-hidden>{item.icon}</NavIcon>
+              <NavLabel>{t(item.labelKey)}</NavLabel>
+            </SidebarNavItem>
+          ))}
+        </SidebarNav>
+      </Sidebar>
+
+      <Main>
+        <Header>
+          <MenuToggle
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label={t("common.toggleMenu")}
+          >
+            ☰
+          </MenuToggle>
+          <HeaderTitle>{t("app.title")}</HeaderTitle>
+        </Header>
+        <Content>
+          <Outlet />
+        </Content>
+      </Main>
+
+      {sidebarOpen && (
+        <Overlay onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <BottomNav>
+        {navItems.slice(0, 5).map((item) => (
+          <BottomNavItem
+            key={item.path}
+            to={item.path}
+            end={item.path === ROUTES.DASHBOARD}
+          >
+            <BottomNavIcon aria-hidden>{item.icon}</BottomNavIcon>
+            <BottomNavLabel>{t(item.labelKey)}</BottomNavLabel>
+          </BottomNavItem>
+        ))}
+      </BottomNav>
+    </LayoutShell>
+  );
+}
 
 const LayoutShell = styled.div`
   display: flex;
@@ -31,23 +102,31 @@ const LayoutShell = styled.div`
 const Sidebar = styled.aside<{ $open: boolean }>`
   width: ${({ theme }) => theme.sidebar.width};
   background: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textInverse};
   display: flex;
   flex-direction: column;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: ${({ theme }) => theme.zIndex.overlay};
   transform: translateX(-100%);
-  transition: transform ${({ theme }) => theme.transition};
+  transition: transform ${({ theme }) => theme.transition}, width ${({ theme }) => theme.transition};
 
   ${({ $open }) => $open && css`transform: translateX(0);`}
 
   @media (min-width: 640px) and (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     width: ${({ theme }) => theme.sidebar.collapsedWidth};
     transform: translateX(0);
-    ${({ $open }) => $open && css`width: ${({ theme }) => theme.sidebar.width};`}
+    overflow: hidden;
+
+    ${({ $open }) => $open && css`
+      width: ${({ theme }) => theme.sidebar.width};
+    `}
+
+    &:hover {
+      width: ${({ theme }) => theme.sidebar.width};
+    }
   }
 
   @media (min-width: 1025px) {
@@ -58,12 +137,15 @@ const Sidebar = styled.aside<{ $open: boolean }>`
 const SidebarHeader = styled.div`
   padding: ${({ theme }) => theme.space.md};
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: ${({ theme }) => theme.header.height};
+  display: flex;
+  align-items: center;
 `;
 
 const LogoLink = styled(NavLink)`
-  color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textInverse};
   font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 18px;
+  font-size: ${({ theme }) => theme.fontSizes.md};
 `;
 
 const LogoText = styled.span`
@@ -74,24 +156,44 @@ const SidebarNav = styled.nav`
   flex: 1;
   padding: ${({ theme }) => theme.space.sm} 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 `;
 
-const NavItem = styled(NavLink)`
+const NavIcon = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+`;
+
+const NavLabel = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const SidebarNavItem = styled(NavLink)`
   display: flex;
   align-items: center;
+  gap: ${({ theme }) => theme.space.sm};
   padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
   color: rgba(255, 255, 255, 0.7);
   transition: all ${({ theme }) => theme.transition};
   min-height: 44px;
+  border-left: 3px solid transparent;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.background};
-    background: rgba(255, 255, 255, 0.1);
+    color: ${({ theme }) => theme.colors.textInverse};
+    background: rgba(255, 255, 255, 0.08);
   }
 
   &.active {
     color: ${({ theme }) => theme.colors.accent};
-    border-left: 3px solid ${({ theme }) => theme.colors.accent};
+    border-left-color: ${({ theme }) => theme.colors.accent};
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
@@ -99,6 +201,7 @@ const Main = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 
   @media (min-width: 640px) and (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     margin-left: ${({ theme }) => theme.sidebar.collapsedWidth};
@@ -119,12 +222,13 @@ const Header = styled.header`
   gap: ${({ theme }) => theme.space.md};
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: ${({ theme }) => theme.zIndex.sticky};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
 
 const HeaderTitle = styled.h1`
-  font-size: 16px;
-  font-weight: 600;
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
 `;
 
 const Content = styled.main`
@@ -133,6 +237,7 @@ const Content = styled.main`
   background: ${({ theme }) => theme.colors.surface};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    padding: ${({ theme }) => theme.space.md};
     padding-bottom: 72px;
   }
 `;
@@ -140,8 +245,8 @@ const Content = styled.main`
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 90;
+  background: ${({ theme }) => theme.colors.overlay};
+  z-index: ${({ theme }) => theme.zIndex.overlay};
 
   @media (min-width: 1025px) {
     display: none;
@@ -151,10 +256,20 @@ const Overlay = styled.div`
 const MenuToggle = styled.button`
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.fontSizes.xl};
   min-height: 44px;
   min-width: 44px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.text};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  transition: background ${({ theme }) => theme.transition};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surfaceHover};
+  }
 
   @media (min-width: 1025px) {
     display: none;
@@ -172,84 +287,37 @@ const BottomNav = styled.nav`
     right: 0;
     background: ${({ theme }) => theme.colors.background};
     border-top: 1px solid ${({ theme }) => theme.colors.border};
-    z-index: 100;
+    z-index: ${({ theme }) => theme.zIndex.sticky};
     height: 56px;
+    box-shadow: ${({ theme }) => theme.shadows.md};
   }
+`;
+
+const BottomNavIcon = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+`;
+
+const BottomNavLabel = styled.span`
+  font-size: 10px;
+  line-height: 1;
 `;
 
 const BottomNavItem = styled(NavLink)`
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  gap: 2px;
   color: ${({ theme }) => theme.colors.textMuted};
   min-height: 44px;
+  transition: color ${({ theme }) => theme.transition};
 
   &.active {
     color: ${({ theme }) => theme.colors.accent};
   }
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.text};
+  }
 `;
-
-export function Layout() {
-  const { t } = useTranslation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { permissions } = useAuth();
-
-  const navItems = useMemo(
-    () => ALL_NAV_ITEMS.filter((item) =>
-      !item.requiredPermission || permissions.includes(item.requiredPermission),
-    ),
-    [permissions],
-  );
-
-  return (
-    <LayoutShell>
-      <Sidebar $open={sidebarOpen}>
-        <SidebarHeader>
-          <LogoLink to={ROUTES.DASHBOARD}>
-            <LogoText>{t("app.title")}</LogoText>
-          </LogoLink>
-        </SidebarHeader>
-        <SidebarNav>
-          {navItems.map((item) => (
-            <NavItem
-              key={item.path}
-              to={item.path}
-              onClick={() => setSidebarOpen(false)}
-            >
-              {t(item.labelKey)}
-            </NavItem>
-          ))}
-        </SidebarNav>
-      </Sidebar>
-
-      <Main>
-        <Header>
-          <MenuToggle
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="Toggle menu"
-          >
-            ☰
-          </MenuToggle>
-          <HeaderTitle>{t("app.title")}</HeaderTitle>
-        </Header>
-        <Content>
-          <Outlet />
-        </Content>
-      </Main>
-
-      {sidebarOpen && (
-        <Overlay onClick={() => setSidebarOpen(false)} />
-      )}
-
-      <BottomNav>
-        {navItems.slice(0, 5).map((item) => (
-          <BottomNavItem key={item.path} to={item.path}>
-            {t(item.labelKey)}
-          </BottomNavItem>
-        ))}
-      </BottomNav>
-    </LayoutShell>
-  );
-}

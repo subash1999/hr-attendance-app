@@ -74,8 +74,8 @@
 
 ## Phase 2: Layout Shell Refinement
 
-- [ ] 2. Refine responsive layout shell
-- [ ] 2.1 Enhance Layout component for redesigned navigation
+- [x] 2. Refine responsive layout shell
+- [x] 2.1 Enhance Layout component for redesigned navigation
   - Update sidebar styling to match new design system tokens (shadows, typography, spacing)
   - Ensure bottom nav on mobile shows icon + label for top 5 navigation items
   - Verify collapsible sidebar on tablet transitions smoothly (icon-only when collapsed, full when expanded)
