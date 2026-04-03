@@ -1,8 +1,8 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { hasMinimumRole } from "@willdesign-hr/core";
-import { ErrorCodes, Roles, API_ONBOARD, API_OFFBOARD, API_AUDIT } from "@willdesign-hr/types";
+import { hasPermission } from "@willdesign-hr/core";
+import { ErrorCodes, ErrorMessages, Permissions, API_ONBOARD, API_OFFBOARD, API_AUDIT } from "@willdesign-hr/types";
 import type { OnboardingInput, OffboardingInput } from "@willdesign-hr/core";
 
 export function adminRoutes(deps: AppDeps): RouteDefinition[] {
@@ -13,8 +13,8 @@ export function adminRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.ADMIN)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Admin required");
+        if (!hasPermission(auth.data, Permissions.ONBOARD)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         const input = body as OnboardingInput | null;
         if (!input) return handleError(ErrorCodes.VALIDATION, "Request body required");
@@ -29,8 +29,8 @@ export function adminRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, pathParams, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.ADMIN)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Admin required");
+        if (!hasPermission(auth.data, Permissions.OFFBOARD)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         const input = body as Omit<OffboardingInput, "employeeId"> | null;
         if (!input) return handleError(ErrorCodes.VALIDATION, "Request body required");
@@ -57,8 +57,8 @@ export function adminRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, pathParams }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.ADMIN)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Admin required");
+        if (!hasPermission(auth.data, Permissions.AUDIT_VIEW)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         const entries = await deps.services.audit.findByTarget(pathParams["targetId"] ?? "");
         return buildResponse(200, entries);

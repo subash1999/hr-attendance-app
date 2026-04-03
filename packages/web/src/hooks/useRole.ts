@@ -1,9 +1,10 @@
 /**
- * Role-based access hooks for conditional UI rendering.
- * Uses the RBAC hierarchy from @willdesign-hr/types.
+ * Role and permission-based access hooks for conditional UI rendering.
+ * Uses permission constants from @willdesign-hr/types.
  */
 import { useAuth } from "./useAuth";
-import { Roles } from "@willdesign-hr/types";
+import { Roles, Permissions } from "@willdesign-hr/types";
+import type { Permission } from "@willdesign-hr/types";
 
 export const ROLE_LEVELS: Record<string, number> = {
   [Roles.EMPLOYEE]: 0,
@@ -29,12 +30,18 @@ export function useHasMinimumRole(minimumRole: string): boolean {
   return level >= getRoleLevel(minimumRole);
 }
 
-/** Returns true if user is at least a MANAGER. */
-export function useIsManager(): boolean {
-  return useHasMinimumRole(Roles.MANAGER);
+/** Returns true if the current user has the specified permission. */
+export function useHasPermission(permission: Permission): boolean {
+  const { permissions } = useAuth();
+  return permissions.includes(permission);
 }
 
-/** Returns true if user is at least an ADMIN. */
+/** Returns true if user has manager-level permissions. */
+export function useIsManager(): boolean {
+  return useHasPermission(Permissions.LEAVE_APPROVE);
+}
+
+/** Returns true if user has admin-level permissions. */
 export function useIsAdmin(): boolean {
-  return useHasMinimumRole(Roles.ADMIN);
+  return useHasPermission(Permissions.ONBOARD);
 }

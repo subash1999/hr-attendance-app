@@ -1,5 +1,5 @@
-import type { AuthContext, AuthorizationResult, ResourceContext, Role } from "@willdesign-hr/types";
-import { Roles, SensitivityLevels } from "@willdesign-hr/types";
+import type { AuthContext, AuthorizationResult, Permission, ResourceContext, Role } from "@willdesign-hr/types";
+import { Roles, SensitivityLevels, ROLE_PERMISSIONS } from "@willdesign-hr/types";
 
 export const ROLE_HIERARCHY: readonly Role[] = [
   Roles.EMPLOYEE,
@@ -26,9 +26,11 @@ export function hasMinimumRole(actorRole: Role, minimumRole: Role): boolean {
   return actorLevel >= requiredLevel;
 }
 
-export function hasPermission(actor: AuthContext, permission: string): boolean {
+export function hasPermission(actor: AuthContext, permission: Permission): boolean {
   if (isSuperAdmin(actor.actorRole)) return true;
-  return actor.actorCustomPermissions.includes(permission);
+  if (actor.actorCustomPermissions.includes(permission)) return true;
+  const rolePerms = ROLE_PERMISSIONS[actor.actorRole];
+  return rolePerms?.includes(permission) ?? false;
 }
 
 // Action-specific authorization (read vs write/delete) deferred to handler middleware

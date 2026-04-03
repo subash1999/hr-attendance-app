@@ -7,7 +7,7 @@ import {
   authorize,
 } from "../src/permissions/engine.js";
 import type { AuthContext, ResourceContext } from "@willdesign-hr/types";
-import { Roles, SensitivityLevels } from "@willdesign-hr/types";
+import { Roles, SensitivityLevels, Permissions, ROLE_PERMISSIONS } from "@willdesign-hr/types";
 
 describe("RBAC — Role hierarchy", () => {
   it("defines 5 default roles in order", () => {
@@ -45,7 +45,7 @@ describe("RBAC — Role hierarchy", () => {
 });
 
 describe("RBAC — Permission checks", () => {
-  it("allows action when actor has explicit permission", () => {
+  it("allows action when actor has explicit custom permission", () => {
     const actor: AuthContext = {
       actorId: "EMP#001",
       actorRole: Roles.EMPLOYEE,
@@ -70,6 +70,124 @@ describe("RBAC — Permission checks", () => {
       actorCustomPermissions: [],
     };
     expect(hasPermission(actor, "anything:at-all")).toBe(true);
+  });
+
+  it("allows action when actor's role grants the permission via ROLE_PERMISSIONS", () => {
+    const actor: AuthContext = {
+      actorId: "EMP#001",
+      actorRole: Roles.MANAGER,
+      actorCustomPermissions: [],
+    };
+    expect(hasPermission(actor, Permissions.LEAVE_APPROVE)).toBe(true);
+    expect(hasPermission(actor, Permissions.FLAG_RESOLVE)).toBe(true);
+    expect(hasPermission(actor, Permissions.BANK_APPROVE)).toBe(true);
+    expect(hasPermission(actor, Permissions.EMPLOYEE_LIST_ALL)).toBe(true);
+  });
+
+  it("denies action when actor's role does not grant the permission", () => {
+    const actor: AuthContext = {
+      actorId: "EMP#001",
+      actorRole: Roles.MANAGER,
+      actorCustomPermissions: [],
+    };
+    expect(hasPermission(actor, Permissions.ONBOARD)).toBe(false);
+    expect(hasPermission(actor, Permissions.EMPLOYEE_UPDATE)).toBe(false);
+    expect(hasPermission(actor, Permissions.POLICY_UPDATE)).toBe(false);
+  });
+
+  it("admin role grants all admin permissions", () => {
+    const actor: AuthContext = {
+      actorId: "EMP#003",
+      actorRole: Roles.ADMIN,
+      actorCustomPermissions: [],
+    };
+    expect(hasPermission(actor, Permissions.ONBOARD)).toBe(true);
+    expect(hasPermission(actor, Permissions.OFFBOARD)).toBe(true);
+    expect(hasPermission(actor, Permissions.AUDIT_VIEW)).toBe(true);
+    expect(hasPermission(actor, Permissions.EMPLOYEE_UPDATE)).toBe(true);
+    expect(hasPermission(actor, Permissions.POLICY_UPDATE)).toBe(true);
+    expect(hasPermission(actor, Permissions.HOLIDAY_MANAGE)).toBe(true);
+    expect(hasPermission(actor, Permissions.ATTENDANCE_LOCK)).toBe(true);
+    // Also has all manager permissions
+    expect(hasPermission(actor, Permissions.LEAVE_APPROVE)).toBe(true);
+  });
+
+  it("employee role has no action permissions", () => {
+    const actor: AuthContext = {
+      actorId: "EMP#002",
+      actorRole: Roles.EMPLOYEE,
+      actorCustomPermissions: [],
+    };
+    expect(hasPermission(actor, Permissions.LEAVE_APPROVE)).toBe(false);
+    expect(hasPermission(actor, Permissions.ONBOARD)).toBe(false);
+  });
+
+  it("unknown role with no custom permissions returns false", () => {
+    const actor: AuthContext = {
+      actorId: "EMP#099",
+      actorRole: "CUSTOM_ROLE",
+      actorCustomPermissions: [],
+    };
+    expect(hasPermission(actor, Permissions.LEAVE_APPROVE)).toBe(false);
+  });
+
+  it("custom permission overrides role-based denial", () => {
+    const actor: AuthContext = {
+      actorId: "EMP#002",
+      actorRole: Roles.EMPLOYEE,
+      actorCustomPermissions: [Permissions.LEAVE_APPROVE],
+    };
+    expect(hasPermission(actor, Permissions.LEAVE_APPROVE)).toBe(true);
+  });
+});
+
+describe("RBAC — Permission constants and role mapping", () => {
+  it("Permissions object contains all 11 permission constants", () => {
+    expect(Object.keys(Permissions)).toHaveLength(11);
+  });
+
+  it("ROLE_PERMISSIONS maps all five roles", () => {
+    expect(ROLE_PERMISSIONS[Roles.EMPLOYEE]).toBeDefined();
+    expect(ROLE_PERMISSIONS[Roles.MANAGER]).toBeDefined();
+    expect(ROLE_PERMISSIONS[Roles.HR_MANAGER]).toBeDefined();
+    expect(ROLE_PERMISSIONS[Roles.ADMIN]).toBeDefined();
+    expect(ROLE_PERMISSIONS[Roles.SUPER_ADMIN]).toBeDefined();
+  });
+
+  it("Employee has zero permissions", () => {
+    expect(ROLE_PERMISSIONS[Roles.EMPLOYEE]).toHaveLength(0);
+  });
+
+  it("Manager has correct permissions", () => {
+    const managerPerms = ROLE_PERMISSIONS[Roles.MANAGER]!;
+    expect(managerPerms).toContain(Permissions.LEAVE_APPROVE);
+    expect(managerPerms).toContain(Permissions.FLAG_RESOLVE);
+    expect(managerPerms).toContain(Permissions.BANK_APPROVE);
+    expect(managerPerms).toContain(Permissions.EMPLOYEE_LIST_ALL);
+    expect(managerPerms).not.toContain(Permissions.ONBOARD);
+  });
+
+  it("Admin includes all manager permissions plus admin-specific", () => {
+    const adminPerms = ROLE_PERMISSIONS[Roles.ADMIN]!;
+    const managerPerms = ROLE_PERMISSIONS[Roles.MANAGER]!;
+    for (const perm of managerPerms) {
+      expect(adminPerms).toContain(perm);
+    }
+    expect(adminPerms).toContain(Permissions.EMPLOYEE_UPDATE);
+    expect(adminPerms).toContain(Permissions.ONBOARD);
+    expect(adminPerms).toContain(Permissions.ATTENDANCE_LOCK);
+  });
+
+  it("Super Admin has all permissions", () => {
+    const superAdminPerms = ROLE_PERMISSIONS[Roles.SUPER_ADMIN]!;
+    const allPerms = Object.values(Permissions);
+    for (const perm of allPerms) {
+      expect(superAdminPerms).toContain(perm);
+    }
+  });
+
+  it("unknown role lookup returns undefined", () => {
+    expect(ROLE_PERMISSIONS["NONEXISTENT_ROLE"]).toBeUndefined();
   });
 });
 

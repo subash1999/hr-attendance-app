@@ -2,15 +2,14 @@ import { useState, useMemo } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styled, { css } from "styled-components";
-import { Roles, ROUTES } from "@willdesign-hr/types";
-import { useRoleLevel, ROLE_LEVELS } from "../../hooks/useRole";
-
-type RoleValue = typeof Roles[keyof typeof Roles];
+import { Permissions, ROUTES } from "@willdesign-hr/types";
+import type { Permission } from "@willdesign-hr/types";
+import { useAuth } from "../../hooks/useAuth";
 
 interface NavItemConfig {
   readonly path: string;
   readonly labelKey: string;
-  readonly minRole?: RoleValue;
+  readonly requiredPermission?: Permission;
 }
 
 const ALL_NAV_ITEMS: readonly NavItemConfig[] = [
@@ -19,8 +18,8 @@ const ALL_NAV_ITEMS: readonly NavItemConfig[] = [
   { path: ROUTES.LEAVE, labelKey: "nav.leave" },
   { path: ROUTES.REPORTS, labelKey: "nav.reports" },
   { path: ROUTES.PAYROLL, labelKey: "nav.payroll" },
-  { path: ROUTES.TEAM, labelKey: "nav.team", minRole: Roles.MANAGER },
-  { path: ROUTES.ADMIN, labelKey: "nav.admin", minRole: Roles.ADMIN },
+  { path: ROUTES.TEAM, labelKey: "nav.team", requiredPermission: Permissions.LEAVE_APPROVE },
+  { path: ROUTES.ADMIN, labelKey: "nav.admin", requiredPermission: Permissions.ONBOARD },
   { path: ROUTES.SETTINGS, labelKey: "nav.settings" },
 ];
 
@@ -195,13 +194,13 @@ const BottomNavItem = styled(NavLink)`
 export function Layout() {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const roleLevel = useRoleLevel();
+  const { permissions } = useAuth();
 
   const navItems = useMemo(
     () => ALL_NAV_ITEMS.filter((item) =>
-      !item.minRole || roleLevel >= (ROLE_LEVELS[item.minRole] ?? 0),
+      !item.requiredPermission || permissions.includes(item.requiredPermission),
     ),
-    [roleLevel],
+    [permissions],
   );
 
   return (

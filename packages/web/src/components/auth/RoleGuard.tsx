@@ -1,16 +1,24 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { ROUTES } from "@willdesign-hr/types";
-import { useHasMinimumRole } from "../../hooks/useRole";
+import { Roles, ROUTES } from "@willdesign-hr/types";
+import { Permissions } from "@willdesign-hr/types";
+import type { Permission } from "@willdesign-hr/types";
+import { useHasMinimumRole, useHasPermission } from "../../hooks/useRole";
 
 interface RoleGuardProps {
-  readonly minRole: string;
+  readonly requiredPermission?: Permission;
+  readonly minRole?: string;
 }
 
-/** Route guard that redirects to dashboard if user lacks the required role. */
-export function RoleGuard({ minRole }: RoleGuardProps) {
-  const hasRole = useHasMinimumRole(minRole);
+/** Route guard that redirects to dashboard if user lacks the required permission or role. */
+export function RoleGuard({ requiredPermission, minRole }: RoleGuardProps) {
+  const hasPermissionResult = useHasPermission(requiredPermission ?? Permissions.EMPLOYEE_LIST_ALL);
+  const hasRoleResult = useHasMinimumRole(minRole ?? Roles.EMPLOYEE);
 
-  if (!hasRole) {
+  const allowed =
+    (!requiredPermission || hasPermissionResult) &&
+    (!minRole || hasRoleResult);
+
+  if (!allowed) {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 

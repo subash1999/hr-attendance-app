@@ -1,9 +1,9 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { hasMinimumRole } from "@willdesign-hr/core";
+import { hasPermission } from "@willdesign-hr/core";
 import {
-  ErrorCodes, Roles,
+  ErrorCodes, ErrorMessages, Permissions,
   API_LEAVE_REQUESTS, API_LEAVE_REQUEST_BY_ID, API_LEAVE_BALANCE,
 } from "@willdesign-hr/types";
 import type {
@@ -43,7 +43,7 @@ export function leaveRoutes(deps: AppDeps): RouteDefinition[] {
         const query = queryParams as unknown as LeaveRequestsQueryParams;
         const employeeId = query.employeeId ?? auth.data.actorId;
 
-        if (query.pending === "true" && hasMinimumRole(auth.data.actorRole, Roles.MANAGER)) {
+        if (query.pending === "true" && hasPermission(auth.data, Permissions.LEAVE_APPROVE)) {
           const pending = await deps.services.leave.findPending();
           return buildResponse(200, pending);
         }
@@ -60,8 +60,8 @@ export function leaveRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, pathParams, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.MANAGER)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Manager required");
+        if (!hasPermission(auth.data, Permissions.LEAVE_APPROVE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         const input = body as LeaveActionBody | null;
         const requestId = pathParams["id"] ?? "";

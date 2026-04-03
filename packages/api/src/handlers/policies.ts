@@ -1,8 +1,8 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { hasMinimumRole } from "@willdesign-hr/core";
-import { ErrorCodes, Roles, API_POLICIES } from "@willdesign-hr/types";
+import { hasPermission } from "@willdesign-hr/core";
+import { ErrorCodes, ErrorMessages, Permissions, API_POLICIES } from "@willdesign-hr/types";
 
 export function policyRoutes(_deps: AppDeps): RouteDefinition[] {
   return [
@@ -24,8 +24,8 @@ export function policyRoutes(_deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, pathParams, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.ADMIN)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Admin required");
+        if (!hasPermission(auth.data, Permissions.POLICY_UPDATE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         return buildResponse(200, {
           groupName: pathParams["groupName"],

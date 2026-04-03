@@ -67,7 +67,10 @@ export type {
   ResourceContext,
   AuthorizationResult,
   RoleDefinition,
+  Permission,
 } from "./permissions.js";
+
+export { Permissions, ROLE_PERMISSIONS } from "./permissions.js";
 
 export type {
   HoursPolicy,
@@ -149,6 +152,7 @@ export {
   PAYMENT,
   CRON,
   ErrorCodes,
+  ErrorMessages,
 } from "./constants.js";
 
 export {

@@ -285,3 +285,8 @@ export const ErrorCodes = {
   CONFLICT: "CONFLICT",
   UNPROCESSABLE: "UNPROCESSABLE",
 } as const;
+
+// ─── Error Messages ───
+export const ErrorMessages = {
+  INSUFFICIENT_PERMISSIONS: "Insufficient permissions",
+} as const;

@@ -6,7 +6,7 @@ import { AuthProvider } from "./hooks/useAuth";
 import { AuthGuard } from "./components/auth/AuthGuard";
 import { RoleGuard } from "./components/auth/RoleGuard";
 import { LoginPage } from "./components/auth/LoginPage";
-import { Roles, ROUTE_SEGMENTS } from "@willdesign-hr/types";
+import { Permissions, ROUTE_SEGMENTS } from "@willdesign-hr/types";
 import { Layout } from "./components/common/Layout";
 import { theme } from "./theme/theme";
 import { GlobalStyle } from "./theme/GlobalStyle";
@@ -44,10 +44,10 @@ export function App() {
                     <Route path={ROUTE_SEGMENTS.LEAVE} element={<LeavePage />} />
                     <Route path={ROUTE_SEGMENTS.REPORTS} element={<ReportsPage />} />
                     <Route path={ROUTE_SEGMENTS.PAYROLL} element={<PayrollPage />} />
-                    <Route element={<RoleGuard minRole={Roles.MANAGER} />}>
+                    <Route element={<RoleGuard requiredPermission={Permissions.LEAVE_APPROVE} />}>
                       <Route path={ROUTE_SEGMENTS.TEAM} element={<TeamPage />} />
                     </Route>
-                    <Route element={<RoleGuard minRole={Roles.ADMIN} />}>
+                    <Route element={<RoleGuard requiredPermission={Permissions.ONBOARD} />}>
                       <Route path={ROUTE_SEGMENTS.ADMIN} element={<AdminPage />} />
                     </Route>
                     <Route path={ROUTE_SEGMENTS.SETTINGS} element={<SettingsPage />} />

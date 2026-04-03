@@ -1,8 +1,8 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { hasMinimumRole } from "@willdesign-hr/core";
-import { ErrorCodes, Roles, API_BANK, API_BANK_APPROVE } from "@willdesign-hr/types";
+import { hasPermission } from "@willdesign-hr/core";
+import { ErrorCodes, ErrorMessages, Permissions, API_BANK, API_BANK_APPROVE } from "@willdesign-hr/types";
 import type { BankApproveBody, BankQueryParams } from "@willdesign-hr/types";
 
 export function bankRoutes(deps: AppDeps): RouteDefinition[] {
@@ -25,8 +25,8 @@ export function bankRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.MANAGER)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Manager required");
+        if (!hasPermission(auth.data, Permissions.BANK_APPROVE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         const input = body as BankApproveBody | null;
         if (!input?.entryId) return handleError(ErrorCodes.VALIDATION, "entryId required");

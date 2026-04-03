@@ -1,8 +1,8 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { hasMinimumRole, resolveFlag } from "@willdesign-hr/core";
-import { ErrorCodes, Roles, API_FLAGS, API_FLAG_BY_ID } from "@willdesign-hr/types";
+import { hasPermission, resolveFlag } from "@willdesign-hr/core";
+import { ErrorCodes, ErrorMessages, Permissions, API_FLAGS, API_FLAG_BY_ID } from "@willdesign-hr/types";
 import type { FlagResolution, FlagsQueryParams, ResolveFlagBody } from "@willdesign-hr/types";
 
 export function flagRoutes(deps: AppDeps): RouteDefinition[] {
@@ -14,7 +14,7 @@ export function flagRoutes(deps: AppDeps): RouteDefinition[] {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
 
-        if (hasMinimumRole(auth.data.actorRole, Roles.MANAGER)) {
+        if (hasPermission(auth.data, Permissions.FLAG_RESOLVE)) {
           const pending = await deps.services.flagQuery.findPending();
           return buildResponse(200, pending);
         }
@@ -32,8 +32,8 @@ export function flagRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.MANAGER)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Manager required");
+        if (!hasPermission(auth.data, Permissions.FLAG_RESOLVE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
 
         const input = body as ResolveFlagBody | null;

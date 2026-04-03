@@ -1,9 +1,9 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { hasMinimumRole } from "@willdesign-hr/core";
+import { hasPermission } from "@willdesign-hr/core";
 import {
-  ErrorCodes, Roles,
+  ErrorCodes, ErrorMessages, Permissions,
   API_EMPLOYEES_ME, API_EMPLOYEES_BY_ID, API_EMPLOYEES,
 } from "@willdesign-hr/types";
 import type { EmployeesQueryParams } from "@willdesign-hr/types";
@@ -40,15 +40,15 @@ export function employeeRoutes(deps: AppDeps): RouteDefinition[] {
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
         const query = queryParams as unknown as EmployeesQueryParams;
 
-        if (hasMinimumRole(auth.data.actorRole, Roles.ADMIN)) {
+        if (hasPermission(auth.data, Permissions.EMPLOYEE_UPDATE)) {
           const all = await deps.services.employee.findAll({ status: query.status });
           return buildResponse(200, all);
         }
-        if (hasMinimumRole(auth.data.actorRole, Roles.MANAGER)) {
+        if (hasPermission(auth.data, Permissions.EMPLOYEE_LIST_ALL)) {
           const reports = await deps.services.employee.findByManagerId(auth.data.actorId);
           return buildResponse(200, reports);
         }
-        return handleError(ErrorCodes.FORBIDDEN, "Insufficient permissions");
+        return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
       },
     },
     {
@@ -57,8 +57,8 @@ export function employeeRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, pathParams, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
-        if (!hasMinimumRole(auth.data.actorRole, Roles.ADMIN)) {
-          return handleError(ErrorCodes.FORBIDDEN, "Admin required");
+        if (!hasPermission(auth.data, Permissions.EMPLOYEE_UPDATE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
         }
         const updated = await deps.services.employee.update(
           pathParams["id"] ?? "",

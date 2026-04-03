@@ -6,7 +6,8 @@ import { Card, PageLayout, SectionTitle, TextMuted, FormField, FormLayout, Butto
 import { LoadingSpinner } from "../common/LoadingSpinner";
 import { useLeaveRequests, useCreateLeave, useLeaveBalance, usePendingLeaveRequests, useApproveLeave } from "../../hooks/queries/useLeave";
 import { formatDate } from "../../utils/date";
-import { useIsManager } from "../../hooks/useRole";
+import { useHasPermission } from "../../hooks/useRole";
+import { Permissions } from "@willdesign-hr/types";
 
 const RequestList = styled.ul`
   list-style: none;
@@ -67,10 +68,10 @@ export function LeavePage() {
   const [leaveType, setLeaveType] = useState<string>(LeaveTypes.PAID);
   const [reason, setReason] = useState("");
 
-  const isManager = useIsManager();
+  const canApproveLeave = useHasPermission(Permissions.LEAVE_APPROVE);
   const { data: requests, isLoading } = useLeaveRequests();
   const { data: balance } = useLeaveBalance();
-  const { data: pendingRequests } = usePendingLeaveRequests({ enabled: isManager });
+  const { data: pendingRequests } = usePendingLeaveRequests({ enabled: canApproveLeave });
   const createLeave = useCreateLeave();
   const approveLeave = useApproveLeave();
 
@@ -140,7 +141,7 @@ export function LeavePage() {
         )}
       </Card>
 
-      {isManager && (
+      {canApproveLeave && (
         <Card>
           <SectionTitle>{t("leave.pendingApprovals")}</SectionTitle>
           {!pendingRequests?.length ? (

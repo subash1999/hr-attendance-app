@@ -1,11 +1,13 @@
 import { useState, useCallback, createContext, useContext } from "react";
 import type { ReactNode } from "react";
 import React from "react";
+import { ROLE_PERMISSIONS } from "@willdesign-hr/types";
 
 interface AuthState {
   readonly token: string | null;
   readonly employeeId: string | null;
   readonly role: string | null;
+  readonly permissions: readonly string[];
   readonly isAuthenticated: boolean;
 }
 
@@ -22,15 +24,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     token: null,
     employeeId: null,
     role: null,
+    permissions: [],
     isAuthenticated: false,
   });
 
   const login = useCallback((token: string, employeeId: string, role: string) => {
-    setAuth({ token, employeeId, role, isAuthenticated: true });
+    const rolePermissions = ROLE_PERMISSIONS[role] ?? [];
+    setAuth({ token, employeeId, role, permissions: rolePermissions, isAuthenticated: true });
   }, []);
 
   const logout = useCallback(() => {
-    setAuth({ token: null, employeeId: null, role: null, isAuthenticated: false });
+    setAuth({ token: null, employeeId: null, role: null, permissions: [], isAuthenticated: false });
   }, []);
 
   return React.createElement(AuthContext.Provider, { value: { ...auth, login, logout } }, children);

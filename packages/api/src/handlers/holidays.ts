@@ -1,7 +1,8 @@
 import type { RouteDefinition } from "./router.js";
 import type { AppDeps } from "../composition.js";
 import { parseAuthContext, buildResponse, handleError } from "../middleware/index.js";
-import { ErrorCodes, API_HOLIDAYS, API_HOLIDAY_DELETE, currentYear, yearFromDate } from "@willdesign-hr/types";
+import { hasPermission } from "@willdesign-hr/core";
+import { ErrorCodes, ErrorMessages, Permissions, API_HOLIDAYS, API_HOLIDAY_DELETE, currentYear, yearFromDate } from "@willdesign-hr/types";
 import type { Region, HolidaysQueryParams, CreateHolidayBody } from "@willdesign-hr/types";
 
 export function holidayRoutes(deps: AppDeps): RouteDefinition[] {
@@ -25,6 +26,9 @@ export function holidayRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, body }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
+        if (!hasPermission(auth.data, Permissions.HOLIDAY_MANAGE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
+        }
         const input = body as CreateHolidayBody | null;
         if (!input?.date || !input.name || !input.region) {
           return handleError(ErrorCodes.VALIDATION, "date, name, region required");
@@ -48,6 +52,9 @@ export function holidayRoutes(deps: AppDeps): RouteDefinition[] {
       handler: async ({ claims, pathParams }) => {
         const auth = parseAuthContext(claims);
         if (!auth.success) return handleError(ErrorCodes.UNAUTHORIZED, auth.error);
+        if (!hasPermission(auth.data, Permissions.HOLIDAY_MANAGE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
+        }
         await deps.services.holiday.removeHoliday(
           (pathParams["region"] ?? "JP") as Region,
           pathParams["date"] ?? "",
