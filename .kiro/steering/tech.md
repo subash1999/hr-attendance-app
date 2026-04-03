@@ -4,7 +4,7 @@
 | Layer | Technology | Reason |
 |-------|-----------|--------|
 | **Runtime** | Node.js 20+ (TypeScript) | Team expertise, Lambda support |
-| **Frontend** | React 18 + Vite | Fast builds, team knows React (from WilPOS) |
+| **Frontend** | React 19 + Vite 8 + styled-components | Fast builds, CSS-in-JS theming |
 | **Backend** | AWS Lambda + API Gateway | Free tier: 1M requests/month |
 | **Database** | DynamoDB (or RDS Postgres free tier) | 25GB free, single-table design |
 | **Auth** | AWS Cognito | 50K MAU free |
@@ -13,8 +13,10 @@
 | **Scheduler** | EventBridge | Cron jobs (daily/weekly/monthly triggers) |
 | **i18n** | react-i18next | Multi-language UI (en, ja, ne) |
 | **CI/CD** | GitHub Actions | Monorepo build + deploy |
-| **IaC** | AWS CDK or SAM | Infrastructure as code |
-| **Testing** | Vitest + Testing Library | TDD approach |
+| **IaC** | AWS CDK (TypeScript) | Infrastructure as code |
+| **Testing** | Vitest 4 + Testing Library | TDD, jsdom for web |
+| **Styling** | styled-components 6 | Theme object + primitives, no CSS files |
+| **PWA** | vite-plugin-pwa + Workbox | Installable, offline, push |
 
 ## Monorepo Structure
 ```
@@ -70,3 +72,11 @@ Both attendance messages and daily report messages follow this async pattern.
 - Append-only audit logs for all user activity (future LLM analysis ready)
 - TDD: tests written before implementation
 - Single-tenant: WillDesign only
+
+## Frontend Coding Rules
+- **styled-components only** — no CSS files. `theme.ts` for tokens, `primitives.ts` for shared components
+- **Never display raw ISO strings** — use `utils/date.ts` (formatDate, formatDateTime, formatRelative)
+- **Form inputs**: `localDateToIso()` before API calls, `isoToLocalDate()` for pre-fill from API
+- **All user-facing text via i18n** — `t("section.key")`, never hardcoded strings in JSX
+- **Lazy-load pages** — `React.lazy()` + `Suspense` in App.tsx for code splitting
+- **No magic strings/numbers** — use constants from `@willdesign-hr/types`

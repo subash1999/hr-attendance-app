@@ -6,21 +6,17 @@ willdesign-hr/
 ├── packages/
 │   ├── core/                    # Shared business logic (ZERO AWS deps)
 │   │   ├── src/
-│   │   │   ├── services/        # Business logic orchestration
-│   │   │   │   ├── attendance.ts
-│   │   │   │   ├── leave.ts
-│   │   │   │   ├── payroll.ts
-│   │   │   │   ├── flag.ts
-│   │   │   │   ├── bank.ts
-│   │   │   │   ├── report.ts
-│   │   │   │   ├── onboarding.ts
-│   │   │   │   ├── offboarding.ts
-│   │   │   │   ├── holiday.ts
-│   │   │   │   ├── quota.ts
-│   │   │   │   ├── role.ts
-│   │   │   │   ├── audit.ts
-│   │   │   │   ├── cron.ts
-│   │   │   │   └── email.ts
+│   │   │   ├── attendance/      # StateMachine, KeywordMatcher, Service, HoursCalculator
+│   │   │   ├── leave/           # LeaveService, Accrual calculator
+│   │   │   ├── payroll/         # PayrollCalculator (blending, pro-rata, deficit)
+│   │   │   ├── flags/           # FlagService (generate, resolve, bank offset, quota)
+│   │   │   ├── overtime/        # OvertimeCalculator (deemed, 36 Agreement)
+│   │   │   ├── reports/         # ReportParser (JIRA/GitHub references)
+│   │   │   ├── policies/        # PolicyResolver (3-level cascade), seed data (9 groups)
+│   │   │   ├── permissions/     # RBAC+ABAC engine (5-level hierarchy)
+│   │   │   ├── onboarding/      # OnboardingService, OffboardingService (settlement, legal)
+│   │   │   ├── holidays/        # HolidayService, JP holiday generator (1980-2099)
+│   │   │   ├── cron/            # CronService (daily/weekly/monthly), ReminderService
 │   │   │   ├── repositories/    # Repository INTERFACES (ports) — no AWS deps
 │   │   │   │   ├── employee.ts
 │   │   │   │   ├── attendance.ts
@@ -143,38 +139,36 @@ willdesign-hr/
 │   └── web/                     # React frontend (S3 + CloudFront)
 │       ├── src/
 │       │   ├── components/
-│       │   │   ├── common/      # Shared UI components
-│       │   │   ├── attendance/  # Clock status, history, edit forms
-│       │   │   ├── leave/       # Leave request, calendar, balances
-│       │   │   ├── reports/     # Daily report view/edit
-│       │   │   ├── payroll/     # Payroll dashboard, salary history
-│       │   │   ├── admin/       # Onboarding, policy builder, role management
-│       │   │   ├── holidays/    # Holiday calendar management
-│       │   │   └── flags/       # Shortfall flags, resolution UI
-│       │   ├── pages/
-│       │   │   ├── Dashboard.tsx
-│       │   │   ├── Attendance.tsx
-│       │   │   ├── Leave.tsx
-│       │   │   ├── Reports.tsx
-│       │   │   ├── Payroll.tsx
-│       │   │   ├── Team.tsx     # Manager view
-│       │   │   ├── Admin.tsx    # Admin panel
-│       │   │   └── Settings.tsx
+│       │   │   ├── common/        # Layout shell (styled-components)
+│       │   │   ├── dashboard/     # DashboardPage, ClockWidget
+│       │   │   ├── attendance/    # AttendancePage
+│       │   │   ├── leave/         # LeavePage
+│       │   │   ├── reports/       # ReportsPage
+│       │   │   ├── payroll/       # PayrollPage
+│       │   │   ├── team/          # TeamPage (manager view)
+│       │   │   ├── admin/         # AdminPage (tabbed: onboard/offboard/policy/roles/holidays)
+│       │   │   └── settings/      # SettingsPage (i18n language selector)
 │       │   ├── hooks/
+│       │   │   ├── useAuth.ts     # JWT in memory, AuthProvider context
+│       │   │   └── apiClient.ts   # fetch wrapper with Bearer token
 │       │   ├── theme/
-│       │   │   ├── theme.css    # CSS custom properties (design tokens)
-│       │   │   └── tokens.ts    # TypeScript theme token constants
+│       │   │   ├── theme.ts       # Design token object (colors, fonts, spacing, radii)
+│       │   │   ├── styled.d.ts    # Theme type augmentation for styled-components
+│       │   │   ├── GlobalStyle.ts # createGlobalStyle (reset, base typography)
+│       │   │   └── primitives.ts  # Shared: Card, Button*, SectionTitle, TextMuted, FormField, PageLayout
 │       │   ├── pwa/
-│       │   │   ├── sw.ts        # Service worker (Workbox via vite-plugin-pwa)
-│       │   │   ├── manifest.ts  # Web app manifest config
-│       │   │   ├── offline.ts   # Offline dashboard cache (IndexedDB)
-│       │   │   └── push.ts      # Push notification subscription
+│       │   │   ├── config.ts      # PWA manifest config (WillDesign brand)
+│       │   │   └── offline-queue.ts # Offline attendance action queue
+│       │   ├── utils/
+│       │   │   └── date.ts        # formatDate/Time/Relative, localDateToIso, isoToLocalDate
 │       │   ├── i18n/
-│       │   │   ├── en.json
-│       │   │   ├── ja.json
-│       │   │   └── ne.json
-│       │   ├── store/           # State management
-│       │   └── App.tsx
+│       │   │   ├── en.json        # English (80+ keys)
+│       │   │   ├── ja.json        # Japanese
+│       │   │   └── ne.json        # Nepali
+│       │   ├── test/
+│       │   │   ├── setup.ts       # @testing-library/jest-dom/vitest
+│       │   │   └── render.tsx     # renderWithProviders (Theme+Query+Auth+Router)
+│       │   └── App.tsx            # ThemeProvider, lazy routes, Suspense
 │       ├── __tests__/
 │       └── package.json
 │
@@ -213,7 +207,7 @@ willdesign-hr/
 │
 ├── package.json                 # Workspace root (npm workspaces)
 ├── tsconfig.base.json           # Shared TS config (strict mode)
-└── vitest.workspace.ts          # Vitest workspace config
+└── vitest.config.ts             # Vitest 4 project-based config (jsdom for web, node for rest)
 ```
 
 ## Package Dependencies
