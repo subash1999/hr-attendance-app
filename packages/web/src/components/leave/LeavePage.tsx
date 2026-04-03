@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { LeaveTypes, LeaveRequestStatuses } from "@willdesign-hr/types";
-import { Card, PageLayout, SectionTitle, TextMuted, FormField, FormLayout, ButtonAccent } from "../../theme/primitives";
+import { Card, PageLayout, SectionTitle, TextMuted, FormField, FormLayout, ButtonAccent, ButtonSecondary, ButtonDanger } from "../../theme/primitives";
 import { LoadingSpinner } from "../common/LoadingSpinner";
-import { useLeaveRequests, useCreateLeave, useLeaveBalance } from "../../hooks/queries/useLeave";
+import { useLeaveRequests, useCreateLeave, useLeaveBalance, usePendingLeaveRequests, useApproveLeave } from "../../hooks/queries/useLeave";
 import { formatDate } from "../../utils/date";
+import { useIsManager } from "../../hooks/useRole";
 
 const RequestList = styled.ul`
   list-style: none;
@@ -42,6 +43,11 @@ const DateRange = styled.div`
   color: ${({ theme }) => theme.colors.textMuted};
 `;
 
+const ActionGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.space.xs};
+`;
+
 const BalanceCard = styled(Card)`
   text-align: center;
   background: ${({ theme }) => theme.colors.surface};
@@ -61,9 +67,12 @@ export function LeavePage() {
   const [leaveType, setLeaveType] = useState<string>(LeaveTypes.PAID);
   const [reason, setReason] = useState("");
 
+  const isManager = useIsManager();
   const { data: requests, isLoading } = useLeaveRequests();
   const { data: balance } = useLeaveBalance();
+  const { data: pendingRequests } = usePendingLeaveRequests({ enabled: isManager });
   const createLeave = useCreateLeave();
+  const approveLeave = useApproveLeave();
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -130,6 +139,37 @@ export function LeavePage() {
           </RequestList>
         )}
       </Card>
+
+      {isManager && (
+        <Card>
+          <SectionTitle>{t("leave.pendingApprovals")}</SectionTitle>
+          {!pendingRequests?.length ? (
+            <TextMuted>{t("leave.noPendingApprovals")}</TextMuted>
+          ) : (
+            <RequestList>
+              {pendingRequests.map((r) => (
+                <RequestItem key={r.id}>
+                  <div>
+                    <strong>{r.employeeId}</strong>
+                    <DateRange>
+                      {t(`leave.type.${r.leaveType}`)} · {formatDate(r.startDate)} — {formatDate(r.endDate)}
+                    </DateRange>
+                  </div>
+                  <ActionGroup>
+                    <ButtonSecondary
+                      onClick={() => approveLeave.mutate(r.id)}
+                      disabled={approveLeave.isPending}
+                    >
+                      {t("leave.approve")}
+                    </ButtonSecondary>
+                    <ButtonDanger disabled>{t("leave.reject")}</ButtonDanger>
+                  </ActionGroup>
+                </RequestItem>
+              ))}
+            </RequestList>
+          )}
+        </Card>
+      )}
     </PageLayout>
   );
 }

@@ -1,18 +1,28 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styled, { css } from "styled-components";
+import { Roles, ROUTES } from "@willdesign-hr/types";
+import { useRoleLevel, ROLE_LEVELS } from "../../hooks/useRole";
 
-const NAV_ITEMS = [
-  { path: "/", labelKey: "nav.dashboard" },
-  { path: "/attendance", labelKey: "nav.attendance" },
-  { path: "/leave", labelKey: "nav.leave" },
-  { path: "/reports", labelKey: "nav.reports" },
-  { path: "/payroll", labelKey: "nav.payroll" },
-  { path: "/team", labelKey: "nav.team" },
-  { path: "/admin", labelKey: "nav.admin" },
-  { path: "/settings", labelKey: "nav.settings" },
-] as const;
+type RoleValue = typeof Roles[keyof typeof Roles];
+
+interface NavItemConfig {
+  readonly path: string;
+  readonly labelKey: string;
+  readonly minRole?: RoleValue;
+}
+
+const ALL_NAV_ITEMS: readonly NavItemConfig[] = [
+  { path: ROUTES.DASHBOARD, labelKey: "nav.dashboard" },
+  { path: ROUTES.ATTENDANCE, labelKey: "nav.attendance" },
+  { path: ROUTES.LEAVE, labelKey: "nav.leave" },
+  { path: ROUTES.REPORTS, labelKey: "nav.reports" },
+  { path: ROUTES.PAYROLL, labelKey: "nav.payroll" },
+  { path: ROUTES.TEAM, labelKey: "nav.team", minRole: Roles.MANAGER },
+  { path: ROUTES.ADMIN, labelKey: "nav.admin", minRole: Roles.ADMIN },
+  { path: ROUTES.SETTINGS, labelKey: "nav.settings" },
+];
 
 const LayoutShell = styled.div`
   display: flex;
@@ -185,17 +195,25 @@ const BottomNavItem = styled(NavLink)`
 export function Layout() {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const roleLevel = useRoleLevel();
+
+  const navItems = useMemo(
+    () => ALL_NAV_ITEMS.filter((item) =>
+      !item.minRole || roleLevel >= (ROLE_LEVELS[item.minRole] ?? 0),
+    ),
+    [roleLevel],
+  );
 
   return (
     <LayoutShell>
       <Sidebar $open={sidebarOpen}>
         <SidebarHeader>
-          <LogoLink to="/">
+          <LogoLink to={ROUTES.DASHBOARD}>
             <LogoText>WiLL Design HR</LogoText>
           </LogoLink>
         </SidebarHeader>
         <SidebarNav>
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavItem
               key={item.path}
               to={item.path}
@@ -227,7 +245,7 @@ export function Layout() {
       )}
 
       <BottomNav>
-        {NAV_ITEMS.slice(0, 5).map((item) => (
+        {navItems.slice(0, 5).map((item) => (
           <BottomNavItem key={item.path} to={item.path}>
             {t(item.labelKey)}
           </BottomNavItem>

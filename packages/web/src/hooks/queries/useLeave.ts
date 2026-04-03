@@ -14,11 +14,12 @@ export function useLeaveRequests() {
   });
 }
 
-export function usePendingLeaveRequests() {
+export function usePendingLeaveRequests(options?: { enabled?: boolean }) {
   const api = useApiClient();
   return useQuery({
     queryKey: queryKeys.leave.pending(),
     queryFn: () => api.get<LeaveRequest[]>(`${API_LEAVE_REQUESTS}?pending=true`),
+    enabled: options?.enabled ?? true,
   });
 }
 

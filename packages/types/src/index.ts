@@ -163,7 +163,7 @@ export {
   API_HOLIDAYS, API_HOLIDAY_DELETE,
   API_POLICIES,
   API_DEV_AUTH_EMPLOYEES, API_DEV_AUTH_LOGIN,
-  ROUTES,
+  ROUTE_SEGMENTS, ROUTES,
   apiPath, withQuery,
 } from "./api-routes.js";
 export type {

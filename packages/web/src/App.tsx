@@ -4,7 +4,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "styled-components";
 import { AuthProvider } from "./hooks/useAuth";
 import { AuthGuard } from "./components/auth/AuthGuard";
+import { RoleGuard } from "./components/auth/RoleGuard";
 import { LoginPage } from "./components/auth/LoginPage";
+import { Roles, ROUTE_SEGMENTS } from "@willdesign-hr/types";
 import { Layout } from "./components/common/Layout";
 import { theme } from "./theme/theme";
 import { GlobalStyle } from "./theme/GlobalStyle";
@@ -34,17 +36,21 @@ export function App() {
           <BrowserRouter>
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
-                <Route path="login" element={<LoginPage />} />
+                <Route path={ROUTE_SEGMENTS.LOGIN} element={<LoginPage />} />
                 <Route element={<AuthGuard />}>
                   <Route element={<Layout />}>
                     <Route index element={<DashboardPage />} />
-                    <Route path="attendance" element={<AttendancePage />} />
-                    <Route path="leave" element={<LeavePage />} />
-                    <Route path="reports" element={<ReportsPage />} />
-                    <Route path="payroll" element={<PayrollPage />} />
-                    <Route path="team" element={<TeamPage />} />
-                    <Route path="admin" element={<AdminPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
+                    <Route path={ROUTE_SEGMENTS.ATTENDANCE} element={<AttendancePage />} />
+                    <Route path={ROUTE_SEGMENTS.LEAVE} element={<LeavePage />} />
+                    <Route path={ROUTE_SEGMENTS.REPORTS} element={<ReportsPage />} />
+                    <Route path={ROUTE_SEGMENTS.PAYROLL} element={<PayrollPage />} />
+                    <Route element={<RoleGuard minRole={Roles.MANAGER} />}>
+                      <Route path={ROUTE_SEGMENTS.TEAM} element={<TeamPage />} />
+                    </Route>
+                    <Route element={<RoleGuard minRole={Roles.ADMIN} />}>
+                      <Route path={ROUTE_SEGMENTS.ADMIN} element={<AdminPage />} />
+                    </Route>
+                    <Route path={ROUTE_SEGMENTS.SETTINGS} element={<SettingsPage />} />
                   </Route>
                 </Route>
               </Routes>

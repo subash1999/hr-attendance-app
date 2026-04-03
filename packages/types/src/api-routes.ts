@@ -128,17 +128,30 @@ export const API_POLICIES = "/api/policies/:groupName" as const;
 export const API_DEV_AUTH_EMPLOYEES = "/api/dev-auth/employees" as const;
 export const API_DEV_AUTH_LOGIN = "/api/dev-auth/login" as const;
 
-// ─── Frontend Routes ───
+// ─── Frontend Route Segments (for <Route path="">) ───
+export const ROUTE_SEGMENTS = {
+  LOGIN: "login",
+  DASHBOARD: "",
+  ATTENDANCE: "attendance",
+  LEAVE: "leave",
+  REPORTS: "reports",
+  PAYROLL: "payroll",
+  TEAM: "team",
+  ADMIN: "admin",
+  SETTINGS: "settings",
+} as const;
+
+// ─── Frontend Routes (absolute paths for <NavLink to="">) ───
 export const ROUTES = {
-  LOGIN: "/login",
+  LOGIN: `/${ROUTE_SEGMENTS.LOGIN}`,
   DASHBOARD: "/",
-  ATTENDANCE: "/attendance",
-  LEAVE: "/leave",
-  REPORTS: "/reports",
-  PAYROLL: "/payroll",
-  TEAM: "/team",
-  ADMIN: "/admin",
-  SETTINGS: "/settings",
+  ATTENDANCE: `/${ROUTE_SEGMENTS.ATTENDANCE}`,
+  LEAVE: `/${ROUTE_SEGMENTS.LEAVE}`,
+  REPORTS: `/${ROUTE_SEGMENTS.REPORTS}`,
+  PAYROLL: `/${ROUTE_SEGMENTS.PAYROLL}`,
+  TEAM: `/${ROUTE_SEGMENTS.TEAM}`,
+  ADMIN: `/${ROUTE_SEGMENTS.ADMIN}`,
+  SETTINGS: `/${ROUTE_SEGMENTS.SETTINGS}`,
 } as const;
 
 // ─── URL builder helpers ───
