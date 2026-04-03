@@ -73,6 +73,40 @@ Both attendance messages and daily report messages follow this async pattern.
 - TDD: tests written before implementation
 - Single-tenant: WillDesign only
 
+## Architecture Pattern: Handler → Service → Repository
+- **Handlers** (`packages/api/src/handlers/`) — HTTP concerns only: parse auth, extract typed params, delegate to service, return response
+- **Services** (`packages/core/src/*/service.ts`) — Business logic: validation, calculations, audit logging, orchestration
+- **Repositories** (`packages/data/src/dynamo/`) — Data access: DynamoDB reads/writes, key construction
+- **Handlers NEVER call repositories directly** — always go through a service
+- Services: EmployeeService, AttendanceService, LeaveService, PayrollService, FlagQueryService, BankService, ReportService, AuditService, OnboardingService, OffboardingService, HolidayService, CronService, ReminderService
+
+## Shared API Contract
+- **`packages/types/src/api-routes.ts`** — Single source of truth for all API endpoints, typed request/response bodies, query params, and frontend routes
+- Route constants (e.g., `API_ATTENDANCE_EVENTS`) used by both backend handlers (route registration) and frontend hooks (API calls)
+- Typed bodies (e.g., `ClockActionBody`, `CreateLeaveBody`) shared between handler `body as ClockActionBody` and hook mutation inputs
+- Typed query params (e.g., `AttendanceEventsQueryParams`) used by handlers: `const query = queryParams as unknown as AttendanceEventsQueryParams`
+- URL helpers: `apiPath(API_PAYROLL, { yearMonth })`, `withQuery(API_REPORTS, { date })`
+- Frontend routes: `ROUTES.DASHBOARD`, `ROUTES.LOGIN`
+- Error codes: `ErrorCodes.UNAUTHORIZED`, `ErrorCodes.NOT_FOUND`, etc.
+
+## Local Development
+- `npm run dev` — starts DynamoDB Local (Docker) + API dev server (Express, port 3001) + Vite (port 5173)
+- Vite proxy forwards `/api` → `http://localhost:3001`
+- Dev auth: POST `/api/dev-auth/login` returns base64 mock token; no Cognito needed locally
+- `scripts/setup-local.ts` — creates DynamoDB table + seeds 4 employees, salaries, leave balances
+- `docker-compose.yml` — DynamoDB Local on port 8000
+
+## Shared Date Utilities
+- **`packages/types/src/date-utils.ts`** — Single source of truth for ALL date operations across ALL packages
+- **Never use inline date operations** — no `new Date()`, `Date.now()`, `.toISOString()`, `.slice(0,10)`, `.getFullYear()`
+- Clock functions (mockable): `nowIso()`, `nowMs()`, `todayDate()`, `currentYear()`
+- Conversion: `isoToDateStr()`, `isoToYearMonth()`, `dateToIso()`, `dateToDateStr()`, `yearFromDate()`
+- Math: `daysInMonth()`, `addDays()`, `addMonths()`, `addYears()`
+- Formatting: `formatYearMonth()`
+- IDs: `timestampId()` (replaces `String(Date.now())`)
+- Frontend display: `packages/web/src/utils/date.ts` (formatDate, formatDateTime, formatRelative)
+- Frontend currency: `packages/web/src/utils/currency.ts` (formatAmount)
+
 ## Frontend Coding Rules
 - **styled-components only** — no CSS files. `theme.ts` for tokens, `primitives.ts` for shared components
 - **Never display raw ISO strings** — use `utils/date.ts` (formatDate, formatDateTime, formatRelative)
@@ -80,3 +114,5 @@ Both attendance messages and daily report messages follow this async pattern.
 - **All user-facing text via i18n** — `t("section.key")`, never hardcoded strings in JSX
 - **Lazy-load pages** — `React.lazy()` + `Suspense` in App.tsx for code splitting
 - **No magic strings/numbers** — use constants from `@willdesign-hr/types`
+- **React Query hooks** — all API calls go through `packages/web/src/hooks/queries/`, using `useApiClient()` + centralized `queryKeys`
+- **DynamoDB keys** — use `KeyPatterns` and `KeyPrefixes` from `@willdesign-hr/types`, never inline template literals

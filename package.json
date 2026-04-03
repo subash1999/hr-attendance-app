@@ -14,8 +14,10 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspace=@willdesign-hr/web",
+    "dev": "concurrently -n db,api,web -c blue,green,cyan \"docker compose up dynamodb\" \"sleep 3 && npx tsx scripts/setup-local.ts && npm run dev -w @willdesign-hr/api\" \"sleep 5 && npm run dev -w @willdesign-hr/web\"",
     "dev:web": "npm run dev --workspace=@willdesign-hr/web",
+    "dev:api": "npm run dev --workspace=@willdesign-hr/api",
+    "dev:setup": "npx tsx scripts/setup-local.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
@@ -36,6 +38,8 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@vitest/ui": "^4.1.2",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.0",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
