@@ -30,5 +30,9 @@ new ApiStack(app, `${config.prefix}-api`, config, {
 });
 new SlackStack(app, `${config.prefix}-slack`, config, { env, table: dbStack.table });
 new WebStack(app, `${config.prefix}-web`, config, { env });
-new SchedulerStack(app, `${config.prefix}-scheduler`, config, { env });
+new SchedulerStack(app, `${config.prefix}-scheduler`, config, {
+  env,
+  tableArn: dbStack.table.tableArn,
+  tableName: dbStack.table.tableName,
+});
 new EmailStack(app, `${config.prefix}-email`, config, { env });

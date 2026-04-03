@@ -5,7 +5,7 @@ import { Card, PageLayout, SectionTitle, TextMuted, FormField, FormLayout, Butto
 export function LeavePage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [leaveType, setLeaveType] = useState(LeaveTypes.PAID);
+  const [leaveType, setLeaveType] = useState<string>(LeaveTypes.PAID);
 
   return (
     <PageLayout>

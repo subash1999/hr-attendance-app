@@ -41,7 +41,7 @@ export class CronService {
     let unclosedCount = 0;
     let openBreakCount = 0;
     let shortSessionCount = 0;
-    let shortfallCount = 0;
+    const shortfallCount = 0;
 
     const unclosed = await this.deps.attendanceRepo.getUnclosedSessions(date);
 
@@ -86,9 +86,9 @@ export class CronService {
     return { weeklyFlagCount };
   }
 
-  async runMonthlyChecks(yearMonth: string): Promise<MonthlyCheckResult> {
+  async runMonthlyChecks(_yearMonth: string): Promise<MonthlyCheckResult> {
     let surplusExpiredCount = 0;
-    let monthlyFlagCount = 0;
+    const monthlyFlagCount = 0;
 
     const employees = await this.deps.employeeRepo.findAll({ status: "ACTIVE" });
 

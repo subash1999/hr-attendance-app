@@ -34,7 +34,7 @@ describe("OfflineQueue", () => {
     queue.dequeue();
     const remaining = queue.getAll();
     expect(remaining).toHaveLength(1);
-    expect(remaining[0].type).toBe("CLOCK_OUT");
+    expect(remaining[0]!.type).toBe("CLOCK_OUT");
   });
 
   it("persists actions to storage", () => {

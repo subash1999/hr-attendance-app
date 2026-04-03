@@ -45,7 +45,7 @@ export function DashboardPage() {
   const [status] = useState<AttendanceState>(AttendanceStates.IDLE);
   const [hoursToday] = useState(0);
   const [loading, setLoading] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };

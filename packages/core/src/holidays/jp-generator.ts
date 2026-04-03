@@ -102,7 +102,7 @@ export function generateJpHolidays(year: number): readonly Holiday[] {
   for (const h of [...holidays]) {
     const d = new Date(h.date);
     if (d.getDay() === SUNDAY) {
-      let subDate = new Date(d);
+      const subDate = new Date(d);
       do {
         subDate.setDate(subDate.getDate() + 1);
       } while (holidayDates.has(formatDate(subDate.getFullYear(), subDate.getMonth(), subDate.getDate())));

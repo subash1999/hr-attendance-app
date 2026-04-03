@@ -116,12 +116,12 @@ export class OffboardingService {
       {
         type: "CONFIDENTIALITY",
         description: `Confidentiality obligation (${LEGAL_OBLIGATIONS.CONFIDENTIALITY_YEARS} years)`,
-        expiresAt: confExpiry.toISOString().split("T")[0],
+        expiresAt: confExpiry.toISOString().slice(0, 10),
       },
       {
         type: "NON_COMPETE",
         description: `Non-compete obligation (${LEGAL_OBLIGATIONS.NON_COMPETE_MONTHS} months)`,
-        expiresAt: nonCompeteExpiry.toISOString().split("T")[0],
+        expiresAt: nonCompeteExpiry.toISOString().slice(0, 10),
       },
     ];
   }
