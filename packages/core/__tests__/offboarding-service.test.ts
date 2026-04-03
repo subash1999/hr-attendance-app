@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { OffboardingService } from "../src/onboarding/offboarding";
-import { TerminationTypes, EmployeeStatuses, PAYMENT } from "@willdesign-hr/types";
+import { TerminationTypes, EmployeeStatuses, LegalObligationTypes, PAYMENT } from "@willdesign-hr/types";
 import type { Employee } from "@willdesign-hr/types";
 
 function mockEmployee(overrides: Partial<Employee> = {}): Employee {
@@ -126,8 +126,8 @@ describe("OffboardingService", () => {
 
     expect(result.success).toBe(true);
     expect(result.legalObligations).toHaveLength(2);
-    const confidentiality = result.legalObligations!.find(o => o.type === "CONFIDENTIALITY");
-    const nonCompete = result.legalObligations!.find(o => o.type === "NON_COMPETE");
+    const confidentiality = result.legalObligations!.find(o => o.type === LegalObligationTypes.CONFIDENTIALITY);
+    const nonCompete = result.legalObligations!.find(o => o.type === LegalObligationTypes.NON_COMPETE);
     expect(confidentiality).toBeDefined();
     expect(nonCompete).toBeDefined();
   });

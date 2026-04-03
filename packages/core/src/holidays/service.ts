@@ -19,14 +19,8 @@ export class HolidayService {
 
   async seedJpHolidays(year: number): Promise<SeedResult> {
     const holidays = generateJpHolidays(year);
-    let seededCount = 0;
-
-    for (const holiday of holidays) {
-      await this.deps.holidayRepo.save(holiday);
-      seededCount++;
-    }
-
-    return { seededCount };
+    await Promise.all(holidays.map(h => this.deps.holidayRepo.save(h)));
+    return { seededCount: holidays.length };
   }
 
   async addHoliday(holiday: Holiday): Promise<Holiday> {

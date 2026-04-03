@@ -154,6 +154,33 @@ export const AuditActions = {
   RESOLVE: "RESOLVE",
 } as const;
 
+export const AuditTargetTypes = {
+  EMPLOYEE: "EMPLOYEE",
+  ATTENDANCE: "ATTENDANCE",
+  LEAVE: "LEAVE",
+  SALARY: "SALARY",
+  FLAG: "FLAG",
+  REPORT: "REPORT",
+} as const;
+
+export const AuditSources = {
+  SLACK: "slack",
+  WEB: "web",
+  SYSTEM: "system",
+  ADMIN: "admin",
+  CRON: "cron",
+} as const;
+
+export const AuditActorIds = {
+  SYSTEM: "SYSTEM",
+} as const;
+
+// ─── Legal Obligations ───
+export const LegalObligationTypes = {
+  CONFIDENTIALITY: "CONFIDENTIALITY",
+  NON_COMPETE: "NON_COMPETE",
+} as const;
+
 // ─── References ───
 export const ReferenceTypes = {
   JIRA: "JIRA",

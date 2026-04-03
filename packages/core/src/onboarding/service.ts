@@ -1,5 +1,5 @@
 import type { Role, Currency, LanguagePreference, Region, SalaryRecord } from "@willdesign-hr/types";
-import { SalaryChangeTypes, SalaryTypes, AuditActions, EmployeeStatuses } from "@willdesign-hr/types";
+import { SalaryChangeTypes, SalaryTypes, AuditActions, AuditTargetTypes, AuditSources, AuditActorIds, EmployeeStatuses } from "@willdesign-hr/types";
 import type { EmployeeRepository, CreateEmployeeInput } from "../repositories/employee.js";
 import type { SalaryRepository } from "../repositories/salary.js";
 import type { AuthProviderAdapter } from "../repositories/auth-provider-adapter.js";
@@ -60,13 +60,6 @@ export class OnboardingService {
 
       employeeId = employee.id;
 
-      await this.deps.authProvider.createUser({
-        email: input.email,
-        employeeId: employee.id,
-        role: input.role,
-        preferredLanguage: input.languagePreference,
-      });
-
       const salaryEntry: SalaryRecord = {
         id: `SAL#${employee.id}#${Date.now()}`,
         employeeId: employee.id,
@@ -78,14 +71,22 @@ export class OnboardingService {
         createdAt: new Date().toISOString(),
       };
 
-      await this.deps.salaryRepo.addEntry(salaryEntry);
+      await Promise.all([
+        this.deps.authProvider.createUser({
+          email: input.email,
+          employeeId: employee.id,
+          role: input.role,
+          preferredLanguage: input.languagePreference,
+        }),
+        this.deps.salaryRepo.addEntry(salaryEntry),
+      ]);
 
       await this.deps.auditRepo.append({
         id: `AUDIT#${Date.now()}`,
         targetId: employee.id,
-        targetType: "EMPLOYEE",
-        actorId: "SYSTEM",
-        source: "web",
+        targetType: AuditTargetTypes.EMPLOYEE,
+        actorId: AuditActorIds.SYSTEM,
+        source: AuditSources.WEB,
         action: AuditActions.CREATE,
         before: null,
         after: { employeeId: employee.id, name: input.name },

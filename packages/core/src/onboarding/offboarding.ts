@@ -1,5 +1,5 @@
 import type { TerminationType, LegalObligation } from "@willdesign-hr/types";
-import { EmployeeStatuses, TerminationTypes, AuditActions, PAYMENT, LEGAL_OBLIGATIONS } from "@willdesign-hr/types";
+import { EmployeeStatuses, TerminationTypes, AuditActions, AuditTargetTypes, AuditSources, AuditActorIds, LegalObligationTypes, PAYMENT, LEGAL_OBLIGATIONS } from "@willdesign-hr/types";
 import type { EmployeeRepository } from "../repositories/employee.js";
 import type { SalaryRepository } from "../repositories/salary.js";
 import type { AuthProviderAdapter } from "../repositories/auth-provider-adapter.js";
@@ -85,9 +85,9 @@ export class OffboardingService {
       await this.deps.auditRepo.append({
         id: `AUDIT#${Date.now()}`,
         targetId: input.employeeId,
-        targetType: "EMPLOYEE",
-        actorId: "SYSTEM",
-        source: "admin",
+        targetType: AuditTargetTypes.EMPLOYEE,
+        actorId: AuditActorIds.SYSTEM,
+        source: AuditSources.ADMIN,
         action: AuditActions.UPDATE,
         before: { status: employee.status },
         after: {
@@ -114,12 +114,12 @@ export class OffboardingService {
 
     return [
       {
-        type: "CONFIDENTIALITY",
+        type: LegalObligationTypes.CONFIDENTIALITY,
         description: `Confidentiality obligation (${LEGAL_OBLIGATIONS.CONFIDENTIALITY_YEARS} years)`,
         expiresAt: confExpiry.toISOString().slice(0, 10),
       },
       {
-        type: "NON_COMPETE",
+        type: LegalObligationTypes.NON_COMPETE,
         description: `Non-compete obligation (${LEGAL_OBLIGATIONS.NON_COMPETE_MONTHS} months)`,
         expiresAt: nonCompeteExpiry.toISOString().slice(0, 10),
       },
