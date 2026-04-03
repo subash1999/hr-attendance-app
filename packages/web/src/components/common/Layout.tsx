@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styled, { css } from "styled-components";
@@ -24,23 +24,28 @@ const ALL_NAV_ITEMS: readonly NavItemConfig[] = [
   { path: ROUTES.SETTINGS, labelKey: "nav.settings", icon: "⊘" },
 ];
 
+const BOTTOM_NAV_MAX_ITEMS = 5;
+
 export function Layout() {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { permissions } = useAuth();
 
-  const navItems = useMemo(
-    () => ALL_NAV_ITEMS.filter((item) =>
+  const { navItems, bottomNavItems } = useMemo(() => {
+    const filtered = ALL_NAV_ITEMS.filter((item) =>
       !item.requiredPermission || permissions.includes(item.requiredPermission),
-    ),
-    [permissions],
-  );
+    );
+    return { navItems: filtered, bottomNavItems: filtered.slice(0, BOTTOM_NAV_MAX_ITEMS) };
+  }, [permissions]);
+
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+  const toggleSidebar = useCallback(() => setSidebarOpen((prev) => !prev), []);
 
   return (
     <LayoutShell>
       <Sidebar $open={sidebarOpen}>
         <SidebarHeader>
-          <LogoLink to={ROUTES.DASHBOARD} onClick={() => setSidebarOpen(false)}>
+          <LogoLink to={ROUTES.DASHBOARD} onClick={closeSidebar}>
             <LogoText>{t("app.title")}</LogoText>
           </LogoLink>
         </SidebarHeader>
@@ -50,7 +55,7 @@ export function Layout() {
               key={item.path}
               to={item.path}
               end={item.path === ROUTES.DASHBOARD}
-              onClick={() => setSidebarOpen(false)}
+              onClick={closeSidebar}
             >
               <NavIcon aria-hidden>{item.icon}</NavIcon>
               <NavLabel>{t(item.labelKey)}</NavLabel>
@@ -62,7 +67,7 @@ export function Layout() {
       <Main>
         <Header>
           <MenuToggle
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={toggleSidebar}
             aria-label={t("common.toggleMenu")}
           >
             ☰
@@ -75,11 +80,11 @@ export function Layout() {
       </Main>
 
       {sidebarOpen && (
-        <Overlay onClick={() => setSidebarOpen(false)} />
+        <Overlay onClick={closeSidebar} />
       )}
 
       <BottomNav>
-        {navItems.slice(0, 5).map((item) => (
+        {bottomNavItems.map((item) => (
           <BottomNavItem
             key={item.path}
             to={item.path}
@@ -115,7 +120,7 @@ const Sidebar = styled.aside<{ $open: boolean }>`
 
   ${({ $open }) => $open && css`transform: translateX(0);`}
 
-  @media (min-width: 640px) and (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tabletMin}) and (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     width: ${({ theme }) => theme.sidebar.collapsedWidth};
     transform: translateX(0);
     overflow: hidden;
@@ -129,14 +134,14 @@ const Sidebar = styled.aside<{ $open: boolean }>`
     }
   }
 
-  @media (min-width: 1025px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktopMin}) {
     transform: translateX(0);
   }
 `;
 
 const SidebarHeader = styled.div`
   padding: ${({ theme }) => theme.space.md};
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.sidebarBorder};
   min-height: ${({ theme }) => theme.header.height};
   display: flex;
   align-items: center;
@@ -179,7 +184,7 @@ const SidebarNavItem = styled(NavLink)`
   align-items: center;
   gap: ${({ theme }) => theme.space.sm};
   padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
-  color: rgba(255, 255, 255, 0.7);
+  color: ${({ theme }) => theme.colors.sidebarText};
   transition: all ${({ theme }) => theme.transition};
   min-height: 44px;
   border-left: 3px solid transparent;
@@ -187,13 +192,13 @@ const SidebarNavItem = styled(NavLink)`
 
   &:hover {
     color: ${({ theme }) => theme.colors.textInverse};
-    background: rgba(255, 255, 255, 0.08);
+    background: ${({ theme }) => theme.colors.sidebarHover};
   }
 
   &.active {
     color: ${({ theme }) => theme.colors.accent};
     border-left-color: ${({ theme }) => theme.colors.accent};
-    background: rgba(255, 255, 255, 0.05);
+    background: ${({ theme }) => theme.colors.sidebarActive};
   }
 `;
 
@@ -203,11 +208,11 @@ const Main = styled.div`
   flex-direction: column;
   min-width: 0;
 
-  @media (min-width: 640px) and (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.tabletMin}) and (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     margin-left: ${({ theme }) => theme.sidebar.collapsedWidth};
   }
 
-  @media (min-width: 1025px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktopMin}) {
     margin-left: ${({ theme }) => theme.sidebar.width};
   }
 `;
@@ -248,7 +253,7 @@ const Overlay = styled.div`
   background: ${({ theme }) => theme.colors.overlay};
   z-index: ${({ theme }) => theme.zIndex.overlay};
 
-  @media (min-width: 1025px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktopMin}) {
     display: none;
   }
 `;
@@ -271,7 +276,7 @@ const MenuToggle = styled.button`
     background: ${({ theme }) => theme.colors.surfaceHover};
   }
 
-  @media (min-width: 1025px) {
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktopMin}) {
     display: none;
   }
 `;
@@ -298,7 +303,7 @@ const BottomNavIcon = styled.span`
 `;
 
 const BottomNavLabel = styled.span`
-  font-size: 10px;
+  font-size: ${({ theme }) => theme.fontSizes.xxs};
   line-height: 1;
 `;
 

@@ -18,23 +18,26 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const EMPTY_PERMISSIONS: readonly string[] = [];
+
+const INITIAL_AUTH: AuthState = {
+  token: null,
+  employeeId: null,
+  role: null,
+  permissions: EMPTY_PERMISSIONS,
+  isAuthenticated: false,
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // JWT stored in memory only — not localStorage (XSS protection)
-  const [auth, setAuth] = useState<AuthState>({
-    token: null,
-    employeeId: null,
-    role: null,
-    permissions: [],
-    isAuthenticated: false,
-  });
+  const [auth, setAuth] = useState<AuthState>(INITIAL_AUTH);
 
   const login = useCallback((token: string, employeeId: string, role: string) => {
-    const rolePermissions = ROLE_PERMISSIONS[role] ?? [];
+    const rolePermissions = ROLE_PERMISSIONS[role] ?? EMPTY_PERMISSIONS;
     setAuth({ token, employeeId, role, permissions: rolePermissions, isAuthenticated: true });
   }, []);
 
   const logout = useCallback(() => {
-    setAuth({ token: null, employeeId: null, role: null, permissions: [], isAuthenticated: false });
+    setAuth(INITIAL_AUTH);
   }, []);
 
   return React.createElement(AuthContext.Provider, { value: { ...auth, login, logout } }, children);

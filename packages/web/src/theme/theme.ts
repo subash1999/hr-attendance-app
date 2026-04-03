@@ -48,6 +48,12 @@ export const theme = {
     focus: "#5636D1",
     selected: "#EBF7FA",
 
+    // Sidebar (derived from textInverse with alpha)
+    sidebarBorder: "rgba(255, 255, 255, 0.1)",
+    sidebarText: "rgba(255, 255, 255, 0.7)",
+    sidebarHover: "rgba(255, 255, 255, 0.08)",
+    sidebarActive: "rgba(255, 255, 255, 0.05)",
+
     // Chart palette
     chart1: "#58C2D9",
     chart2: "#40DEC5",
@@ -64,6 +70,7 @@ export const theme = {
 
   // Typography scale (1.25 ratio — Major Third)
   fontSizes: {
+    xxs: "0.625rem",  // 10px — compact labels (bottom nav)
     xs: "0.75rem",    // 12px
     sm: "0.875rem",   // 14px
     base: "1rem",     // 16px
@@ -127,7 +134,9 @@ export const theme = {
 
   breakpoints: {
     mobile: "639px",
+    tabletMin: "640px",
     tablet: "1024px",
+    desktopMin: "1025px",
   },
 
   sidebar: {
