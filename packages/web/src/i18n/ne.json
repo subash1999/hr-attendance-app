@@ -1,5 +1,5 @@
 {
-  "app": { "title": "WillDesign HR" },
+  "app": { "title": "HR Attendance App" },
   "nav": { "dashboard": "ड्यासबोर्ड", "attendance": "हाजिरी", "leave": "बिदा", "reports": "रिपोर्ट", "payroll": "तलब", "team": "टोली", "admin": "प्रशासन", "settings": "सेटिङ" },
   "auth": { "login": "लग इन", "logout": "लग आउट", "loading": "लोड हुँदैछ...", "selectEmployee": "लग इन गर्न कर्मचारी चयन गर्नुहोस्", "loginButton": "लग इन" },
   "common": { "loading": "लोड हुँदैछ...", "error": "केही गलत भयो", "retry": "पुन: प्रयास", "noData": "डाटा उपलब्ध छैन" },

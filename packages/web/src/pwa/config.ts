@@ -1,8 +1,10 @@
-/** PWA manifest configuration aligned with WillDesign brand. */
+import { AppBranding } from "@hr-attendance-app/types";
+
+/** PWA manifest configuration — uses centralized AppBranding. */
 export const PWA_CONFIG = {
-  name: "WillDesign HR",
-  short_name: "WD HR",
-  theme_color: "#58C2D9",
+  name: AppBranding.appName,
+  short_name: AppBranding.appShortName,
+  theme_color: AppBranding.themeColor,
   background_color: "#FFFFFF",
   display: "standalone" as const,
   start_url: "/",

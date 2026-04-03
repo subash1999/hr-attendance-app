@@ -1,5 +1,5 @@
 {
-  "app": { "title": "WillDesign HR" },
+  "app": { "title": "HR Attendance App" },
   "nav": { "dashboard": "Dashboard", "attendance": "Attendance", "leave": "Leave", "reports": "Reports", "payroll": "Payroll", "team": "Team", "admin": "Admin", "settings": "Settings" },
   "auth": { "login": "Log In", "logout": "Log Out", "loading": "Loading...", "selectEmployee": "Select an employee to log in as", "loginButton": "Log In" },
   "common": { "loading": "Loading...", "error": "Something went wrong", "retry": "Retry", "noData": "No data available" },

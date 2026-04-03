@@ -9,7 +9,7 @@ export interface EnvironmentConfig {
 }
 
 export function getConfig(stage: Stage): EnvironmentConfig {
-  const prefix = stage === "prod" ? "willdesign-hr" : "willdesign-hr-dev";
+  const prefix = stage === "prod" ? "hr-attendance-app" : "hr-attendance-app-dev";
 
   return {
     stage,

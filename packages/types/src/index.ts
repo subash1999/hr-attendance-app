@@ -190,6 +190,8 @@ export type {
 
 export { KeyPrefixes, KeyPatterns } from "./key-patterns.js";
 
+export { AppBranding } from "./branding.js";
+
 export {
   nowIso, nowMs, todayDate, currentYear,
   isoToDateStr, isoToYearMonth, yearFromDate,

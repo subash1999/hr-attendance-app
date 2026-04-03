@@ -6,7 +6,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 const ENDPOINT = process.env["DYNAMODB_ENDPOINT"] ?? "http://localhost:8000";
-const TABLE_NAME = process.env["DYNAMODB_TABLE_NAME"] ?? "willdesign-hr-dev-table";
+const TABLE_NAME = process.env["DYNAMODB_TABLE_NAME"] ?? "hr-attendance-app-dev-table";
 const REGION = process.env["AWS_REGION"] ?? "ap-northeast-1";
 
 const rawClient = new DynamoDBClient({
@@ -35,7 +35,7 @@ async function seedEmployees(): Promise<void> {
       GSI2SK: "ACTIVE#ADMIN001",
       id: "EMP#ADMIN001",
       name: "Tanaka Admin",
-      email: "admin@willdesign.com",
+      email: "admin@example.com",
       slackId: "U_ADMIN",
       employmentType: "JP_FULL_TIME",
       region: "JP",
@@ -59,7 +59,7 @@ async function seedEmployees(): Promise<void> {
       GSI2SK: "ACTIVE#MGR001",
       id: "EMP#MGR001",
       name: "Suzuki Manager",
-      email: "manager@willdesign.com",
+      email: "manager@example.com",
       slackId: "U_MGR",
       employmentType: "JP_FULL_TIME",
       region: "JP",
@@ -83,7 +83,7 @@ async function seedEmployees(): Promise<void> {
       GSI2SK: "ACTIVE#JP001",
       id: "EMP#JP001",
       name: "Yamada Taro",
-      email: "taro@willdesign.com",
+      email: "taro@example.com",
       slackId: "U_JP001",
       employmentType: "JP_FULL_TIME",
       region: "JP",
@@ -107,7 +107,7 @@ async function seedEmployees(): Promise<void> {
       GSI2SK: "ACTIVE#NP001",
       id: "EMP#NP001",
       name: "Ram Sharma",
-      email: "ram@willdesign.com",
+      email: "ram@example.com",
       slackId: "U_NP001",
       employmentType: "NP_FULL_TIME",
       region: "NP",

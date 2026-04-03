@@ -16,7 +16,7 @@ function run(script: string): void {
     env: {
       ...process.env,
       DYNAMODB_ENDPOINT: process.env["DYNAMODB_ENDPOINT"] ?? "http://localhost:8000",
-      DYNAMODB_TABLE_NAME: process.env["DYNAMODB_TABLE_NAME"] ?? "willdesign-hr-dev-table",
+      DYNAMODB_TABLE_NAME: process.env["DYNAMODB_TABLE_NAME"] ?? "hr-attendance-app-dev-table",
       AWS_REGION: process.env["AWS_REGION"] ?? "ap-northeast-1",
     },
   });
