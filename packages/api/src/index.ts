@@ -1,4 +1,6 @@
 // @willdesign-hr/api — REST API Lambda handlers (composition root)
-// Instantiates adapters from data, injects into services from core
 
-export {};
+export { parseAuthContext, validateBody, handleError, buildResponse } from "./middleware/index.js";
+export type { ApiResponse } from "./middleware/index.js";
+export { createRouter } from "./handlers/router.js";
+export type { RouteHandler, RouteDefinition } from "./handlers/router.js";

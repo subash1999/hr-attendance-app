@@ -20,9 +20,14 @@ const env: cdk.Environment = {
   account: process.env["CDK_DEFAULT_ACCOUNT"],
 };
 
-new DatabaseStack(app, `${config.prefix}-database`, config, { env });
+const dbStack = new DatabaseStack(app, `${config.prefix}-database`, config, { env });
 new AuthStack(app, `${config.prefix}-auth`, config, { env });
-new ApiStack(app, `${config.prefix}-api`, config, { env });
+new ApiStack(app, `${config.prefix}-api`, config, {
+  env,
+  table: dbStack.table,
+  userPoolId: "placeholder-pool-id",
+  userPoolArn: "arn:aws:cognito-idp:ap-northeast-1:000000000000:userpool/placeholder",
+});
 new SlackStack(app, `${config.prefix}-slack`, config, { env });
 new WebStack(app, `${config.prefix}-web`, config, { env });
 new SchedulerStack(app, `${config.prefix}-scheduler`, config, { env });

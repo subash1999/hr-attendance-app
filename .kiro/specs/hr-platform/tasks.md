@@ -322,8 +322,8 @@
   - Write integration tests for user creation and attribute management
   - _Requirements: 16.1, 16.2, 5.1_
 
-- [ ] 13. API handlers and REST middleware
-- [ ] 13.1 Build the API middleware chain: JWT authentication, permission enforcement, input validation, and error handling
+- [x] 13. API handlers and REST middleware
+- [x] 13.1 Build the API middleware chain: JWT authentication, permission enforcement, input validation, and error handling
   - JWT authentication middleware: verify Cognito JWT token, extract actor ID and role from claims, reject 401 for missing/invalid tokens
   - Permission middleware: call the permission engine's authorize function with actor context, requested action, and resource context; return 403 with reason on denial
   - Input validation middleware: validate request bodies against Zod schemas; return 400 with field-level errors
@@ -332,7 +332,7 @@
   - Write unit tests for each middleware component with valid and invalid inputs
   - _Requirements: 5.1, 5.2, 19.4_
 
-- [ ] 13.2 Implement employee, attendance, and leave API handlers
+- [x] 13.2 Implement employee, attendance, and leave API handlers
   - Employee endpoints: GET /employees/me (own profile), GET /employees/:id (manager/admin), GET /employees (admin list), POST /employees (admin create), PATCH /employees/:id (admin update)
   - Attendance endpoints: GET /attendance/state (own current state), GET /attendance/events (own events by date/month), POST /attendance/events (log event via web), PATCH /attendance/events/:id (edit with audit)
   - Leave endpoints: POST /leave-requests (create), GET /leave-requests (list with filters), PATCH /leave-requests/:id (approve/reject by manager), GET /leave/balance (own or direct report balance)
@@ -340,7 +340,7 @@
   - Write integration tests for each endpoint with authenticated requests
   - _Requirements: 3.1, 3.2, 3.3, 7.1, 9.3_
 
-- [ ] 13.3 (P) Implement payroll, flag, bank, report, and admin API handlers
+- [x] 13.3 (P) Implement payroll, flag, bank, report, and admin API handlers
   - Payroll endpoints: GET /payroll/:yearMonth (own or direct report breakdown)
   - Flag endpoints: GET /flags (manager view with filters), PATCH /flags/:id (resolve with bank offset option)
   - Bank endpoints: GET /bank (own or manager view), POST /bank/approve (manager approves surplus banking)
@@ -356,7 +356,7 @@
   - Write integration tests for each endpoint group
   - _Requirements: 3.3, 3.4, 3.6, 10.16, 11.2, 12.5, 2.1, 15.1, 5.7, 16.5, 18.2, 10.12_
 
-- [ ] 13.4 Implement the CDK API stack with Lambda handlers, API Gateway, and Cognito authorizer
+- [x] 13.4 Implement the CDK API stack with Lambda handlers, API Gateway, and Cognito authorizer
   - Define API Gateway REST API with Cognito User Pool authorizer
   - Create Lambda functions for each handler group with Node.js 20 runtime
   - Configure IAM roles with least-privilege access to DynamoDB, S3, SES, and Cognito
