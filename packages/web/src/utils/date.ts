@@ -57,6 +57,53 @@ export function formatYearMonth(yearMonth: string): string {
   });
 }
 
+// ─── Input conversion: local form values → ISO for API ───
+
+/** Local date input "2026-04-03" → ISO UTC string "2026-04-03T00:00:00.000Z" */
+export function localDateToIso(localDate: string): string {
+  return new Date(localDate + "T00:00:00").toISOString();
+}
+
+/** Local datetime-local input "2026-04-03T09:30" → ISO UTC string */
+export function localDateTimeToIso(localDateTime: string): string {
+  return new Date(localDateTime).toISOString();
+}
+
+/** Local month input "2026-04" → ISO start-of-month UTC */
+export function localMonthToIso(yearMonth: string): string {
+  return new Date(yearMonth + "-01T00:00:00").toISOString();
+}
+
+// ─── API response → local form values ───
+
+/** ISO string → "2026-04-03" for <input type="date"> */
+export function isoToLocalDate(iso: string): string {
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** ISO string → "2026-04-03T09:30" for <input type="datetime-local"> */
+export function isoToLocalDateTime(iso: string): string {
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const h = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  return `${y}-${mo}-${day}T${h}:${mi}`;
+}
+
+/** ISO string → "2026-04" for <input type="month"> */
+export function isoToLocalMonth(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+// ─── Display helpers ───
+
 /** Relative time: "2 hours ago", "in 3 days" */
 export function formatRelative(iso: string): string {
   const rtf = new Intl.RelativeTimeFormat(getLocale(), { numeric: "auto" });
