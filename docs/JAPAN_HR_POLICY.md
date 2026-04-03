@@ -1,8 +1,8 @@
-# WillDesign Japan-Side HR Policy
+# HR Attendance App Japan-Side HR Policy
 
 ## Company Information
 
-- **Company**: WillDesign KK/GK (Japan-registered)
+- **Company**: the organization (Japan-registered)
 - **本社**: 〒153-0044 東京都目黒区大橋２丁目２２−１２
 - **オフィス**: 〒150-0043 東京都渋谷区道玄坂２丁目６−１７ 12階
 - **Team Size**: Up to 10 members (scalable)
@@ -254,7 +254,7 @@ Manually managed by admin (volatile/changing yearly):
 
 ### 9.3 Reference Tracking
 - Extract JIRA ticket IDs from reports (regex: JIRA-\d+, PROJECT-\d+)
-- Extract GitHub references (repo + PR: e.g., "willdesign-hr#42")
+- Extract GitHub references (repo + PR: e.g., "hr-attendance-app#42")
 - Warn if report has no JIRA or GitHub references
 - Store references as structured data alongside report text
 - Future: Claude/AI verification of report vs actual JIRA/GitHub activity

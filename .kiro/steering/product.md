@@ -1,7 +1,7 @@
-# Product Context — WillDesign HR Platform
+# Product Context — HR Attendance App
 
 ## What Is This?
-A full-stack HR management platform for WillDesign KK/GK serving two teams:
+A full-stack HR management platform for the organization serving two teams:
 - **Japan team** (~10 members): employees, contractors, part-time, sales, interns — Japanese labor law
 - **Nepal team** (~15 members): independent contractors, paid/unpaid interns — Nepal Contract Act 2056
 
@@ -33,7 +33,7 @@ Replaces the existing Google Apps Script Slack bot with a proper web application
 7. **Free/cheap deployment** — AWS free tier, ~$0-5/month
 8. **TDD** — test-driven development, tests first
 9. **Monorepo** — single repo, GitHub Actions CI/CD, dev + prod
-10. **Single-tenant** — WillDesign only, not SaaS
+10. **Single-tenant** — HR Attendance App only, not SaaS
 
 ## Two-Region Context
 
@@ -58,13 +58,9 @@ Replaces the existing Google Apps Script Slack bot with a proper web application
 - Holidays: manually managed (Dashain, Tihar, Shivaratri, Teej, volatile yearly)
 - Remote work arrangement
 
-## Brand Identity (from willdesign-tech.com)
+## Brand Identity
 
-### Company
-- **Name**: WiLL Design (stylized with capital L)
-- **Tagline**: "Good Design — Flexible — Reasonable"
-- **Mission**: "Make IT development more accessible by realizing ideas overflowing in society"
-- **Website**: willdesign-tech.com
+Branding is centralized in `packages/types/src/branding.ts` (AppBranding) and `packages/web/src/theme/theme.ts`. Change these files to rebrand the app per company.
 
 ### Color Palette
 | Token | Hex | Usage |
@@ -96,6 +92,6 @@ Replaces the existing Google Apps Script Slack bot with a proper web application
 - Professional feel — subtle border radii (4-12px), no over-rounded elements
 
 ### Logo
-- File: `will-design-logo.png`
+- File: configurable per deployment
 - Placement: top-left of sidebar/header navigation
 - Links to dashboard when clicked

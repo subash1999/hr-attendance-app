@@ -1,4 +1,4 @@
-# Session Handoff — WillDesign HR Platform
+# Session Handoff — HR Attendance App
 
 ## Current State
 - **Phase**: Design Generated + Validated (GO with 3 fixes applied)
@@ -6,7 +6,7 @@
 - **After tasks**: Run `./sync-to-drive.sh` to sync to NotebookLM
 
 ## What This Project Is
-Full-stack HR platform for WillDesign KK/GK replacing an existing buggy Google Apps Script Slack bot. Serves two teams:
+Full-stack HR platform for the organization replacing an existing buggy Google Apps Script Slack bot. Serves two teams:
 - **Japan team** (~10 members): employees, contractors, part-time, sales, interns — Japanese labor law
 - **Nepal team** (~15 members): independent contractors, paid/unpaid interns — Nepal Contract Act 2056
 
@@ -21,7 +21,7 @@ Full-stack HR platform for WillDesign KK/GK replacing an existing buggy Google A
 - **Permissions**: RBAC (Employee, Manager, HR Manager, Admin, Super Admin) + ABAC (reporting chain, resource ownership, sensitivity)
 - **Auth**: Cognito Lite tier (10K MAU free perpetually), CognitoAuthAdapter for onboarding/offboarding
 - **i18n**: English, Japanese, Nepali
-- **Theme**: WillDesign brand from willdesign-tech.com — black/white/cyan (#58C2D9), Silom font, light modern minimalist
+- **Theme**: HR Attendance App brand from example.com — black/white/cyan (#58C2D9), Silom font, light modern minimalist
 - **Environments**: dev (develop branch) + prod (main branch), GitHub Actions CI/CD
 - **No AI in v1**: Bot gives hints/warnings via regex pattern matching, no Claude/AI backend
 - **Append-only audit logs**: All user activity stored for future LLM analysis
@@ -58,7 +58,7 @@ Full-stack HR platform for WillDesign KK/GK replacing an existing buggy Google A
 19. **Infrastructure** (7 reqs): AWS free tier, SES email, CDK/SAM, TDD
 20. **Cron** (7 reqs): Daily/weekly/monthly triggers, payment deadline alerts, scheduled salary emails
 21. **Scalability** (3 reqs): 100+ users, new regions without schema changes
-22. **Brand & Theme** (6 reqs): WillDesign color palette (#000/#58C2D9), Silom font, logo, CSS design tokens, responsive mobile-first
+22. **Brand & Theme** (6 reqs): HR Attendance App color palette (#000/#58C2D9), Silom font, logo, CSS design tokens, responsive mobile-first
 
 ## Gap Analysis Completed
 - Validated requirements against existing slack-hr-bot codebase (no code to port — only spec docs exist)
@@ -66,15 +66,15 @@ Full-stack HR platform for WillDesign KK/GK replacing an existing buggy Google A
 - All gaps resolved and added to requirements (REQ-ATT-007/008, REQ-LEAVE-007, REQ-PAY-011-016, REQ-BANK-005, REQ-OB-004/005, REQ-QUOTA-002 updated, REQ-WEB-007/008, REQ-CRON-006/007)
 
 ## NotebookLM Integration
-- Notebook ID: `willdesign-hr-policies-slack-b`
+- Notebook ID: `hr-attendance-app-policies-slack-b`
 - Contains: HR contracts, policies, all spec files
 - Sync script: `./sync-to-drive.sh` copies all .md as .txt to Google Drive for NotebookLM
 - **IMPORTANT**: After creating design.md and tasks.md, run `./sync-to-drive.sh` to sync to NotebookLM
 
 ## Existing Codebase Reference (DO NOT PORT CODE — it's buggy)
-- `/Users/subash/Documents/CODING-SHARED/WillDesign/slack-hr-bot/docs/SCHEMA.md` — Data model reference (13 tables, getEffectiveSalary() algorithm)
-- `/Users/subash/Documents/CODING-SHARED/WillDesign/slack-hr-bot/docs/DAILY_REPORTING_AND_HOURS_POLICY.md` — Hours calculation, flags, banking rules
-- `/Users/subash/Documents/CODING-SHARED/WillDesign/slack-hr-bot/docs/REQUIREMENTS.md` — Business logic formulas
+- `/Users/subash/Documents/CODING-SHARED/HR Attendance App/slack-hr-bot/docs/SCHEMA.md` — Data model reference (13 tables, getEffectiveSalary() algorithm)
+- `/Users/subash/Documents/CODING-SHARED/HR Attendance App/slack-hr-bot/docs/DAILY_REPORTING_AND_HOURS_POLICY.md` — Hours calculation, flags, banking rules
+- `/Users/subash/Documents/CODING-SHARED/HR Attendance App/slack-hr-bot/docs/REQUIREMENTS.md` — Business logic formulas
 - The existing bot has NO source code — only specification documents
 
 ## What To Do Next

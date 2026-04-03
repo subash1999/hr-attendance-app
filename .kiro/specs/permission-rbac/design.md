@@ -33,30 +33,30 @@ The current system uses a 5-level role hierarchy (`EMPLOYEE < MANAGER < HR_MANAG
 Integration points preserved:
 - `parseAuthContext` in `api/src/middleware/index.ts` — enhanced, not replaced
 - `authorize` ABAC function — unchanged, continues using `hasMinimumRole` internally
-- All existing exports from `@willdesign-hr/core` — preserved
+- All existing exports from `@hr-attendance-app/core` — preserved
 
 ### Architecture Pattern & Boundary Map
 
 ```mermaid
 graph TB
-    subgraph Types["@willdesign-hr/types"]
+    subgraph Types["@hr-attendance-app/types"]
         Perms[Permissions constants]
         RolePerms[ROLE_PERMISSIONS mapping]
         PermType[Permission type]
     end
 
-    subgraph Core["@willdesign-hr/core"]
+    subgraph Core["@hr-attendance-app/core"]
         Engine[hasPermission - enhanced]
         Legacy[hasMinimumRole - preserved]
         ABAC[authorize - unchanged]
     end
 
-    subgraph API["@willdesign-hr/api"]
+    subgraph API["@hr-attendance-app/api"]
         Parse[parseAuthContext]
         Handlers[Handler auth checks]
     end
 
-    subgraph Web["@willdesign-hr/web"]
+    subgraph Web["@hr-attendance-app/web"]
         AuthHook[useAuth - permissions in state]
         PermHook[useHasPermission]
         RoleHook[useIsManager / useIsAdmin]
@@ -86,10 +86,10 @@ graph TB
 
 | Layer | Choice / Version | Role in Feature | Notes |
 |-------|------------------|-----------------|-------|
-| Shared Types | `@willdesign-hr/types` | `Permissions`, `Permission`, `ROLE_PERMISSIONS` constants | No new dependencies |
-| Business Logic | `@willdesign-hr/core` | Enhanced `hasPermission` engine | No new dependencies |
-| Backend | `@willdesign-hr/api` (Express dev / Lambda prod) | Handler authorization migration | No new dependencies |
-| Frontend | `@willdesign-hr/web` (React 19) | `useHasPermission` hook, guard updates | No new dependencies |
+| Shared Types | `@hr-attendance-app/types` | `Permissions`, `Permission`, `ROLE_PERMISSIONS` constants | No new dependencies |
+| Business Logic | `@hr-attendance-app/core` | Enhanced `hasPermission` engine | No new dependencies |
+| Backend | `@hr-attendance-app/api` (Express dev / Lambda prod) | Handler authorization migration | No new dependencies |
+| Frontend | `@hr-attendance-app/web` (React 19) | `useHasPermission` hook, guard updates | No new dependencies |
 
 No new packages, libraries, or infrastructure changes required.
 
@@ -285,7 +285,7 @@ export const ROLE_PERMISSIONS: Record<string, readonly Permission[]> = {
 
 **Dependencies**
 - Inbound: All handlers — permission checking (P0)
-- Outbound: `ROLE_PERMISSIONS` from `@willdesign-hr/types` — permission lookup (P0)
+- Outbound: `ROLE_PERMISSIONS` from `@hr-attendance-app/types` — permission lookup (P0)
 
 **Contracts**: Service [x]
 
@@ -315,7 +315,7 @@ export function hasPermission(actor: AuthContext, permission: string): boolean;
 
 **Dependencies**
 - Inbound: HTTP requests via router (P0)
-- Outbound: `hasPermission` from `@willdesign-hr/core` (P0), `Permissions` from `@willdesign-hr/types` (P0)
+- Outbound: `hasPermission` from `@hr-attendance-app/core` (P0), `Permissions` from `@hr-attendance-app/types` (P0)
 
 **Contracts**: API [x]
 
@@ -349,7 +349,7 @@ The `EMPLOYEE_UPDATE` permission serves as the admin indicator for full list acc
 
 **Implementation Notes**
 - All forbidden responses use `handleError(ErrorCodes.FORBIDDEN, "Insufficient permissions")` — unified message per 4.10
-- Import changes: replace `import { hasMinimumRole } from "@willdesign-hr/core"` with `import { hasPermission } from "@willdesign-hr/core"` and add `import { Permissions } from "@willdesign-hr/types"`
+- Import changes: replace `import { hasMinimumRole } from "@hr-attendance-app/core"` with `import { hasPermission } from "@hr-attendance-app/core"` and add `import { Permissions } from "@hr-attendance-app/types"`
 - Handlers that don't use `hasMinimumRole` (attendance, payroll, reports) are unchanged
 
 #### AuthPropagation (Backend)
@@ -389,7 +389,7 @@ export function parseAuthContext(
 
 **Dependencies**
 - Inbound: All UI components needing permission checks (P0)
-- Outbound: `useAuth` hook — reads role and permissions (P0), `ROLE_PERMISSIONS` from `@willdesign-hr/types` (P0)
+- Outbound: `useAuth` hook — reads role and permissions (P0), `ROLE_PERMISSIONS` from `@hr-attendance-app/types` (P0)
 
 **Contracts**: State [x]
 

@@ -20,7 +20,7 @@
 ### ROLE_PERMISSIONS Placement
 - **Context**: Both backend (`core`) and frontend (`web`) need access to role-permission mappings
 - **Sources Consulted**: Package dependency graph: `types ← (no deps)`, `core ← types`, `web ← types`
-- **Findings**: `@willdesign-hr/types` is the only package importable by all consumers. `core` cannot be imported by `web` (architecture rule). Placing `ROLE_PERMISSIONS` in `types` makes it universally accessible.
+- **Findings**: `@hr-attendance-app/types` is the only package importable by all consumers. `core` cannot be imported by `web` (architecture rule). Placing `ROLE_PERMISSIONS` in `types` makes it universally accessible.
 - **Implications**: `Permissions`, `Permission` type, and `ROLE_PERMISSIONS` all go in `types/src/permissions.ts`
 
 ### Employee List Scoping Strategy
@@ -32,7 +32,7 @@
 ### Frontend Permission Resolution
 - **Context**: Frontend currently gets `role` from login, derives capabilities via `ROLE_LEVELS` numeric comparison
 - **Sources Consulted**: `packages/web/src/hooks/useAuth.ts`, `packages/web/src/hooks/useRole.ts`, `packages/web/src/components/auth/LoginPage.tsx`
-- **Findings**: Two options: (a) server returns permissions in login response, (b) client derives from role using shared `ROLE_PERMISSIONS`. Option (b) is simpler — no API change needed for dev-auth, and `ROLE_PERMISSIONS` is already shared via `@willdesign-hr/types`.
+- **Findings**: Two options: (a) server returns permissions in login response, (b) client derives from role using shared `ROLE_PERMISSIONS`. Option (b) is simpler — no API change needed for dev-auth, and `ROLE_PERMISSIONS` is already shared via `@hr-attendance-app/types`.
 - **Implications**: Frontend `login()` accepts `role`, then derives permissions from `ROLE_PERMISSIONS[role]` internally. Custom permissions can be added later when Cognito integration includes them in the JWT.
 
 ### Holiday Handler Missing Auth Checks
@@ -82,5 +82,5 @@
 
 ## Risks & Mitigations
 - **Risk**: Holiday endpoints gain new restrictions — could break existing workflows → **Mitigation**: Only ADMIN+ roles use these endpoints in practice; migration is seamless since admins have `HOLIDAY_MANAGE`
-- **Risk**: Frontend permission derivation drifts from backend → **Mitigation**: Both use the same `ROLE_PERMISSIONS` from `@willdesign-hr/types`; single source of truth
+- **Risk**: Frontend permission derivation drifts from backend → **Mitigation**: Both use the same `ROLE_PERMISSIONS` from `@hr-attendance-app/types`; single source of truth
 - **Risk**: Existing tests use hardcoded `"leave:approve"` strings that must match new constants → **Mitigation**: `Permissions.LEAVE_APPROVE` value is `"leave:approve"` — exact match

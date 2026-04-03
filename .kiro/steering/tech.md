@@ -1,4 +1,4 @@
-# Technical Context — WillDesign HR Platform
+# Technical Context — HR Attendance App
 
 ## Stack
 | Layer | Technology | Reason |
@@ -20,7 +20,7 @@
 
 ## Monorepo Structure
 ```
-willdesign-hr/
+hr-attendance-app/
 ├── packages/
 │   ├── api/           # Lambda handlers (REST API)
 │   ├── web/           # React frontend (S3 + CloudFront)
@@ -39,8 +39,8 @@ willdesign-hr/
 ## Environments
 | Environment | Purpose | Branch | URL Pattern |
 |-------------|---------|--------|-------------|
-| **dev** | Development/testing | `develop` | `dev-hr.willdesign.com` |
-| **prod** | Production | `main` | `hr.willdesign.com` |
+| **dev** | Development/testing | `develop` | `dev-hr.example.com` |
+| **prod** | Production | `main` | `hr.example.com` |
 
 ## Slack 3-Second Constraint
 ```
@@ -71,7 +71,7 @@ Both attendance messages and daily report messages follow this async pattern.
 - No AI/Claude on backend in v1 — only pattern matching for JIRA/GitHub references
 - Append-only audit logs for all user activity (future LLM analysis ready)
 - TDD: tests written before implementation
-- Single-tenant: WillDesign only
+- Single-tenant: HR Attendance App only
 
 ## Architecture Pattern: Handler → Service → Repository
 - **Handlers** (`packages/api/src/handlers/`) — HTTP concerns only: parse auth, extract typed params, delegate to service, return response
@@ -115,6 +115,6 @@ Both attendance messages and daily report messages follow this async pattern.
 - **Form inputs**: `localDateToIso()` before API calls, `isoToLocalDate()` for pre-fill from API
 - **All user-facing text via i18n** — `t("section.key")`, never hardcoded strings in JSX
 - **Lazy-load pages** — `React.lazy()` + `Suspense` in App.tsx for code splitting
-- **No magic strings/numbers** — use constants from `@willdesign-hr/types`
+- **No magic strings/numbers** — use constants from `@hr-attendance-app/types`
 - **React Query hooks** — all API calls go through `packages/web/src/hooks/queries/`, using `useApiClient()` + centralized `queryKeys`
-- **DynamoDB keys** — use `KeyPatterns` and `KeyPrefixes` from `@willdesign-hr/types`, never inline template literals
+- **DynamoDB keys** — use `KeyPatterns` and `KeyPrefixes` from `@hr-attendance-app/types`, never inline template literals

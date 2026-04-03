@@ -81,11 +81,11 @@ graph TB
 
 | Layer | Choice / Version | Role in Feature | Notes |
 |-------|------------------|-----------------|-------|
-| Shared Types | `@willdesign-hr/types` | `AttendanceLock`, `AttendanceLockScope`, API routes | No new dependencies |
-| Business Logic | `@willdesign-hr/core` | Lock check in `processEvent`, repository interface | Adds `EmployeeRepository` dep to `AttendanceService` |
-| Data Layer | `@willdesign-hr/data` | `DynamoAttendanceLockRepository` | No new dependencies |
-| Backend | `@willdesign-hr/api` | Lock handler endpoints | No new dependencies |
-| Frontend | `@willdesign-hr/web` | `AttendanceLockTab`, React Query hooks | No new dependencies |
+| Shared Types | `@hr-attendance-app/types` | `AttendanceLock`, `AttendanceLockScope`, API routes | No new dependencies |
+| Business Logic | `@hr-attendance-app/core` | Lock check in `processEvent`, repository interface | Adds `EmployeeRepository` dep to `AttendanceService` |
+| Data Layer | `@hr-attendance-app/data` | `DynamoAttendanceLockRepository` | No new dependencies |
+| Backend | `@hr-attendance-app/api` | Lock handler endpoints | No new dependencies |
+| Frontend | `@hr-attendance-app/web` | `AttendanceLockTab`, React Query hooks | No new dependencies |
 
 ## System Flows
 
@@ -375,7 +375,7 @@ LOCK_SK_EMP: (employeeId: string) => `EMP#${employeeId}`,
 
 **Dependencies**
 - Inbound: HTTP requests (P0)
-- Outbound: `hasPermission` from `@willdesign-hr/core` (P0), `AttendanceService` lock methods (P0)
+- Outbound: `hasPermission` from `@hr-attendance-app/core` (P0), `AttendanceService` lock methods (P0)
 
 **Contracts**: API [x]
 

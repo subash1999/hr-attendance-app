@@ -6,18 +6,18 @@ Replace the hierarchical `hasMinimumRole` authorization model with a granular, p
 ## Requirements
 
 ### Requirement 1: Permission Constants Definition
-**Objective:** As a developer, I want a single, typed set of permission constants in `@willdesign-hr/types`, so that all packages reference the same permission identifiers with no magic strings.
+**Objective:** As a developer, I want a single, typed set of permission constants in `@hr-attendance-app/types`, so that all packages reference the same permission identifiers with no magic strings.
 
 #### Acceptance Criteria
-1. The `@willdesign-hr/types` package shall export a `Permissions` constant object containing at minimum: `EMPLOYEE_LIST_ALL`, `EMPLOYEE_UPDATE`, `LEAVE_APPROVE`, `FLAG_RESOLVE`, `BANK_APPROVE`, `ATTENDANCE_LOCK`, `ONBOARD`, `OFFBOARD`, `AUDIT_VIEW`, `POLICY_UPDATE`, `HOLIDAY_MANAGE`.
-2. The `@willdesign-hr/types` package shall export a `Permission` type derived from the `Permissions` constant values.
+1. The `@hr-attendance-app/types` package shall export a `Permissions` constant object containing at minimum: `EMPLOYEE_LIST_ALL`, `EMPLOYEE_UPDATE`, `LEAVE_APPROVE`, `FLAG_RESOLVE`, `BANK_APPROVE`, `ATTENDANCE_LOCK`, `ONBOARD`, `OFFBOARD`, `AUDIT_VIEW`, `POLICY_UPDATE`, `HOLIDAY_MANAGE`.
+2. The `@hr-attendance-app/types` package shall export a `Permission` type derived from the `Permissions` constant values.
 3. The `Permissions` constant shall be declared `as const` so that each value is a string literal type.
 
 ### Requirement 2: Role-to-Permission Mapping
 **Objective:** As a system administrator, I want each role to have a default set of permissions, so that newly assigned roles automatically grant the correct capabilities without per-user configuration.
 
 #### Acceptance Criteria
-1. The `@willdesign-hr/types` package shall export a `ROLE_PERMISSIONS` mapping from each `Role` to a readonly array of `Permission` values.
+1. The `@hr-attendance-app/types` package shall export a `ROLE_PERMISSIONS` mapping from each `Role` to a readonly array of `Permission` values.
 2. The `ROLE_PERMISSIONS` mapping shall follow cumulative inclusion: `MANAGER` permissions shall include all `EMPLOYEE` permissions plus manager-specific ones; `HR_MANAGER` shall include all `MANAGER` permissions; `ADMIN` shall include all `HR_MANAGER` permissions; `SUPER_ADMIN` shall include all permissions.
 3. The `EMPLOYEE` role shall have no action permissions beyond self-access (empty permission set or self-only permissions).
 4. The `MANAGER` role shall include `LEAVE_APPROVE`, `FLAG_RESOLVE`, `BANK_APPROVE`, and `EMPLOYEE_LIST_ALL` (scoped to direct reports by handler logic).
@@ -89,7 +89,7 @@ Replace the hierarchical `hasMinimumRole` authorization model with a granular, p
 **Objective:** As a developer, I want the migration to be non-breaking, so that existing tests and internal utilities continue to work during and after the transition.
 
 #### Acceptance Criteria
-1. The `hasMinimumRole` function shall remain exported from `@willdesign-hr/core` and shall continue to function correctly.
-2. The `ROLE_HIERARCHY` constant shall remain exported from `@willdesign-hr/core`.
+1. The `hasMinimumRole` function shall remain exported from `@hr-attendance-app/core` and shall continue to function correctly.
+2. The `ROLE_HIERARCHY` constant shall remain exported from `@hr-attendance-app/core`.
 3. The `authorize` function in the ABAC engine shall continue to work, using `hasMinimumRole` internally for resource-level checks.
 4. All existing permission engine tests shall continue to pass after the migration.

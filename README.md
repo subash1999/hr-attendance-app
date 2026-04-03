@@ -1,6 +1,6 @@
-# WillDesign HR Platform
+# HR Attendance App
 
-Full-stack HR management platform for WillDesign KK/GK, serving both Japan-based employees and Nepal-based contractors. Replaces the existing Google Apps Script Slack bot with a proper web application backed by AWS infrastructure, while keeping Slack as the primary daily interface for attendance and reporting.
+Full-stack HR management platform for the organization, serving both Japan-based employees and Nepal-based contractors. Replaces the existing Google Apps Script Slack bot with a proper web application backed by AWS infrastructure, while keeping Slack as the primary daily interface for attendance and reporting.
 
 ## Overview
 
@@ -32,7 +32,7 @@ Full-stack HR management platform for WillDesign KK/GK, serving both Japan-based
 ## Monorepo Structure
 
 ```
-willdesign-hr/
+hr-attendance-app/
 ├── packages/
 │   ├── core/          # Shared business logic (policy engine, calculations, permissions)
 │   ├── types/         # Shared TypeScript types
@@ -105,7 +105,7 @@ Workflow: Requirements -> Design -> Tasks -> Implementation (human review at eac
 
 | Script | Purpose |
 |--------|---------|
-| `sync-to-drive.sh` | Syncs all `.md` files to Google Drive for NotebookLM integration. Flattens paths into filenames (e.g., `docs/JAPAN_HR_POLICY.md` becomes `docs_JAPAN_HR_POLICY.md`). Run after updating specs to keep NotebookLM in sync. Usage: `./sync-to-drive.sh [target-folder-name]` (default: `willdesign-hr`). |
+| `sync-to-drive.sh` | Syncs all `.md` files to Google Drive for NotebookLM integration. Flattens paths into filenames (e.g., `docs/JAPAN_HR_POLICY.md` becomes `docs_JAPAN_HR_POLICY.md`). Run after updating specs to keep NotebookLM in sync. Usage: `./sync-to-drive.sh [target-folder-name]` (default: `hr-attendance-app`). |
 
 ## Documentation
 

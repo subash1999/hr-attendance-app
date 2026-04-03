@@ -1,8 +1,8 @@
-# Project Structure — WillDesign HR Platform
+# Project Structure — HR Attendance App
 
 ## Monorepo Layout
 ```
-willdesign-hr/
+hr-attendance-app/
 ├── packages/
 │   ├── core/                    # Shared business logic (ZERO AWS deps)
 │   │   ├── src/
@@ -160,7 +160,7 @@ willdesign-hr/
 │       │   │   ├── GlobalStyle.ts # createGlobalStyle (reset, base typography)
 │       │   │   └── primitives.ts  # Shared: Card, Button*, SectionTitle, TextMuted, FormField, PageLayout
 │       │   ├── pwa/
-│       │   │   ├── config.ts      # PWA manifest config (WillDesign brand)
+│       │   │   ├── config.ts      # PWA manifest config (HR Attendance App brand)
 │       │   │   └── offline-queue.ts # Offline attendance action queue
 │       │   ├── utils/
 │       │   │   └── date.ts        # formatDate/Time/Relative, localDateToIso, isoToLocalDate
