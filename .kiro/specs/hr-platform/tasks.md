@@ -290,8 +290,8 @@
   - Write integration tests for each repository
   - _Requirements: 15.1, 14.1, 5.7, 1.8, 16.5, 16.6_
 
-- [ ] 12. S3, SES, and Cognito adapters
-- [ ] 12.1 Implement the S3 policy repository adapter with seed deployment and web builder write support
+- [x] 12. S3, SES, and Cognito adapters
+- [x] 12.1 Implement the S3 policy repository adapter with seed deployment and web builder write support
   - Read policies from S3 bucket: company policy from org.json, group policies from groups/ prefix, user policies from users/ prefix
   - Write policies to S3 for web policy builder: saveGroupPolicy and saveUserPolicy write JSON to appropriate S3 keys
   - CDK configuration: deploy seed JSON files from git policies/ folder on first deployment only (do not overwrite existing)
@@ -299,7 +299,7 @@
   - Write integration tests verifying read/write cycle and seed deployment behavior
   - _Requirements: 4.2, 4.4, 3.6_
 
-- [ ] 12.2 (P) Implement the S3 document repository adapter for employee document uploads
+- [x] 12.2 (P) Implement the S3 document repository adapter for employee document uploads
   - Generate pre-signed PUT URLs for upload (15-minute expiry, max 10MB, PDF and image types only)
   - Generate pre-signed GET URLs for download (15-minute expiry)
   - Store document metadata in DynamoDB with S3 key reference
@@ -307,14 +307,14 @@
   - Write integration tests for URL generation and metadata persistence
   - _Requirements: 16.5_
 
-- [ ] 12.3 (P) Implement the SES email adapter for salary statement emails
+- [x] 12.3 (P) Implement the SES email adapter for salary statement emails
   - Send HTML emails via AWS SES with configurable sender address
   - Build salary statement HTML template with: period, base salary, allowances, deductions, overtime pay, bonus, commission, net amount, payment method and date
   - CDK: configure SES domain verification and sandbox exit for production
   - Write unit tests for template rendering with various payroll breakdown scenarios
   - _Requirements: 10.12_
 
-- [ ] 12.4 Implement the Cognito auth provider adapter for user lifecycle management
+- [x] 12.4 Implement the Cognito auth provider adapter for user lifecycle management
   - Create Cognito user during employee onboarding: set email, temporary password, employee_id as custom attribute, role as Cognito group
   - Disable Cognito user during offboarding (preserve for audit, do not delete)
   - Update user attributes when role or other profile fields change

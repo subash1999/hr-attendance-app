@@ -134,6 +134,8 @@ export {
   ATTENDANCE,
   AllowanceTypes,
   BANKING,
+  COGNITO,
+  S3_PREFIXES,
   FORCE_MAJEURE,
   JP_LABOR,
   HOURS,

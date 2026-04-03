@@ -196,6 +196,20 @@ export const BANKING = {
   EXPIRY_MONTHS: 12,
 } as const;
 
+// ─── Cognito ───
+export const COGNITO = {
+  ATTR_EMAIL: "email",
+  ATTR_EMAIL_VERIFIED: "email_verified",
+  ATTR_EMPLOYEE_ID: "custom:employee_id",
+  ATTR_PREFERRED_LANGUAGE: "custom:preferred_language",
+  DELIVERY_EMAIL: "EMAIL",
+} as const;
+
+// ─── S3 Keys ───
+export const S3_PREFIXES = {
+  DOCUMENTS: (employeeId: string, name: string) => `documents/${employeeId}/${name}`,
+} as const;
+
 // ─── Force Majeure ───
 export const FORCE_MAJEURE = {
   TERMINATION_DAYS: 30,

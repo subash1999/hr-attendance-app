@@ -16,3 +16,9 @@ export { DynamoHolidayRepository } from "./dynamo/holiday.js";
 export { DynamoOverrideRepository } from "./dynamo/override.js";
 export { DynamoRoleRepository } from "./dynamo/role.js";
 export { DynamoMonthlySummaryRepository } from "./dynamo/monthly-summary.js";
+
+export { S3PolicyRepository } from "./s3/policy-repository.js";
+export { S3DocumentRepository } from "./s3/document-repository.js";
+export { SESEmailAdapter } from "./ses/email-adapter.js";
+export { renderSalaryStatementHtml } from "./ses/salary-template.js";
+export { CognitoAuthAdapter } from "./cognito/auth-provider-adapter.js";
