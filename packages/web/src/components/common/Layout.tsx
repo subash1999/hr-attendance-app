@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styled, { css } from "styled-components";
 import { Permissions, ROUTES } from "@hr-attendance-app/types";
@@ -30,7 +30,13 @@ const BOTTOM_NAV_MAX_ITEMS = 5;
 export const Layout = () => {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { permissions } = useAuth();
+  const { permissions, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate(ROUTES.HOME);
+  }, [logout, navigate]);
 
   const { navItems, bottomNavItems } = useMemo(() => {
     const filtered = ALL_NAV_ITEMS.filter((item) =>
@@ -65,6 +71,9 @@ export const Layout = () => {
         </SidebarNav>
         <SidebarFooter>
           <LanguageSwitcher />
+          <LogoutButton onClick={handleLogout}>
+            {t("auth.logout")}
+          </LogoutButton>
         </SidebarFooter>
       </Sidebar>
 
@@ -173,6 +182,33 @@ const SidebarNav = styled.nav`
 const SidebarFooter = styled.div`
   padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
   border-top: 1px solid ${({ theme }) => theme.colors.sidebarBorder};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space.sm};
+`;
+
+const LogoutButton = styled.button`
+  width: 100%;
+  padding: ${({ theme }) => theme.space.sm};
+  border: 1px solid ${({ theme }) => theme.colors.sidebarBorder};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.sidebarText};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  cursor: pointer;
+  min-height: 40px;
+  transition: all ${({ theme }) => theme.transition};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.sidebarHover};
+    color: ${({ theme }) => theme.colors.error};
+    border-color: ${({ theme }) => theme.colors.error};
+  }
+
+  &:focus-visible {
+    box-shadow: ${({ theme }) => theme.focusRing};
+    outline: none;
+  }
 `;
 
 const NavIcon = styled.span`
