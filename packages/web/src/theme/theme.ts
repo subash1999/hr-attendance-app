@@ -43,6 +43,9 @@ export const theme = {
     errorLight: "#FDEEF4",
     danger: "#E2498A",
 
+    // Translucent surfaces
+    backgroundTranslucent: "rgba(255, 255, 255, 0.92)",
+
     // Interactive
     hover: "#4BB8DF",
     focus: "#5636D1",
@@ -150,6 +153,9 @@ export const theme = {
 
   // Max content width for readability (65-75 chars)
   maxContentWidth: "720px",
+
+  // Max page width for full-width sections (landing, marketing)
+  maxPageWidth: "1200px",
 } as const;
 
 export type AppTheme = typeof theme;

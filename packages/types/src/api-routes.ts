@@ -194,8 +194,9 @@ export const API_DEV_AUTH_LOGIN = "/api/dev-auth/login" as const;
 
 // ─── Frontend Route Segments (for <Route path="">) ───
 export const ROUTE_SEGMENTS = {
+  HOME: "",
   LOGIN: "login",
-  DASHBOARD: "",
+  DASHBOARD: "dashboard",
   ATTENDANCE: "attendance",
   LEAVE: "leave",
   REPORTS: "reports",
@@ -207,8 +208,9 @@ export const ROUTE_SEGMENTS = {
 
 // ─── Frontend Routes (absolute paths for <NavLink to="">) ───
 export const ROUTES = {
+  HOME: "/",
   LOGIN: `/${ROUTE_SEGMENTS.LOGIN}`,
-  DASHBOARD: "/",
+  DASHBOARD: `/${ROUTE_SEGMENTS.DASHBOARD}`,
   ATTENDANCE: `/${ROUTE_SEGMENTS.ATTENDANCE}`,
   LEAVE: `/${ROUTE_SEGMENTS.LEAVE}`,
   REPORTS: `/${ROUTE_SEGMENTS.REPORTS}`,
