@@ -69,9 +69,10 @@ export const LoginPage = () => {
   useEffect(() => {
     fetch(API_DEV_AUTH_EMPLOYEES)
       .then((res) => res.json())
-      .then((data: DevEmployee[]) => {
-        setEmployees(data);
-        if (data.length > 0) setSelectedId(data[0]!.id);
+      .then((data: unknown) => {
+        if (!Array.isArray(data)) return;
+        setEmployees(data as DevEmployee[]);
+        if (data.length > 0) setSelectedId((data as DevEmployee[])[0]!.id);
       })
       .catch(console.error);
   }, []);
