@@ -1,34 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { Card, PageLayout, SectionTitle, FormField } from "../../theme/primitives";
-import { isoToLocalMonth } from "../../utils/date";
 import { nowIso } from "@hr-attendance-app/types";
+import { Card, PageLayout, FormField, Badge } from "../ui";
 import { LoadingSpinner } from "../common/LoadingSpinner";
 import { usePayroll } from "../../hooks/queries/usePayroll";
 import { formatAmount } from "../../utils/currency";
-
-const PayrollTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-
-  td {
-    padding: ${({ theme }) => theme.space.sm};
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  }
-`;
-
-const AmountCell = styled.td`
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-`;
-
-const TotalRow = styled.tr`
-  td {
-    font-weight: 700;
-    border-top: 2px solid ${({ theme }) => theme.colors.text};
-  }
-`;
+import { formatDate, isoToLocalMonth } from "../../utils/date";
 
 export function PayrollPage() {
   const { t } = useTranslation();
@@ -38,53 +16,153 @@ export function PayrollPage() {
   return (
     <PageLayout>
       <Card>
-        <SectionTitle>{t("payroll.breakdown")}</SectionTitle>
         <FormField>
           <label htmlFor="payroll-month">{t("payroll.month")}</label>
-          <input
-            type="month"
-            id="payroll-month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-          />
+          <input type="month" id="payroll-month" value={month} onChange={(e) => setMonth(e.target.value)} />
         </FormField>
       </Card>
 
-      <Card>
-        {isLoading ? (
-          <LoadingSpinner />
+      <BreakdownCard>
+        {isLoading ? <LoadingSpinner /> : !payroll ? (
+          <p>{t("common.noData")}</p>
         ) : (
-          <PayrollTable>
-            <tbody>
-              <tr>
-                <td>{t("payroll.baseSalary")}</td>
-                <AmountCell>{formatAmount(payroll?.baseSalary, payroll?.currency)}</AmountCell>
-              </tr>
-              <tr>
-                <td>{t("payroll.overtime")}</td>
-                <AmountCell>{formatAmount(payroll?.overtimePay, payroll?.currency)}</AmountCell>
-              </tr>
-              <tr>
-                <td>{t("payroll.allowances")}</td>
-                <AmountCell>
-                  {formatAmount(
-                    payroll?.allowances?.reduce((s: number, a: { amount: number }) => s + a.amount, 0) ?? 0,
-                    payroll?.currency,
-                  )}
-                </AmountCell>
-              </tr>
-              <tr>
-                <td>{t("payroll.deductions")}</td>
-                <AmountCell>{formatAmount(payroll?.deficitDeduction, payroll?.currency)}</AmountCell>
-              </tr>
-              <TotalRow>
-                <td>{t("payroll.netAmount")}</td>
-                <AmountCell>{formatAmount(payroll?.netAmount, payroll?.currency)}</AmountCell>
-              </TotalRow>
-            </tbody>
-          </PayrollTable>
+          <>
+            <LineItem>
+              <LineLabel>{t("payroll.baseSalary")}</LineLabel>
+              <LineAmount>{formatAmount(payroll.baseSalary, payroll.currency)}</LineAmount>
+            </LineItem>
+
+            {payroll.proRataAdjustment !== 0 && (
+              <LineItem>
+                <LineLabel>{t("payroll.proRata")}</LineLabel>
+                <LineAmount>{formatAmount(payroll.proRataAdjustment, payroll.currency)}</LineAmount>
+              </LineItem>
+            )}
+
+            {payroll.overtimePay > 0 && (
+              <LineItem>
+                <LineLabel>{t("payroll.overtime")}</LineLabel>
+                <LineAmount>{formatAmount(payroll.overtimePay, payroll.currency)}</LineAmount>
+              </LineItem>
+            )}
+
+            {payroll.allowances.map((a) => (
+              <LineItem key={a.type}>
+                <LineLabel>{a.name}</LineLabel>
+                <LineAmount>{formatAmount(a.amount, a.currency)}</LineAmount>
+              </LineItem>
+            ))}
+
+            {payroll.bonus > 0 && (
+              <LineItem>
+                <LineLabel>{t("payroll.bonus")}</LineLabel>
+                <LineAmount>{formatAmount(payroll.bonus, payroll.currency)}</LineAmount>
+              </LineItem>
+            )}
+
+            {payroll.commission > 0 && (
+              <LineItem>
+                <LineLabel>{t("payroll.commission")}</LineLabel>
+                <LineAmount>{formatAmount(payroll.commission, payroll.currency)}</LineAmount>
+              </LineItem>
+            )}
+
+            {payroll.deficitDeduction > 0 && (
+              <LineItem $danger>
+                <LineLabel>{t("payroll.deductions")}</LineLabel>
+                <LineAmount>-{formatAmount(payroll.deficitDeduction, payroll.currency)}</LineAmount>
+              </LineItem>
+            )}
+
+            {payroll.blendingDetails && (
+              <BlendingSection>
+                <BlendingTitle>{t("payroll.blending")}</BlendingTitle>
+                <BlendingDetail>
+                  {formatAmount(payroll.blendingDetails.oldSalary, payroll.currency)} × {payroll.blendingDetails.oldDays}d +{" "}
+                  {formatAmount(payroll.blendingDetails.newSalary, payroll.currency)} × {payroll.blendingDetails.newDays}d
+                </BlendingDetail>
+              </BlendingSection>
+            )}
+
+            {payroll.transferFees > 0 && (
+              <LineItem>
+                <LineLabel>{t("payroll.transferFees")}</LineLabel>
+                <LineAmount>{formatAmount(payroll.transferFees, payroll.currency)}</LineAmount>
+              </LineItem>
+            )}
+
+            <Divider />
+
+            <TotalLine>
+              <LineLabel>{t("payroll.netAmount")}</LineLabel>
+              <TotalAmount>{formatAmount(payroll.netAmount, payroll.currency)}</TotalAmount>
+            </TotalLine>
+
+            {payroll.homeCurrencyEquivalent != null && (
+              <ExchangeRow>
+                <Badge label={`JPY ${formatAmount(payroll.homeCurrencyEquivalent, "JPY")}`} variant="info" />
+                {payroll.exchangeRate && <ExchangeMeta>{t("payroll.rate")}: {payroll.exchangeRate}</ExchangeMeta>}
+                {payroll.exchangeRateDate && <ExchangeMeta>{formatDate(payroll.exchangeRateDate)}</ExchangeMeta>}
+              </ExchangeRow>
+            )}
+          </>
         )}
-      </Card>
+      </BreakdownCard>
     </PageLayout>
   );
 }
+
+const BreakdownCard = styled(Card)`
+  display: flex; flex-direction: column; gap: ${({ theme }) => theme.space.xs};
+`;
+
+const LineItem = styled.div<{ $danger?: boolean }>`
+  display: flex; justify-content: space-between; align-items: center;
+  padding: ${({ theme }) => theme.space.sm} 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.borderLight};
+  color: ${({ theme, $danger }) => $danger ? theme.colors.danger : theme.colors.text};
+`;
+
+const LineLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+const LineAmount = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm}; font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  font-variant-numeric: tabular-nums; font-family: ${({ theme }) => theme.fonts.mono};
+`;
+
+const Divider = styled.hr`
+  border: none; border-top: 2px solid ${({ theme }) => theme.colors.text}; margin: ${({ theme }) => theme.space.sm} 0;
+`;
+
+const TotalLine = styled.div`
+  display: flex; justify-content: space-between; align-items: center;
+`;
+
+const TotalAmount = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xl}; font-weight: ${({ theme }) => theme.fontWeights.bold};
+  font-family: ${({ theme }) => theme.fonts.heading}; font-variant-numeric: tabular-nums;
+`;
+
+const BlendingSection = styled.div`
+  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
+  background: ${({ theme }) => theme.colors.infoLight}; border-radius: ${({ theme }) => theme.radii.sm};
+`;
+
+const BlendingTitle = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.xs}; font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.info}; margin-bottom: ${({ theme }) => theme.space.xs};
+`;
+
+const BlendingDetail = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.sm}; font-family: ${({ theme }) => theme.fonts.mono};
+`;
+
+const ExchangeRow = styled.div`
+  display: flex; align-items: center; gap: ${({ theme }) => theme.space.sm}; margin-top: ${({ theme }) => theme.space.sm};
+`;
+
+const ExchangeMeta = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs}; color: ${({ theme }) => theme.colors.textMuted};
+`;

@@ -209,8 +209,8 @@
 
 ## Phase 6: Employee Experience Pages
 
-- [ ] 6. Redesign employee dashboard
-- [ ] 6.1 Redesign dashboard with clock widget, progress, and quick actions
+- [x] 6. Redesign employee dashboard
+- [x] 6.1 Redesign dashboard with clock widget, progress, and quick actions
   - Top section: large ClockWidget with status display (IDLE/CLOCKED_IN/ON_BREAK), prominent one-tap action button, elapsed time counter using client-side interval when clocked in
   - Stats row: 4 cards with ProgressBar — Today's Hours, Week Hours, Month Hours, Leave Balance
   - Quick Actions row: "New Leave Request", "View Reports", "View Payroll" (role-aware: managers see "Team" link)
@@ -218,23 +218,23 @@
   - All critical information visible without scrolling on 375px mobile viewport
   - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
 
-- [ ] 7. Redesign attendance page with calendar and editing
-- [ ] 7.1 Build attendance monthly calendar view
+- [x] 7. Redesign attendance page with calendar and editing
+- [x] 7.1 Build attendance monthly calendar view
   - Monthly calendar with daily attendance summaries: hours worked shown as color intensity per cell
   - Day click opens detail panel showing all events in timeline format: timestamp, action icon, source badge (slack/web/admin), session duration
   - Warning badges on calendar: orange for unclosed sessions, red for short sessions (< 5 min)
   - Week/month hour totals with ProgressBar showing completion against policy requirements
   - _Requirements: 10.1, 10.2, 10.6, 10.7_
 
-- [ ] 7.2 Build attendance event editing with audit trail
+- [x] 7.2 Build attendance event editing with audit trail
   - Edit button on each event opens modal with: timestamp picker, action type dropdown, work location selector, mandatory edit reason text field
   - On submit: preserve original record, create new version with source "web" and edit reason
   - Show audit trail below event: original vs edited values with actor and timestamp
   - While period is locked: disable edit controls, display lock indicator with "Period locked by admin" message
   - _Requirements: 10.3, 10.4, 10.5_
 
-- [ ] 8. Enhance leave page with team calendar and Japan-specific features
-- [ ] 8.1 Enhance leave request form and balance display
+- [x] 8. Enhance leave page with team calendar and Japan-specific features
+- [x] 8.1 Enhance leave request form and balance display
   - Leave type dropdown includes all configured types from LeaveType enum including Japan-specific: BEREAVEMENT, MATERNITY, NURSING, MENSTRUAL, COMPANY_SPECIFIC
   - Zero-balance warning: when selecting PAID with 0 remaining balance, show warning suggesting unpaid leave or shift permission
   - Balance breakdown: cards by type showing paid remaining, carry-over amount, carry-over expiry date
@@ -242,35 +242,35 @@
   - Approval notification: show toast when request status changes (via polling)
   - _Requirements: 17.1, 17.2, 17.3, 17.5, 17.6_
 
-- [ ] 8.2 (P) Add team leave calendar tab to leave page
+- [x] 8.2 (P) Add team leave calendar tab to leave page
   - Monthly calendar with leave markers per team member
   - Employees see "name — on leave"; managers see leave type details
   - Reuse Calendar primitive with CalendarEvent overlays
   - _Requirements: 17.4_
 
-- [ ] 9. Build flag and shortfall management views
-- [ ] 9.1 Build flags panel with grouped display
+- [x] 9. Build flag and shortfall management views
+- [x] 9.1 Build flags panel with grouped display
   - List flags grouped by level: Daily (info color), Weekly (warning color), Monthly (actionable, danger color)
   - Each flag displays: period, expected hours, actual hours, deficit, resolution status
   - Visual distinction between informational (daily/weekly) and actionable (monthly) using Badge variants and iconography
   - _Requirements: 11.1, 11.2, 11.6_
 
-- [ ] 9.2 Build flag resolution dialog for managers
+- [x] 9.2 Build flag resolution dialog for managers
   - When manager views direct report's pending monthly flag: show resolution options dropdown (NO_PENALTY, DEDUCT_FULL, USE_BANK, PARTIAL_BANK, DISCUSS)
   - For USE_BANK/PARTIAL_BANK: show bank offset hours input with available banked hours and remaining deficit preview
   - On submit: call resolve flag mutation, show success toast
   - _Requirements: 11.3, 11.4, 11.5_
 
-- [ ] 10. Build hours banking panel
-- [ ] 10.1 Build bank balance view and request flow
+- [x] 10. Build hours banking panel
+- [x] 10.1 Build bank balance view and request flow
   - Display: total approved banked hours, pending approval hours, expiry timeline (visual bar chart or timeline showing banked hours approaching 12-month expiry)
   - Bank entry list: period, surplus hours, status badge (pending/approved/used/expired), approval date, expiry date
   - "Request Banking" button: call bank mutation, show pending status
   - Pending entries display as "Awaiting manager approval" and hidden from available balance
   - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.6_
 
-- [ ] 11. Redesign payroll breakdown page
-- [ ] 11.1 Build detailed payroll breakdown with all line items
+- [x] 11. Redesign payroll breakdown page
+- [x] 11.1 Build detailed payroll breakdown with all line items
   - Month picker + structured breakdown card with individual line items:
   - Base salary, pro-rata adjustment (if non-zero), overtime (hours × rate), each allowance by name from allowances array, bonus (if > 0), commission (if > 0), deficit deduction (negative, danger color)
   - Blending section when blendingDetails is present: old rate × N days + new rate × M days = blended amount
@@ -280,8 +280,8 @@
   - Responsive: card layout on all breakpoints
   - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6_
 
-- [ ] 12. Redesign reports page with references and versions
-- [ ] 12.1 Enhance reports page with reference links and version history
+- [x] 12. Redesign reports page with references and versions
+- [x] 12.1 Enhance reports page with reference links and version history
   - Report form: free-text area with optional date override
   - Date filter for history navigation
   - Render JIRA references as clickable links, GitHub PRs as repo#number links from report references array
@@ -289,8 +289,8 @@
   - Display version history when report version > 1: list all versions with timestamps and version numbers
   - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
 
-- [ ] 13. Redesign settings page with profile and preferences
-- [ ] 13.1 Build settings page with profile display and language selector
+- [x] 13. Redesign settings page with profile and preferences
+- [x] 13.1 Build settings page with profile display and language selector
   - Profile section: read-only card showing name, email, employment type, region, team, manager name, probation status with end date
   - Language section: 3-option selector (en/ja/ne), calls i18next changeLanguage + persists to localStorage, immediate re-render
   - Notifications section: toggles for push and email notifications (stored locally, backend integration deferred)

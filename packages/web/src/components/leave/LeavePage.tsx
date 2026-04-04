@@ -1,176 +1,288 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { LeaveTypes, LeaveRequestStatuses } from "@hr-attendance-app/types";
-import { Card, PageLayout, SectionTitle, TextMuted, FormField, FormLayout, ButtonAccent, ButtonSecondary, ButtonDanger } from "../../theme/primitives";
+import { LeaveTypes, LeaveRequestStatuses, Permissions, isoToDateStr, JP_LABOR } from "@hr-attendance-app/types";
+import { Card, PageLayout, Tabs, Calendar, Badge, ProgressBar, FormField, FormLayout, ButtonAccent, EmptyState } from "../ui";
+import { useToast } from "../ui/Toast";
 import { LoadingSpinner } from "../common/LoadingSpinner";
-import { useLeaveRequests, useCreateLeave, useLeaveBalance, usePendingLeaveRequests, useApproveLeave } from "../../hooks/queries/useLeave";
+import {
+  useLeaveRequests, useCreateLeave, useLeaveBalance,
+  usePendingLeaveRequests, useApproveLeave,
+} from "../../hooks/queries/useLeave";
 import { formatDate } from "../../utils/date";
-import { useHasPermission } from "../../hooks/useRole";
-import { Permissions } from "@hr-attendance-app/types";
+import { useHasPermission, useIsManager } from "../../hooks/useRole";
 
-const RequestList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
+const LEAVE_TABS = [
+  { key: "my", label: "leave.tab.my" },
+  { key: "calendar", label: "leave.tab.calendar" },
+  { key: "balance", label: "leave.tab.balance" },
+] as const;
 
-const RequestItem = styled.li`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${({ theme }) => theme.space.sm} 0;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  &:last-child { border-bottom: none; }
-`;
+const ALL_LEAVE_TYPES = [
+  LeaveTypes.PAID, LeaveTypes.UNPAID, LeaveTypes.SHIFT_PERMISSION,
+  LeaveTypes.CREDITED_ABSENCE, LeaveTypes.BEREAVEMENT, LeaveTypes.MATERNITY,
+  LeaveTypes.NURSING, LeaveTypes.MENSTRUAL, LeaveTypes.COMPANY_SPECIFIC,
+] as const;
 
-function getStatusColor(status: string, theme: { colors: { success: string; warning: string; accent: string } }): string {
-  if (status === LeaveRequestStatuses.APPROVED) return theme.colors.success;
-  if (status === LeaveRequestStatuses.REJECTED) return theme.colors.warning;
-  return theme.colors.accent;
-}
-
-const StatusBadge = styled.span<{ $status: string }>`
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: ${({ theme }) => theme.radii.sm};
-  color: ${({ theme }) => theme.colors.background};
-  background: ${({ $status, theme }) => getStatusColor($status, theme)};
-`;
-
-const DateRange = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const ActionGroup = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.space.xs};
-`;
-
-const BalanceCard = styled(Card)`
-  text-align: center;
-  background: ${({ theme }) => theme.colors.surface};
-`;
-
-const BalanceValue = styled.div`
-  font-size: 2rem;
-  font-weight: 700;
-  font-family: ${({ theme }) => theme.fonts.heading};
-  color: ${({ theme }) => theme.colors.accent};
-`;
 
 export function LeavePage() {
   const { t } = useTranslation();
+  const toast = useToast();
+  const [activeTab, setActiveTab] = useState("my");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [leaveType, setLeaveType] = useState<string>(LeaveTypes.PAID);
   const [reason, setReason] = useState("");
 
-  const canApproveLeave = useHasPermission(Permissions.LEAVE_APPROVE);
+  const canApprove = useHasPermission(Permissions.LEAVE_APPROVE);
+  const isManager = useIsManager();
   const { data: requests, isLoading } = useLeaveRequests();
   const { data: balance } = useLeaveBalance();
-  const { data: pendingRequests } = usePendingLeaveRequests({ enabled: canApproveLeave });
+  const { data: pendingRequests } = usePendingLeaveRequests({ enabled: canApprove });
   const createLeave = useCreateLeave();
   const approveLeave = useApproveLeave();
+
+  const showZeroBalanceWarning = leaveType === LeaveTypes.PAID && balance && balance.paidLeaveRemaining === 0;
+
+  const localizedTabs = useMemo(
+    () => LEAVE_TABS.map((tab) => ({ key: tab.key, label: t(tab.label) })),
+    [t],
+  );
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!startDate || !endDate) return;
     createLeave.mutate(
       { leaveType, startDate, endDate, reason },
-      { onSuccess: () => { setStartDate(""); setEndDate(""); setReason(""); } },
+      {
+        onSuccess: () => {
+          setStartDate(""); setEndDate(""); setReason("");
+          toast.show(t("leave.requestCreated"), "success");
+        },
+      },
     );
   };
 
   return (
     <PageLayout>
-      {balance && (
-        <BalanceCard>
-          <TextMuted>{t("leave.balanceRemaining")}</TextMuted>
-          <BalanceValue>{balance.paidLeaveRemaining}</BalanceValue>
-        </BalanceCard>
-      )}
+      <Tabs tabs={localizedTabs} activeKey={activeTab} onChange={setActiveTab} />
 
-      <Card>
-        <SectionTitle>{t("leave.newRequest")}</SectionTitle>
-        <FormLayout onSubmit={handleSubmit}>
-          <FormField>
-            <label htmlFor="leave-type">{t("leave.leaveType")}</label>
-            <select id="leave-type" value={leaveType} onChange={(e) => setLeaveType(e.target.value)}>
-              <option value={LeaveTypes.PAID}>{t("leave.paid")}</option>
-              <option value={LeaveTypes.UNPAID}>{t("leave.unpaid")}</option>
-              <option value={LeaveTypes.SHIFT_PERMISSION}>{t("leave.shiftPermission")}</option>
-            </select>
-          </FormField>
-          <FormField>
-            <label htmlFor="start-date">{t("leave.startDate")}</label>
-            <input type="date" id="start-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </FormField>
-          <FormField>
-            <label htmlFor="end-date">{t("leave.endDate")}</label>
-            <input type="date" id="end-date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </FormField>
-          <ButtonAccent type="submit" disabled={createLeave.isPending}>
-            {createLeave.isPending ? t("common.loading") : t("leave.submit")}
-          </ButtonAccent>
-        </FormLayout>
-      </Card>
+      {activeTab === "my" && (
+        <>
+          {/* Request Form */}
+          <Card>
+            <FormLayout onSubmit={handleSubmit}>
+              <FormField>
+                <label htmlFor="leave-type">{t("leave.leaveType")}</label>
+                <select id="leave-type" value={leaveType} onChange={(e) => setLeaveType(e.target.value)}>
+                  {ALL_LEAVE_TYPES.map((type) => (
+                    <option key={type} value={type}>{t(`leave.type.${type}`)}</option>
+                  ))}
+                </select>
+              </FormField>
+              {showZeroBalanceWarning && (
+                <WarningBox>{t("leave.zeroBalanceWarning")}</WarningBox>
+              )}
+              <DateRow>
+                <FormField>
+                  <label htmlFor="start-date">{t("leave.startDate")}</label>
+                  <input type="date" id="start-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                </FormField>
+                <FormField>
+                  <label htmlFor="end-date">{t("leave.endDate")}</label>
+                  <input type="date" id="end-date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                </FormField>
+              </DateRow>
+              <ButtonAccent type="submit" disabled={createLeave.isPending}>
+                {createLeave.isPending ? t("common.submitting") : t("leave.submit")}
+              </ButtonAccent>
+            </FormLayout>
+          </Card>
 
-      <Card>
-        <SectionTitle>{t("leave.myRequests")}</SectionTitle>
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : !requests?.length ? (
-          <TextMuted>{t("leave.noRequests")}</TextMuted>
-        ) : (
-          <RequestList>
-            {requests.map((r) => (
-              <RequestItem key={r.id}>
-                <div>
-                  <strong>{t(`leave.type.${r.leaveType}`)}</strong>
-                  <DateRange>
-                    {formatDate(r.startDate)} — {formatDate(r.endDate)}
-                  </DateRange>
-                </div>
-                <StatusBadge $status={r.status}>{t(`leave.status.${r.status}`)}</StatusBadge>
-              </RequestItem>
-            ))}
-          </RequestList>
-        )}
-      </Card>
+          {/* My Requests */}
+          <Card>
+            {isLoading ? <LoadingSpinner /> : !requests?.length ? (
+              <EmptyState message={t("leave.noRequests")} />
+            ) : (
+              <RequestList>
+                {requests.map((r) => (
+                  <RequestRow key={r.id}>
+                    <RequestInfo>
+                      <Badge label={t(`leave.type.${r.leaveType}`)} variant="info" />
+                      <DateRange>{formatDate(r.startDate)} → {formatDate(r.endDate)}</DateRange>
+                    </RequestInfo>
+                    <Badge
+                      label={t(`leave.status.${r.status}`)}
+                      variant={r.status === LeaveRequestStatuses.APPROVED ? "success" : r.status === LeaveRequestStatuses.REJECTED ? "danger" : "warning"}
+                    />
+                  </RequestRow>
+                ))}
+              </RequestList>
+            )}
+          </Card>
 
-      {canApproveLeave && (
-        <Card>
-          <SectionTitle>{t("leave.pendingApprovals")}</SectionTitle>
-          {!pendingRequests?.length ? (
-            <TextMuted>{t("leave.noPendingApprovals")}</TextMuted>
-          ) : (
-            <RequestList>
-              {pendingRequests.map((r) => (
-                <RequestItem key={r.id}>
-                  <div>
-                    <strong>{r.employeeId}</strong>
-                    <DateRange>
-                      {t(`leave.type.${r.leaveType}`)} · {formatDate(r.startDate)} — {formatDate(r.endDate)}
-                    </DateRange>
-                  </div>
-                  <ActionGroup>
-                    <ButtonSecondary
-                      onClick={() => approveLeave.mutate(r.id)}
+          {/* Pending Approvals (Manager) */}
+          {canApprove && pendingRequests?.length ? (
+            <Card>
+              <h3>{t("leave.pendingApprovals")}</h3>
+              <RequestList>
+                {pendingRequests.map((r) => (
+                  <RequestRow key={r.id}>
+                    <RequestInfo>
+                      <span>{r.employeeId}</span>
+                      <Badge label={t(`leave.type.${r.leaveType}`)} variant="info" />
+                      <DateRange>{formatDate(r.startDate)} → {formatDate(r.endDate)}</DateRange>
+                    </RequestInfo>
+                    <ButtonAccent
+                      onClick={() => approveLeave.mutate(r.id, { onSuccess: () => toast.show(t("leave.approved"), "success") })}
                       disabled={approveLeave.isPending}
                     >
                       {t("leave.approve")}
-                    </ButtonSecondary>
-                    <ButtonDanger disabled>{t("leave.reject")}</ButtonDanger>
-                  </ActionGroup>
-                </RequestItem>
-              ))}
-            </RequestList>
-          )}
+                    </ButtonAccent>
+                  </RequestRow>
+                ))}
+              </RequestList>
+            </Card>
+          ) : null}
+        </>
+      )}
+
+      {activeTab === "calendar" && <LeaveCalendarTab isManager={isManager} />}
+
+      {activeTab === "balance" && balance && (
+        <Card>
+          <BalanceGrid>
+            <BalanceItem>
+              <BalanceLabel>{t("leave.paidRemaining")}</BalanceLabel>
+              <BalanceValue>{balance.paidLeaveRemaining}</BalanceValue>
+            </BalanceItem>
+            <BalanceItem>
+              <BalanceLabel>{t("leave.carryOver")}</BalanceLabel>
+              <BalanceValue>{balance.carryOver}</BalanceValue>
+            </BalanceItem>
+            {balance.carryOverExpiry && (
+              <BalanceItem>
+                <BalanceLabel>{t("leave.carryOverExpiry")}</BalanceLabel>
+                <BalanceValue>{formatDate(balance.carryOverExpiry)}</BalanceValue>
+              </BalanceItem>
+            )}
+          </BalanceGrid>
+          <MandatorySection>
+            <MandatoryLabel>{t("leave.mandatory5Days")}</MandatoryLabel>
+            <ProgressBar value={balance.paidLeaveUsed} max={JP_LABOR.MANDATORY_LEAVE_DAYS} variant="accent" />
+          </MandatorySection>
         </Card>
       )}
     </PageLayout>
   );
 }
+
+function LeaveCalendarTab({ isManager }: { readonly isManager: boolean }) {
+  const { t } = useTranslation();
+  const { data: allLeave } = useLeaveRequests();
+
+  const approved = useMemo(
+    () => allLeave?.filter((r) => r.status === LeaveRequestStatuses.APPROVED) ?? [],
+    [allLeave],
+  );
+
+  const highlighted = useMemo(() => {
+    const dates = new Set<string>();
+    approved.forEach((r) => dates.add(isoToDateStr(r.startDate)));
+    return dates;
+  }, [approved]);
+
+  return (
+    <Card>
+      <Calendar highlightedDates={highlighted} />
+      {approved.length === 0 ? (
+        <EmptyState message={t("leave.noApprovedLeave")} />
+      ) : (
+        <LeaveList>
+          {approved.map((r) => (
+            <LeaveRow key={r.id}>
+              <span>{r.employeeId}</span>
+              <DateRange>{formatDate(r.startDate)} → {formatDate(r.endDate)}</DateRange>
+              {isManager && <Badge label={t(`leave.type.${r.leaveType}`)} variant="info" />}
+            </LeaveRow>
+          ))}
+        </LeaveList>
+      )}
+    </Card>
+  );
+}
+
+const DateRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.space.md};
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) { grid-template-columns: 1fr; }
+`;
+
+const WarningBox = styled.div`
+  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
+  background: ${({ theme }) => theme.colors.warningLight};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.warning};
+`;
+
+const RequestList = styled.div`
+  display: flex; flex-direction: column; gap: ${({ theme }) => theme.space.xs};
+`;
+
+const RequestRow = styled.div`
+  display: flex; align-items: center; justify-content: space-between;
+  padding: ${({ theme }) => theme.space.sm} 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.borderLight};
+  gap: ${({ theme }) => theme.space.sm};
+  &:last-child { border-bottom: none; }
+`;
+
+const RequestInfo = styled.div`
+  display: flex; align-items: center; gap: ${({ theme }) => theme.space.sm}; flex-wrap: wrap;
+`;
+
+const DateRange = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm}; color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+const BalanceGrid = styled.div`
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: ${({ theme }) => theme.space.md};
+`;
+
+const BalanceItem = styled.div`
+  text-align: center; padding: ${({ theme }) => theme.space.md};
+  background: ${({ theme }) => theme.colors.surface}; border-radius: ${({ theme }) => theme.radii.md};
+`;
+
+const BalanceLabel = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.xs}; color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase; margin-bottom: ${({ theme }) => theme.space.xs};
+`;
+
+const BalanceValue = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.xl}; font-weight: ${({ theme }) => theme.fontWeights.bold};
+  font-family: ${({ theme }) => theme.fonts.heading}; color: ${({ theme }) => theme.colors.accent};
+`;
+
+const MandatorySection = styled.div`
+  margin-top: ${({ theme }) => theme.space.md}; padding-top: ${({ theme }) => theme.space.md};
+  border-top: 1px solid ${({ theme }) => theme.colors.borderLight};
+`;
+
+const MandatoryLabel = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.sm}; font-weight: ${({ theme }) => theme.fontWeights.medium};
+  margin-bottom: ${({ theme }) => theme.space.sm};
+`;
+
+const LeaveList = styled.div`
+  margin-top: ${({ theme }) => theme.space.md}; display: flex; flex-direction: column;
+  gap: ${({ theme }) => theme.space.xs};
+`;
+
+const LeaveRow = styled.div`
+  display: flex; align-items: center; gap: ${({ theme }) => theme.space.sm};
+  padding: ${({ theme }) => theme.space.sm}; font-size: ${({ theme }) => theme.fontSizes.sm};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.borderLight};
+`;
