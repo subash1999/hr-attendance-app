@@ -2,7 +2,7 @@
  * API client wrapper that attaches JWT Authorization header.
  */
 export function createApiClient(getToken: () => string | null) {
-  const baseUrl = import.meta.env.VITE_API_URL ?? "/api";
+  const baseUrl = import.meta.env.VITE_API_URL ?? "";
 
   async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = getToken();

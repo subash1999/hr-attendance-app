@@ -4,10 +4,12 @@
  */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { createTenantKeys } from "@hr-attendance-app/data";
 
 const ENDPOINT = process.env["DYNAMODB_ENDPOINT"] ?? "http://localhost:8000";
 const TABLE_NAME = process.env["DYNAMODB_TABLE_NAME"] ?? "hr-attendance-app-dev-table";
 const REGION = process.env["AWS_REGION"] ?? "ap-northeast-1";
+const TENANT_ID = "default";
 
 const rawClient = new DynamoDBClient({
   region: REGION,
@@ -18,22 +20,24 @@ const client = DynamoDBDocumentClient.from(rawClient, {
   marshallOptions: { removeUndefinedValues: true },
 });
 
-async function put(item: Record<string, unknown>): Promise<void> {
+const keys = createTenantKeys(TENANT_ID);
+
+const put = async (item: Record<string, unknown>): Promise<void> => {
   await client.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
-}
+};
 
 const NOW = new Date().toISOString();
 
-async function seedEmployees(): Promise<void> {
+const seedEmployees = async (): Promise<void> => {
   const employees = [
     {
-      PK: "EMP#ADMIN001",
-      SK: "PROFILE",
-      GSI1PK: "SLACK#U_ADMIN",
-      GSI1SK: "EMP#ADMIN001",
-      GSI2PK: "ORG#EMP",
+      PK: keys.EMP("ADMIN001"),
+      SK: keys.PROFILE,
+      GSI1PK: keys.GSI1.SLACK("U_ADMIN"),
+      GSI1SK: keys.EMP("ADMIN001"),
+      GSI2PK: keys.GSI2.ORG_EMP,
       GSI2SK: "ACTIVE#ADMIN001",
-      id: "EMP#ADMIN001",
+      id: "ADMIN001",
       name: "Tanaka Admin",
       email: "admin@example.com",
       slackId: "U_ADMIN",
@@ -51,13 +55,13 @@ async function seedEmployees(): Promise<void> {
       updatedAt: NOW,
     },
     {
-      PK: "EMP#MGR001",
-      SK: "PROFILE",
-      GSI1PK: "SLACK#U_MGR",
-      GSI1SK: "EMP#MGR001",
-      GSI2PK: "ORG#EMP",
+      PK: keys.EMP("MGR001"),
+      SK: keys.PROFILE,
+      GSI1PK: keys.GSI1.SLACK("U_MGR"),
+      GSI1SK: keys.EMP("MGR001"),
+      GSI2PK: keys.GSI2.ORG_EMP,
       GSI2SK: "ACTIVE#MGR001",
-      id: "EMP#MGR001",
+      id: "MGR001",
       name: "Suzuki Manager",
       email: "manager@example.com",
       slackId: "U_MGR",
@@ -65,7 +69,7 @@ async function seedEmployees(): Promise<void> {
       region: "JP",
       timezone: "Asia/Tokyo",
       languagePreference: "ja",
-      managerId: "EMP#ADMIN001",
+      managerId: "ADMIN001",
       joinDate: "2024-04-01",
       probationEndDate: null,
       status: "ACTIVE",
@@ -75,13 +79,13 @@ async function seedEmployees(): Promise<void> {
       updatedAt: NOW,
     },
     {
-      PK: "EMP#JP001",
-      SK: "PROFILE",
-      GSI1PK: "SLACK#U_JP001",
-      GSI1SK: "EMP#JP001",
-      GSI2PK: "ORG#EMP",
+      PK: keys.EMP("JP001"),
+      SK: keys.PROFILE,
+      GSI1PK: keys.GSI1.SLACK("U_JP001"),
+      GSI1SK: keys.EMP("JP001"),
+      GSI2PK: keys.GSI2.ORG_EMP,
       GSI2SK: "ACTIVE#JP001",
-      id: "EMP#JP001",
+      id: "JP001",
       name: "Yamada Taro",
       email: "taro@example.com",
       slackId: "U_JP001",
@@ -89,7 +93,7 @@ async function seedEmployees(): Promise<void> {
       region: "JP",
       timezone: "Asia/Tokyo",
       languagePreference: "ja",
-      managerId: "EMP#MGR001",
+      managerId: "MGR001",
       joinDate: "2025-01-01",
       probationEndDate: "2025-04-01",
       status: "ACTIVE",
@@ -99,13 +103,13 @@ async function seedEmployees(): Promise<void> {
       updatedAt: NOW,
     },
     {
-      PK: "EMP#NP001",
-      SK: "PROFILE",
-      GSI1PK: "SLACK#U_NP001",
-      GSI1SK: "EMP#NP001",
-      GSI2PK: "ORG#EMP",
+      PK: keys.EMP("NP001"),
+      SK: keys.PROFILE,
+      GSI1PK: keys.GSI1.SLACK("U_NP001"),
+      GSI1SK: keys.EMP("NP001"),
+      GSI2PK: keys.GSI2.ORG_EMP,
       GSI2SK: "ACTIVE#NP001",
-      id: "EMP#NP001",
+      id: "NP001",
       name: "Ram Sharma",
       email: "ram@example.com",
       slackId: "U_NP001",
@@ -113,7 +117,7 @@ async function seedEmployees(): Promise<void> {
       region: "NP",
       timezone: "Asia/Kathmandu",
       languagePreference: "en",
-      managerId: "EMP#MGR001",
+      managerId: "MGR001",
       joinDate: "2025-06-01",
       probationEndDate: "2025-09-01",
       status: "ACTIVE",
@@ -126,101 +130,113 @@ async function seedEmployees(): Promise<void> {
 
   for (const emp of employees) {
     await put(emp);
-    // Also index by manager
     if (emp.managerId) {
       await put({
         ...emp,
-        GSI1PK: `MGR#${emp.managerId}`,
-        GSI1SK: emp.id,
+        GSI1PK: keys.GSI1.MGR(emp.managerId),
+        GSI1SK: keys.EMP(emp.id),
       });
     }
   }
   console.log(`Seeded ${employees.length} employees.`);
-}
+};
 
-async function seedAttendanceStates(): Promise<void> {
-  const states = [
-    { PK: "EMP#ADMIN001", SK: "ATT_STATE", employeeId: "EMP#ADMIN001", state: "IDLE", lastEventTimestamp: "" },
-    { PK: "EMP#MGR001", SK: "ATT_STATE", employeeId: "EMP#MGR001", state: "IDLE", lastEventTimestamp: "" },
-    { PK: "EMP#JP001", SK: "ATT_STATE", employeeId: "EMP#JP001", state: "IDLE", lastEventTimestamp: "" },
-    { PK: "EMP#NP001", SK: "ATT_STATE", employeeId: "EMP#NP001", state: "IDLE", lastEventTimestamp: "" },
-  ];
-
-  for (const s of states) {
-    await put(s);
+const seedAttendanceStates = async (): Promise<void> => {
+  const ids = ["ADMIN001", "MGR001", "JP001", "NP001"];
+  for (const id of ids) {
+    await put({
+      PK: keys.EMP(id),
+      SK: keys.ATT_STATE,
+      employeeId: id,
+      state: "IDLE",
+      lastEventTimestamp: "",
+    });
   }
-  console.log(`Seeded ${states.length} attendance states.`);
-}
+  console.log(`Seeded ${ids.length} attendance states.`);
+};
 
-async function seedSalaries(): Promise<void> {
+const seedSalaries = async (): Promise<void> => {
   const salaries = [
-    {
-      PK: "EMP#ADMIN001", SK: "SALARY#2024-01-01",
-      id: "SAL#ADMIN001#1", employeeId: "EMP#ADMIN001",
-      amount: 500000, currency: "JPY", salaryType: "MONTHLY",
-      changeType: "INITIAL", effectiveFrom: "2024-01-01", createdAt: NOW,
-    },
-    {
-      PK: "EMP#MGR001", SK: "SALARY#2024-04-01",
-      id: "SAL#MGR001#1", employeeId: "EMP#MGR001",
-      amount: 400000, currency: "JPY", salaryType: "MONTHLY",
-      changeType: "INITIAL", effectiveFrom: "2024-04-01", createdAt: NOW,
-    },
-    {
-      PK: "EMP#JP001", SK: "SALARY#2025-01-01",
-      id: "SAL#JP001#1", employeeId: "EMP#JP001",
-      amount: 300000, currency: "JPY", salaryType: "MONTHLY",
-      changeType: "INITIAL", effectiveFrom: "2025-01-01", createdAt: NOW,
-    },
-    {
-      PK: "EMP#NP001", SK: "SALARY#2025-06-01",
-      id: "SAL#NP001#1", employeeId: "EMP#NP001",
-      amount: 80000, currency: "NPR", salaryType: "MONTHLY",
-      changeType: "INITIAL", effectiveFrom: "2025-06-01", createdAt: NOW,
-    },
+    { id: "ADMIN001", amount: 500000, currency: "JPY", effectiveFrom: "2024-01-01" },
+    { id: "MGR001", amount: 400000, currency: "JPY", effectiveFrom: "2024-04-01" },
+    { id: "JP001", amount: 300000, currency: "JPY", effectiveFrom: "2025-01-01" },
+    { id: "NP001", amount: 80000, currency: "NPR", effectiveFrom: "2025-06-01" },
   ];
 
   for (const s of salaries) {
-    await put(s);
+    await put({
+      PK: keys.EMP(s.id),
+      SK: keys.SALARY(s.effectiveFrom),
+      id: `SAL#${s.id}#1`,
+      employeeId: s.id,
+      amount: s.amount,
+      currency: s.currency,
+      salaryType: "MONTHLY",
+      changeType: "INITIAL",
+      effectiveFrom: s.effectiveFrom,
+      createdAt: NOW,
+    });
   }
   console.log(`Seeded ${salaries.length} salary records.`);
-}
+};
 
-async function seedLeaveBalances(): Promise<void> {
+const seedLeaveBalances = async (): Promise<void> => {
   const balances = [
-    {
-      PK: "EMP#JP001", SK: "LEAVE_BALANCE",
-      employeeId: "EMP#JP001", paidLeaveTotal: 10, paidLeaveUsed: 2,
-      paidLeaveRemaining: 8, carryOver: 0, carryOverExpiry: null, lastAccrualDate: "2025-07-01",
-    },
-    {
-      PK: "EMP#NP001", SK: "LEAVE_BALANCE",
-      employeeId: "EMP#NP001", paidLeaveTotal: 3, paidLeaveUsed: 0,
-      paidLeaveRemaining: 3, carryOver: 0, carryOverExpiry: null, lastAccrualDate: "2025-12-01",
-    },
-    {
-      PK: "EMP#MGR001", SK: "LEAVE_BALANCE",
-      employeeId: "EMP#MGR001", paidLeaveTotal: 15, paidLeaveUsed: 3,
-      paidLeaveRemaining: 12, carryOver: 5, carryOverExpiry: "2027-01-01", lastAccrualDate: "2026-01-01",
-    },
+    { id: "JP001", total: 10, used: 2, remaining: 8, carryOver: 0, lastAccrual: "2025-07-01" },
+    { id: "NP001", total: 3, used: 0, remaining: 3, carryOver: 0, lastAccrual: "2025-12-01" },
+    { id: "MGR001", total: 15, used: 3, remaining: 12, carryOver: 5, lastAccrual: "2026-01-01" },
   ];
 
   for (const b of balances) {
-    await put(b);
+    await put({
+      PK: keys.EMP(b.id),
+      SK: "LEAVE_BALANCE",
+      employeeId: b.id,
+      paidLeaveTotal: b.total,
+      paidLeaveUsed: b.used,
+      paidLeaveRemaining: b.remaining,
+      carryOver: b.carryOver,
+      carryOverExpiry: b.carryOver > 0 ? "2027-01-01" : null,
+      lastAccrualDate: b.lastAccrual,
+    });
   }
   console.log(`Seeded ${balances.length} leave balances.`);
-}
+};
 
-async function seedAll(): Promise<void> {
+const seedRoles = async (): Promise<void> => {
+  const roles = [
+    { name: "SUPER_ADMIN", description: "Full system access", permissions: ["ONBOARD", "OFFBOARD", "AUDIT_VIEW", "POLICY_UPDATE", "ATTENDANCE_LOCK", "LEAVE_APPROVE", "FLAG_RESOLVE", "BANK_APPROVE", "EMPLOYEE_LIST_ALL", "EMPLOYEE_UPDATE", "HOLIDAY_MANAGE"] },
+    { name: "MANAGER", description: "Team management", permissions: ["EMPLOYEE_LIST_ALL", "LEAVE_APPROVE", "FLAG_RESOLVE", "BANK_APPROVE"] },
+    { name: "EMPLOYEE", description: "Basic access", permissions: [] },
+  ];
+
+  for (const r of roles) {
+    await put({
+      PK: keys.ROLE(r.name),
+      SK: keys.DEFINITION,
+      GSI2PK: keys.GSI2.ORG_ROLE,
+      GSI2SK: r.name,
+      name: r.name,
+      description: r.description,
+      permissions: r.permissions,
+      createdAt: NOW,
+      updatedAt: NOW,
+    });
+  }
+  console.log(`Seeded ${roles.length} roles.`);
+};
+
+const seedAll = async (): Promise<void> => {
   console.log("Seeding local DynamoDB...");
   await Promise.all([
     seedEmployees(),
     seedAttendanceStates(),
     seedSalaries(),
     seedLeaveBalances(),
+    seedRoles(),
   ]);
   console.log("Seed complete.");
-}
+};
 
 seedAll().catch((err) => {
   console.error("Seed failed:", err);
