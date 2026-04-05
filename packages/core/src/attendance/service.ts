@@ -221,7 +221,9 @@ export class AttendanceService {
       }
 
       if (delta < ATTENDANCE.IDEMPOTENCY_WINDOW_MS) {
-        return { success: false, error: ErrorMessages.TOO_FAST };
+        const remainingMs = ATTENDANCE.IDEMPOTENCY_WINDOW_MS - delta;
+        const remainingSec = Math.ceil(remainingMs / 1000);
+        return { success: false, error: `${ErrorMessages.TOO_FAST}|${remainingSec}` };
       }
     }
 

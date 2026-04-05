@@ -12,7 +12,7 @@ import {
 } from "../../hooks/queries/useAttendance";
 import { useAttendanceLocks } from "../../hooks/queries";
 import { formatDateTime, isoToLocalDate, isoToLocalDateTime, localDateTimeToIso } from "../../utils/date";
-import { clockErrorToI18nKey } from "../../utils/attendance-status";
+import { formatClockError } from "../../utils/attendance-status";
 
 const ACTION_OPTIONS = [
   AttendanceActions.CLOCK_IN,
@@ -95,7 +95,7 @@ export const AttendancePage = () => {
           breakMinutesToday={breakMinutesToday}
           lastEventTimestamp={attState?.lastEventTimestamp ?? null}
           onAction={(action) => clockAction.mutate(action, {
-            onError: (err) => toast.show(t(clockErrorToI18nKey(err)), "danger"),
+            onError: (err) => toast.show(formatClockError(err, t), "danger"),
           })}
           loading={clockAction.isPending}
         />

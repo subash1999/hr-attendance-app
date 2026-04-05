@@ -101,7 +101,7 @@ describe("AttendanceService", () => {
     });
 
     expect(result.success).toBe(false);
-    if (!result.success) expect(result.error).toBe(ErrorMessages.TOO_FAST);
+    if (!result.success) expect(result.error).toMatch(new RegExp(`^${ErrorMessages.TOO_FAST}\\|\\d+$`));
   });
 
   it("allows event at exact boundary (60s)", async () => {

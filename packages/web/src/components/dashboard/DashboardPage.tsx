@@ -10,7 +10,7 @@ import { useHolidays } from "../../hooks/queries";
 import { useIsManager } from "../../hooks/useRole";
 import { useToast } from "../ui/Toast";
 import { formatDate } from "../../utils/date";
-import { clockErrorToI18nKey } from "../../utils/attendance-status";
+import { formatClockError } from "../../utils/attendance-status";
 
 
 export const DashboardPage = () => {
@@ -46,7 +46,7 @@ export const DashboardPage = () => {
           lastEventTimestamp={attState?.lastEventTimestamp ?? null}
           todayEvents={todayEvents ?? []}
           onAction={(action) => clockAction.mutate(action, {
-            onError: (err) => toast.show(t(clockErrorToI18nKey(err)), "danger"),
+            onError: (err) => toast.show(formatClockError(err, t), "danger"),
           })}
           loading={clockAction.isPending || attLoading}
         />
