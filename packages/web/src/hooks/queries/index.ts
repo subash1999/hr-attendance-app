@@ -10,7 +10,7 @@ export { useHolidays } from "./useHolidays";
 export { useCreateHoliday, useDeleteHoliday } from "./useHolidayMutations";
 export { useOnboard, useOffboard } from "./useAdmin";
 export { useAttendanceLocks, useCreateLock, useDeleteLock } from "./useAttendanceLock";
-export { usePolicies, useUpdatePolicy } from "./usePolicies";
+export { usePolicies, useCompanyPolicy, useUserPolicy, useEffectivePolicy, useUpdateGroupPolicy, useUpdateCompanyPolicy, useUpdateUserPolicy } from "./usePolicies";
 export { useBank, useBankApprove } from "./useBank";
 export { useAudit } from "./useAudit";
 export { useRoles, useUpdateRole } from "./useRoles";

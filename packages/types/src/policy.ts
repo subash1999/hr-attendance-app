@@ -132,4 +132,6 @@ export interface RawPolicy {
   readonly report?: Partial<ReportPolicy>;
   readonly salaryStatement?: Partial<SalaryStatementPolicy>;
   readonly effectiveFrom?: string;
+  readonly deprecated?: boolean;
+  readonly deprecatedAt?: string;
 }
