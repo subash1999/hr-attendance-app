@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { AttendanceStates, ROUTES, Regions, currentYear } from "@hr-attendance-app/types";
+import { AttendanceStates, ROUTES, Regions, currentYear, todayDate } from "@hr-attendance-app/types";
 import { ClockWidget } from "./ClockWidget";
 import { Card, PageLayout, ProgressBar, Badge } from "../ui";
-import { useAttendanceState, useAttendanceSummary, useClockAction } from "../../hooks/queries/useAttendance";
+import { useAttendanceState, useAttendanceSummary, useAttendanceEvents, useClockAction } from "../../hooks/queries/useAttendance";
 import { useLeaveBalance } from "../../hooks/queries/useLeave";
 import { useHolidays } from "../../hooks/queries";
 import { useIsManager } from "../../hooks/useRole";
@@ -18,6 +18,7 @@ export const DashboardPage = () => {
   const toast = useToast();
   const { data: attState, isLoading: attLoading } = useAttendanceState();
   const { data: summary } = useAttendanceSummary();
+  const { data: todayEvents } = useAttendanceEvents(todayDate());
   const clockAction = useClockAction();
   const { data: balance } = useLeaveBalance();
   const { data: holidays } = useHolidays(Regions.JP, currentYear());
@@ -43,6 +44,7 @@ export const DashboardPage = () => {
           hoursToday={hoursToday}
           breakMinutesToday={breakMinutesToday}
           lastEventTimestamp={attState?.lastEventTimestamp ?? null}
+          todayEvents={todayEvents ?? []}
           onAction={(action) => clockAction.mutate(action, {
             onError: (err) => toast.show(t(clockErrorToI18nKey(err)), "danger"),
           })}

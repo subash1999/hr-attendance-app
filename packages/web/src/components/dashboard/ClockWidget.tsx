@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import styled, { css, keyframes } from "styled-components";
-import type { AttendanceAction, AttendanceState } from "@hr-attendance-app/types";
+import type { AttendanceAction, AttendanceState, AttendanceEvent } from "@hr-attendance-app/types";
 import { AttendanceStates, AttendanceActions, HOURS, nowMs } from "@hr-attendance-app/types";
 import { ButtonAccent, ButtonDanger, ButtonSecondary } from "../../theme/primitives";
 import { ATTENDANCE_STATUS_CONFIG } from "../../utils/attendance-status";
@@ -13,15 +13,22 @@ interface ClockWidgetProps {
   readonly hoursToday: number;
   readonly breakMinutesToday: number;
   readonly lastEventTimestamp: string | null;
+  readonly todayEvents?: readonly AttendanceEvent[];
   readonly onAction: (action: AttendanceAction) => void;
   readonly loading?: boolean;
 }
+
+const formatTime = (iso: string): string => {
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+};
 
 export const ClockWidget = ({
   status,
   hoursToday,
   breakMinutesToday,
   lastEventTimestamp,
+  todayEvents = [],
   onAction,
   loading,
 }: ClockWidgetProps) => {
@@ -57,6 +64,9 @@ export const ClockWidget = ({
     ? Math.min(100, Math.round((hoursToday / HOURS.DAILY_MINIMUM) * 100))
     : 0;
 
+  const workHours = Math.floor(hoursToday);
+  const workMins = Math.round((hoursToday - workHours) * 60);
+
   return (
     <Wrapper data-testid="clock-widget" $status={status}>
       {/* Status indicator */}
@@ -65,21 +75,29 @@ export const ClockWidget = ({
         <StatusLabel $color={config.color}>{t(config.labelKey)}</StatusLabel>
       </StatusRow>
 
-      {/* Elapsed timer */}
+      {/* Elapsed timer or total hours */}
       {isActive ? (
         <TimerSection>
           <Timer>{formatElapsed(elapsed)}</Timer>
-          {status === AttendanceStates.ON_BREAK && breakMinutesToday > 0 && (
-            <BreakLabel>
-              {t("dashboard.breakDuration")}: {breakMinutesToday}m
-            </BreakLabel>
-          )}
         </TimerSection>
       ) : (
         <TimerSection>
           <HoursDisplay>{hoursToday.toFixed(1)}h</HoursDisplay>
         </TimerSection>
       )}
+
+      {/* Work / Break stats */}
+      <StatsRow>
+        <StatItem>
+          <StatValue>{workHours}h {workMins}m</StatValue>
+          <StatLabel>{t("dashboard.totalWork")}</StatLabel>
+        </StatItem>
+        <StatDivider />
+        <StatItem>
+          <StatValue>{breakMinutesToday}m</StatValue>
+          <StatLabel>{t("dashboard.totalBreak")}</StatLabel>
+        </StatItem>
+      </StatsRow>
 
       {/* Today's progress */}
       <ProgressSection>
@@ -127,6 +145,20 @@ export const ClockWidget = ({
           </PrimaryAction>
         )}
       </Actions>
+
+      {/* Today's session timeline */}
+      {todayEvents.length > 0 && (
+        <Timeline>
+          <TimelineTitle>{t("dashboard.todaySessions")}</TimelineTitle>
+          {todayEvents.map((evt) => (
+            <TimelineEntry key={evt.id} $action={evt.action}>
+              <TimelineDot $action={evt.action} />
+              <TimelineTime>{formatTime(evt.timestamp)}</TimelineTime>
+              <TimelineLabel>{t(`attendance.action.${evt.action}`)}</TimelineLabel>
+            </TimelineEntry>
+          ))}
+        </Timeline>
+      )}
     </Wrapper>
   );
 };
@@ -202,10 +234,43 @@ const HoursDisplay = styled.div`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-const BreakLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.warning};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
+const StatsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space.md};
+  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radii.md};
+  width: 100%;
+  max-width: 280px;
+  justify-content: center;
+`;
+
+const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+`;
+
+const StatValue = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  font-family: ${({ theme }) => theme.fonts.mono};
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const StatLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xxs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+const StatDivider = styled.div`
+  width: 1px;
+  height: 28px;
+  background: ${({ theme }) => theme.colors.border};
 `;
 
 const ProgressSection = styled.div`
@@ -272,3 +337,58 @@ const actionBase = css`
 const PrimaryAction = styled(ButtonAccent)`${actionBase}`;
 const DangerAction = styled(ButtonDanger)`${actionBase}`;
 const SecondaryAction = styled(ButtonSecondary)`${actionBase}`;
+
+/* ── Timeline ── */
+
+const ACTION_COLORS: Record<string, string> = {
+  CLOCK_IN: "success",
+  CLOCK_OUT: "error",
+  BREAK_START: "warning",
+  BREAK_END: "accent",
+};
+
+const Timeline = styled.div`
+  width: 100%;
+  max-width: 280px;
+  border-top: 1px solid ${({ theme }) => theme.colors.borderLight};
+  padding-top: ${({ theme }) => theme.space.sm};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space.xs};
+`;
+
+const TimelineTitle = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xxs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: ${({ theme }) => theme.space.xs};
+`;
+
+const TimelineEntry = styled.div<{ $action: string }>`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space.sm};
+  padding: 2px 0;
+`;
+
+const TimelineDot = styled.div<{ $action: string }>`
+  width: 8px;
+  height: 8px;
+  border-radius: ${({ theme }) => theme.radii.full};
+  background: ${({ theme, $action }) =>
+    theme.colors[ACTION_COLORS[$action] as keyof typeof theme.colors] ?? theme.colors.textMuted};
+  flex-shrink: 0;
+`;
+
+const TimelineTime = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-family: ${({ theme }) => theme.fonts.mono};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  min-width: 40px;
+`;
+
+const TimelineLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;

@@ -12,6 +12,7 @@ vi.mock("../../hooks/queries/useAttendance", () => ({
   useAttendanceSummary: () => ({
     data: { hoursToday: 0, hoursWeek: 0, hoursMonth: 0, breakMinutesToday: 0, requiredDaily: 8, requiredWeekly: 40, requiredMonthly: 160 },
   }),
+  useAttendanceEvents: () => ({ data: [] }),
   useClockAction: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
