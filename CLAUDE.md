@@ -60,6 +60,39 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 - All DynamoDB key patterns use `KeyPatterns` and `KeyPrefixes` from `@hr-attendance-app/types` — never construct keys with inline template literals
 - Prefer querying NotebookLM MCP for requirement, design, or contract lookups to save context tokens — fall back to reading spec files directly only when NotebookLM is unavailable
 
+## Policy System Rules
+
+### Policy Architecture
+The app uses a 4-level cascade: **Region defaults → Company overrides → Group overrides → Employee overrides**. Each level is a `RawPolicy` (partial). The resolved `EffectivePolicy` has all fields filled.
+
+- **Region defaults**: Defined in `packages/core/src/regions/{jp,np}/` → `defaultPolicy`
+- **Company policy**: Stored in DynamoDB (`PK: POLICY, SK: COMPANY`)
+- **Group policies**: Stored in DynamoDB (`PK: POLICY, SK: GROUP#{groupName}`)
+- **User policies**: Stored in DynamoDB (`PK: POLICY, SK: USER#{userId}`)
+
+### Policy Field Documentation Requirements
+- Every policy field MUST have a description in `packages/web/src/i18n/en.json` under `admin.policy.fieldDesc.{fieldName}`
+- When adding a new policy field: add to TypeScript interface in `packages/types/src/policy.ts`, add i18n description, document its effect
+
+### Policy Deprecation Rules
+- **NEVER delete a policy group** in production — historical records depend on it
+- To deprecate: set `deprecated: true` and `deprecatedAt: <ISO date>` on the `RawPolicy`
+- Deprecated policies still resolve in cascade (historical data preserved); UI prevents editing
+- Migration: create new group → update employees → deprecate old group
+
+### Active Policy Groups
+| Group | Region | Hours/mo |
+|---|---|---|
+| jp-fulltime | JP | 160h |
+| jp-contract | JP | 160h |
+| jp-gyoumu-itaku | JP | flex |
+| jp-parttime | JP | ~90h |
+| jp-sales | JP | 160h |
+| jp-intern | JP | ~90h |
+| np-fulltime | NP | 160h |
+| np-paid-intern | NP | 80h |
+| np-unpaid-intern | NP | 90h |
+
 ## Steering Configuration
 
 - Load entire `.kiro/steering/` as project memory
