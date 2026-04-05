@@ -8,7 +8,7 @@ import {
   API_LEAVE_REQUESTS, API_LEAVE_BALANCE,
   API_PAYROLL, API_FLAGS, API_BANK, API_BANK_APPROVE,
   API_REPORTS, API_HOLIDAYS, API_AUDIT,
-  API_POLICIES, API_ROLES, API_DOCUMENTS,
+  API_POLICIES, API_POLICY_EFFECTIVE, API_ROLES, API_DOCUMENTS,
 } from "@hr-attendance-app/types";
 
 /** Sub-key constants for cache scoping within query key arrays. */
@@ -74,6 +74,7 @@ export const queryKeys = {
   policies: {
     all: [API_POLICIES] as const,
     byGroup: (groupName: string) => [API_POLICIES, groupName] as const,
+    effective: () => [API_POLICY_EFFECTIVE] as const,
   },
   roles: {
     all: [API_ROLES] as const,

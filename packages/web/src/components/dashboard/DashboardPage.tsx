@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { AttendanceStates, ROUTES, HOURS, Regions, currentYear } from "@hr-attendance-app/types";
+import { useEffectivePolicy } from "../../hooks/queries";
 import { ClockWidget } from "./ClockWidget";
 import { Card, PageLayout, ProgressBar, Badge } from "../ui";
 import { useAttendanceState, useClockAction } from "../../hooks/queries/useAttendance";
@@ -19,6 +20,11 @@ export const DashboardPage = () => {
   const { data: balance } = useLeaveBalance();
   const { data: holidays } = useHolidays(Regions.JP, currentYear());
   const isManager = useIsManager();
+  const { data: effectivePolicy } = useEffectivePolicy();
+
+  const dailyMin = effectivePolicy?.hours.dailyMinimum ?? HOURS.DAILY_MINIMUM;
+  const weeklyMin = effectivePolicy?.hours.weeklyMinimum ?? HOURS.WEEKLY_MINIMUM;
+  const monthlyMin = effectivePolicy?.hours.monthlyMinimum ?? HOURS.MONTHLY_FULL_TIME;
 
   const status = attState?.state ?? AttendanceStates.IDLE;
 
@@ -61,15 +67,15 @@ export const DashboardPage = () => {
       <StatsGrid>
         <StatCard>
           <StatLabel>{t("dashboard.hoursToday")}</StatLabel>
-          <ProgressBar value={0} max={HOURS.DAILY_MINIMUM} variant="accent" />
+          <ProgressBar value={0} max={dailyMin} variant="accent" />
         </StatCard>
         <StatCard>
           <StatLabel>{t("dashboard.hoursWeek")}</StatLabel>
-          <ProgressBar value={0} max={HOURS.WEEKLY_MINIMUM} variant="accent" />
+          <ProgressBar value={0} max={weeklyMin} variant="accent" />
         </StatCard>
         <StatCard>
           <StatLabel>{t("dashboard.hoursMonth")}</StatLabel>
-          <ProgressBar value={0} max={HOURS.MONTHLY_FULL_TIME} variant="accent" />
+          <ProgressBar value={0} max={monthlyMin} variant="accent" />
         </StatCard>
         <StatCard>
           <StatLabel>{t("dashboard.leaveBalance")}</StatLabel>

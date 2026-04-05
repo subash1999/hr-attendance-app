@@ -17,6 +17,7 @@ import {
   DynamoReportRepository,
   DynamoHolidayRepository,
   DynamoAttendanceLockRepository,
+  DynamoPolicyRepository,
 } from "@hr-attendance-app/data";
 import {
   AttendanceService,
@@ -28,10 +29,13 @@ import {
   ReminderService,
   EmployeeService,
   PayrollService,
+  PolicyService,
   FlagQueryService,
   BankService,
   ReportService,
   AuditService,
+  MonthlyPayrollReportService,
+  regionRegistry,
 } from "@hr-attendance-app/core";
 import type { AuthProviderAdapter } from "@hr-attendance-app/core";
 import { nowMs, DEFAULT_TENANT_ID } from "@hr-attendance-app/types";
@@ -41,6 +45,7 @@ export interface AppServices {
   readonly attendance: AttendanceService;
   readonly leave: LeaveService;
   readonly payroll: PayrollService;
+  readonly policy: PolicyService;
   readonly flagQuery: FlagQueryService;
   readonly bank: BankService;
   readonly report: ReportService;
@@ -48,6 +53,7 @@ export interface AppServices {
   readonly onboarding: OnboardingService;
   readonly offboarding: OffboardingService;
   readonly holiday: HolidayService;
+  readonly monthlyPayrollReport: MonthlyPayrollReportService;
   readonly cron: CronService;
   readonly reminder: ReminderService;
 }
@@ -92,12 +98,20 @@ export function getTenantDeps(tenantId: string): AppDeps {
   const reportRepo = new DynamoReportRepository(client, tableName, tenantId);
   const holidayRepo = new DynamoHolidayRepository(client, tableName, tenantId);
   const lockRepo = new DynamoAttendanceLockRepository(client, tableName, tenantId);
+  const policyRepo = new DynamoPolicyRepository(client, tableName, tenantId);
+
+  const policyService = new PolicyService({
+    policyRepo,
+    employeeRepo,
+    regionRegistry,
+  });
 
   const services: AppServices = {
     employee: new EmployeeService({ employeeRepo }),
     attendance: new AttendanceService(attendanceRepo, auditRepo, lockRepo, employeeRepo),
     leave: new LeaveService(leaveRepo, auditRepo),
-    payroll: new PayrollService({ salaryRepo }),
+    payroll: new PayrollService({ salaryRepo, policyService }),
+    policy: policyService,
     flagQuery: new FlagQueryService({ flagRepo }),
     bank: new BankService({ bankRepo }),
     report: new ReportService({ reportRepo }),
@@ -112,9 +126,17 @@ export function getTenantDeps(tenantId: string): AppDeps {
       authProvider: devAuthProvider,
       auditRepo,
     }),
+    monthlyPayrollReport: new MonthlyPayrollReportService({
+      employeeRepo,
+      attendanceRepo,
+      salaryRepo,
+      leaveRepo,
+      policyService,
+    }),
     holiday: new HolidayService({ holidayRepo }),
     cron: new CronService({
       employeeRepo, attendanceRepo, flagRepo, bankRepo, auditRepo,
+      policyService,
     }),
     reminder: new ReminderService({
       employeeRepo, leaveRepo, bankRepo,

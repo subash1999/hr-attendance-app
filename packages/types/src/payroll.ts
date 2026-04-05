@@ -55,3 +55,35 @@ export interface PayrollBreakdown {
   readonly exchangeRate: number | null;
   readonly exchangeRateDate: string | null;
 }
+
+// ─── Monthly Payroll Report ───
+
+export interface MonthlyPayrollReportEntry {
+  readonly employeeId: string;
+  readonly employeeName: string;
+  readonly employmentType: string;
+  readonly region: string;
+  readonly workedHours: number;
+  readonly requiredHours: number;
+  readonly leaveCredits: number;
+  readonly deficitHours: number;
+  readonly surplusHours: number;
+  readonly overtimeHours: number;
+  readonly payroll: PayrollBreakdown;
+}
+
+export interface MonthlyPayrollReportTotals {
+  readonly totalWorked: number;
+  readonly totalRequired: number;
+  readonly totalNet: number;
+  readonly totalOvertime: number;
+  readonly totalDeficit: number;
+  readonly totalSurplus: number;
+}
+
+export interface MonthlyPayrollReport {
+  readonly yearMonth: string;
+  readonly generatedAt: string;
+  readonly entries: readonly MonthlyPayrollReportEntry[];
+  readonly totals: MonthlyPayrollReportTotals;
+}

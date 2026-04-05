@@ -1,10 +1,23 @@
 import type { RouteDefinition } from "./router.js";
 import type { DepsResolver } from "../composition.js";
-import { withAuth, buildResponse } from "../middleware/index.js";
-import { API_PAYROLL } from "@hr-attendance-app/types";
+import { withAuth, buildResponse, handleError } from "../middleware/index.js";
+import { hasPermission } from "@hr-attendance-app/core";
+import { API_PAYROLL, API_PAYROLL_REPORT, ErrorCodes, ErrorMessages, Permissions } from "@hr-attendance-app/types";
 
 export function payrollRoutes(getDeps: DepsResolver): RouteDefinition[] {
   return [
+    {
+      method: "GET",
+      path: API_PAYROLL_REPORT,
+      handler: withAuth(getDeps, async ({ auth, deps, pathParams }) => {
+        if (!hasPermission(auth, Permissions.SALARY_MANAGE)) {
+          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
+        }
+        const yearMonth = pathParams["yearMonth"] ?? "";
+        const report = await deps.services.monthlyPayrollReport.generate(yearMonth);
+        return buildResponse(200, report);
+      }),
+    },
     {
       method: "GET",
       path: API_PAYROLL,

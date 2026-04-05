@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "../useApiClient";
 import { queryKeys } from "./keys";
-import { API_POLICIES, apiPath } from "@hr-attendance-app/types";
+import { API_POLICIES, API_POLICY_EFFECTIVE, apiPath } from "@hr-attendance-app/types";
 import type { EffectivePolicy, RawPolicy } from "@hr-attendance-app/types";
 
 interface PolicyResponse {
@@ -15,6 +15,14 @@ export function usePolicies(groupName: string) {
     queryKey: queryKeys.policies.byGroup(groupName),
     queryFn: () => api.get<PolicyResponse>(apiPath(API_POLICIES, { groupName })),
     enabled: !!groupName,
+  });
+}
+
+export function useEffectivePolicy() {
+  const api = useApiClient();
+  return useQuery({
+    queryKey: queryKeys.policies.effective(),
+    queryFn: () => api.get<EffectivePolicy>(API_POLICY_EFFECTIVE),
   });
 }
 

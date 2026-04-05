@@ -2,10 +2,18 @@ import type { RouteDefinition } from "./router.js";
 import type { DepsResolver } from "../composition.js";
 import { withAuth, buildResponse, handleError } from "../middleware/index.js";
 import { hasPermission } from "@hr-attendance-app/core";
-import { ErrorCodes, ErrorMessages, Permissions, API_POLICIES } from "@hr-attendance-app/types";
+import { ErrorCodes, ErrorMessages, Permissions, API_POLICIES, API_POLICY_EFFECTIVE } from "@hr-attendance-app/types";
 
 export function policyRoutes(getDeps: DepsResolver): RouteDefinition[] {
   return [
+    {
+      method: "GET",
+      path: API_POLICY_EFFECTIVE,
+      handler: withAuth(getDeps, async ({ auth, deps }) => {
+        const policy = await deps.services.policy.resolveForEmployee(auth.actorId);
+        return buildResponse(200, policy);
+      }),
+    },
     {
       method: "GET",
       path: API_POLICIES,

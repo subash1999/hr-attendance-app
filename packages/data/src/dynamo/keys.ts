@@ -77,6 +77,12 @@ export function createTenantKeys(tenantId: string) {
     // Legal Obligation
     LEGAL: (type: string) => `LEGAL#${type}`,
 
+    // Policy
+    POLICY: `${T}#POLICY`,
+    POLICY_COMPANY: "COMPANY",
+    POLICY_GROUP: (groupName: string) => `GROUP#${groupName}`,
+    POLICY_USER: (userId: string) => `USER#${userId}`,
+
     // Attendance Lock
     LOCK: (yearMonth: string) => `${T}#LOCK#${yearMonth}`,
     LOCK_SK_COMPANY: "COMPANY",

@@ -19,6 +19,7 @@ export { DynamoOverrideRepository } from "./dynamo/override.js";
 export { DynamoRoleRepository } from "./dynamo/role.js";
 export { DynamoMonthlySummaryRepository } from "./dynamo/monthly-summary.js";
 
+export { DynamoPolicyRepository } from "./dynamo/policy.js";
 export { S3PolicyRepository } from "./s3/policy-repository.js";
 export { S3DocumentRepository } from "./s3/document-repository.js";
 export { SESEmailAdapter } from "./ses/email-adapter.js";

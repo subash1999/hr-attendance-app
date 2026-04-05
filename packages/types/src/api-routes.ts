@@ -58,6 +58,7 @@ export interface LeaveBalanceQueryParams {
 
 // ─── Payroll ───
 export const API_PAYROLL = "/api/payroll/:yearMonth" as const;
+export const API_PAYROLL_REPORT = "/api/payroll/report/:yearMonth" as const;
 
 // ─── Flags ───
 export const API_FLAGS = "/api/flags" as const;
@@ -104,6 +105,19 @@ export const API_ONBOARD = "/api/onboard" as const;
 export const API_OFFBOARD = "/api/offboard/:id" as const;
 export const API_AUDIT = "/api/audit/:targetId" as const;
 
+// ─── Salary Admin ───
+export const API_ADMIN_SALARY = "/api/admin/salary/:employeeId" as const;
+export const API_ADMIN_SALARY_EFFECTIVE = "/api/admin/salary/:employeeId/:yearMonth" as const;
+
+export interface CreateSalaryEntryBody {
+  readonly amount: number;
+  readonly currency: string;
+  readonly salaryType: import("./payroll.js").SalaryType;
+  readonly changeType: import("./payroll.js").SalaryChangeType;
+  readonly effectiveFrom: string;
+  readonly agreementDocumentId?: string;
+}
+
 // ─── Holidays ───
 export const API_HOLIDAYS = "/api/holidays" as const;
 export const API_HOLIDAY_DELETE = "/api/holidays/:region/:date" as const;
@@ -145,6 +159,7 @@ export interface AttendanceLockQueryParams {
 
 // ─── Policies ───
 export const API_POLICIES = "/api/policies/:groupName" as const;
+export const API_POLICY_EFFECTIVE = "/api/policies/effective" as const;
 
 // ─── Roles ───
 export const API_ROLES = "/api/roles" as const;

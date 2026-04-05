@@ -6,7 +6,7 @@ import { ClockWidget } from "../dashboard/ClockWidget";
 import { Card, PageLayout, Calendar, Badge, ProgressBar, Modal, FormField, ButtonAccent, EmptyState } from "../ui";
 import { useToast } from "../ui/Toast";
 import { useAttendanceState, useAttendanceEvents, useClockAction } from "../../hooks/queries/useAttendance";
-import { useAttendanceLocks } from "../../hooks/queries";
+import { useAttendanceLocks, useEffectivePolicy } from "../../hooks/queries";
 import { formatDateTime, isoToLocalDate } from "../../utils/date";
 
 
@@ -22,6 +22,9 @@ export const AttendancePage = () => {
   const { data: events, isLoading: eventsLoading } = useAttendanceEvents(selectedDate);
   const clockAction = useClockAction();
   const { data: locks } = useAttendanceLocks(currentMonth);
+  const { data: effectivePolicy } = useEffectivePolicy();
+
+  const monthlyMin = effectivePolicy?.hours.monthlyMinimum ?? HOURS.MONTHLY_FULL_TIME;
 
   const status = attState?.state ?? AttendanceStates.IDLE;
   const isLocked = (locks?.length ?? 0) > 0;
@@ -59,7 +62,7 @@ export const AttendancePage = () => {
           highlightedDates={eventDates}
         />
         <HoursSummary>
-          <ProgressBar value={0} max={HOURS.MONTHLY_FULL_TIME} variant="accent" />
+          <ProgressBar value={0} max={monthlyMin} variant="accent" />
         </HoursSummary>
       </Card>
 

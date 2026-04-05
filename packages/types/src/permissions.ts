@@ -49,6 +49,7 @@ export const Permissions = {
   AUDIT_VIEW: "admin:audit_view",
   POLICY_UPDATE: "admin:policy_update",
   HOLIDAY_MANAGE: "holiday:manage",
+  SALARY_MANAGE: "admin:salary_manage",
 } as const;
 
 export type Permission = typeof Permissions[keyof typeof Permissions];
@@ -77,6 +78,7 @@ const ADMIN_PERMISSIONS: readonly Permission[] = [
   Permissions.POLICY_UPDATE,
   Permissions.HOLIDAY_MANAGE,
   Permissions.ATTENDANCE_LOCK,
+  Permissions.SALARY_MANAGE,
 ];
 
 const ALL_PERMISSIONS: readonly Permission[] = Object.values(Permissions);

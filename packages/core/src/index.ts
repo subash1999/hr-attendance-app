@@ -29,6 +29,8 @@ export type {
 } from "./repositories/index.js";
 
 export { deepMergePolicy, resolveCascade, resolveCascadeWithRegion } from "./policies/resolver.js";
+export { PolicyService } from "./policies/service.js";
+export type { PolicyServiceDeps } from "./policies/service.js";
 
 export {
   ROLE_HIERARCHY,
@@ -101,6 +103,8 @@ export { EmployeeService } from "./employee/service.js";
 export type { EmployeeServiceDeps } from "./employee/service.js";
 export { PayrollService } from "./payroll/service.js";
 export type { PayrollServiceDeps } from "./payroll/service.js";
+export { MonthlyPayrollReportService } from "./payroll/monthly-report.js";
+export type { MonthlyPayrollReportDeps } from "./payroll/monthly-report.js";
 export { FlagQueryService } from "./flags/query-service.js";
 export type { FlagQueryServiceDeps } from "./flags/query-service.js";
 export { BankService } from "./banking/service.js";

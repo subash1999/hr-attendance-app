@@ -14,6 +14,7 @@ import { adminRoutes } from "./handlers/admin.js";
 import { holidayRoutes } from "./handlers/holidays.js";
 import { policyRoutes } from "./handlers/policies.js";
 import { attendanceLockRoutes } from "./handlers/attendance-lock.js";
+import { salaryAdminRoutes } from "./handlers/salary-admin.js";
 
 export function buildRoutes(getDeps: DepsResolver): readonly RouteDefinition[] {
   return [
@@ -28,5 +29,6 @@ export function buildRoutes(getDeps: DepsResolver): readonly RouteDefinition[] {
     ...holidayRoutes(getDeps),
     ...policyRoutes(getDeps),
     ...attendanceLockRoutes(getDeps),
+    ...salaryAdminRoutes(getDeps),
   ];
 }
