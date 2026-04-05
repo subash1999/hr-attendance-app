@@ -19,7 +19,7 @@ const personalSchema = z.object({
 const employmentSchema = z.object({
   employmentType: z.string().min(1),
   region: z.enum(["JP", "NP"]),
-  managerId: z.string().min(1),
+  managerId: z.string().optional().default(""),
   joinDate: z.string().min(1),
 });
 
@@ -112,7 +112,7 @@ export const OnboardingTab = () => {
           <FormField>
             <label htmlFor="managerId">{t("admin.onboard.manager")}</label>
             <select id="managerId" {...form.register("managerId")}>
-              <option value="">{t("common.select")}</option>
+              <option value="">{t("admin.onboard.noManager")}</option>
               {employees?.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.name}
