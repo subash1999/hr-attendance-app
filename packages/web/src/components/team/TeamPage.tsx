@@ -450,7 +450,8 @@ const MemberNameRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.space.sm};
+  gap: ${({ theme }) => theme.space.xs};
+  flex-wrap: wrap;
 `;
 
 const MemberName = styled.span`
@@ -569,19 +570,26 @@ const ReportItem = styled.div`
 const ReportHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.space.sm};
   margin-bottom: ${({ theme }) => theme.space.sm};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    flex-direction: column;
+    gap: ${({ theme }) => theme.space.xs};
+  }
 `;
 
 const ReportAuthor = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  font-family: ${({ theme }) => theme.fonts.mono};
+  flex-shrink: 0;
 `;
 
 const ReportMeta = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.space.xs};
+  flex-wrap: wrap;
   align-items: center;
 `;
 
