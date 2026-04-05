@@ -304,4 +304,8 @@ export const ErrorMessages = {
   GROUP_ID_REQUIRED: "groupId required for GROUP scope",
   EMPLOYEE_ID_REQUIRED: "employeeId required for EMPLOYEE scope",
   LOCK_ALREADY_EXISTS: "Lock already exists for this scope and period",
+  TOO_FAST: "Please wait a moment before trying again",
+  EVENT_BEFORE_LAST: "This action cannot be recorded before the previous one",
+  INVALID_TRANSITION: "This action is not available right now",
+  PERIOD_LOCKED: "This period is locked by admin",
 } as const;

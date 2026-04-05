@@ -139,7 +139,7 @@ export class AttendanceService {
     const yearMonth = isoToYearMonth(event.timestamp);
     const locks = await this.lockRepo.findByYearMonth(yearMonth);
     if (locks.length > 0) {
-      return { success: false, error: `Period ${yearMonth} is locked` };
+      return { success: false, error: ErrorMessages.PERIOD_LOCKED };
     }
 
     const updatedEvent: AttendanceEvent = {
@@ -217,17 +217,11 @@ export class AttendanceService {
       const delta = newTime - lastTime;
 
       if (delta < 0) {
-        return {
-          success: false,
-          error: `Rejected: event timestamp is before last known event at ${state.lastEventTimestamp}`,
-        };
+        return { success: false, error: ErrorMessages.EVENT_BEFORE_LAST };
       }
 
       if (delta < ATTENDANCE.IDEMPOTENCY_WINDOW_MS) {
-        return {
-          success: false,
-          error: `Rejected: idempotency window (${ATTENDANCE.IDEMPOTENCY_WINDOW_MS / 1000}s) — last event at ${state.lastEventTimestamp}`,
-        };
+        return { success: false, error: ErrorMessages.TOO_FAST };
       }
     }
 
@@ -286,7 +280,7 @@ export class AttendanceService {
       l => l.scope === AttendanceLockScopes.EMPLOYEE && l.employeeId === employeeId,
     );
     if (employeeLock) {
-      return { success: false, error: `Period ${yearMonth} is locked (scope: ${AttendanceLockScopes.EMPLOYEE})` };
+      return { success: false, error: ErrorMessages.PERIOD_LOCKED };
     }
 
     // Group-scope: blocks by employment type
@@ -296,7 +290,7 @@ export class AttendanceService {
       if (employee) {
         const matchingGroupLock = groupLocks.find(l => l.groupId === employee.employmentType);
         if (matchingGroupLock) {
-          return { success: false, error: `Period ${yearMonth} is locked (scope: ${AttendanceLockScopes.GROUP})` };
+          return { success: false, error: ErrorMessages.PERIOD_LOCKED };
         }
       }
     }
@@ -304,7 +298,7 @@ export class AttendanceService {
     // Company-scope: broadest, blocks everyone
     const companyLock = locks.find(l => l.scope === AttendanceLockScopes.COMPANY);
     if (companyLock) {
-      return { success: false, error: `Period ${yearMonth} is locked (scope: ${AttendanceLockScopes.COMPANY})` };
+      return { success: false, error: ErrorMessages.PERIOD_LOCKED };
     }
 
     return null;

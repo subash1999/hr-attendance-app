@@ -80,8 +80,7 @@ describe("AttendanceService — Lock Enforcement", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toContain("2026-03");
-      expect(result.error).toContain(AttendanceLockScopes.EMPLOYEE);
+      expect(result.error).toBe(ErrorMessages.PERIOD_LOCKED);
     }
   });
 
@@ -96,7 +95,7 @@ describe("AttendanceService — Lock Enforcement", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toContain(AttendanceLockScopes.GROUP);
+      expect(result.error).toBe(ErrorMessages.PERIOD_LOCKED);
     }
   });
 
@@ -111,7 +110,7 @@ describe("AttendanceService — Lock Enforcement", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toContain(AttendanceLockScopes.COMPANY);
+      expect(result.error).toBe(ErrorMessages.PERIOD_LOCKED);
     }
   });
 
@@ -148,7 +147,7 @@ describe("AttendanceService — Lock Enforcement", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toContain(AttendanceLockScopes.EMPLOYEE);
+      expect(result.error).toBe(ErrorMessages.PERIOD_LOCKED);
     }
   });
 
@@ -236,7 +235,7 @@ describe("AttendanceService — Lock CRUD", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toMatch(/Period 2026-03 is locked \(scope: COMPANY\)/);
+      expect(result.error).toBe(ErrorMessages.PERIOD_LOCKED);
     }
   });
 });

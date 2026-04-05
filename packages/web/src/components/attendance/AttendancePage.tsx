@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { AttendanceStates, isoToDateStr, dateToDateStr, nowIso } from "@hr-attendance-app/types";
+import { AttendanceStates, AttendanceActions, isoToDateStr, dateToDateStr, nowIso } from "@hr-attendance-app/types";
+import type { AttendanceEvent } from "@hr-attendance-app/types";
 import { ClockWidget } from "../dashboard/ClockWidget";
 import { Card, PageLayout, Calendar, Badge, ProgressBar, Modal, FormField, ButtonAccent, EmptyState } from "../ui";
 import { useToast } from "../ui/Toast";
@@ -10,15 +11,24 @@ import {
   useClockAction, useEditAttendanceEvent,
 } from "../../hooks/queries/useAttendance";
 import { useAttendanceLocks } from "../../hooks/queries";
-import { formatDateTime, isoToLocalDate } from "../../utils/date";
+import { formatDateTime, isoToLocalDate, isoToLocalDateTime, localDateTimeToIso } from "../../utils/date";
 import { clockErrorToI18nKey } from "../../utils/attendance-status";
+
+const ACTION_OPTIONS = [
+  AttendanceActions.CLOCK_IN,
+  AttendanceActions.CLOCK_OUT,
+  AttendanceActions.BREAK_START,
+  AttendanceActions.BREAK_END,
+] as const;
 
 
 export const AttendancePage = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const [selectedDate, setSelectedDate] = useState(() => isoToLocalDate(nowIso()));
-  const [editEvent, setEditEvent] = useState<string | null>(null);
+  const [editEvent, setEditEvent] = useState<AttendanceEvent | null>(null);
+  const [editTimestamp, setEditTimestamp] = useState("");
+  const [editAction, setEditAction] = useState("");
   const [editReason, setEditReason] = useState("");
   const currentMonth = selectedDate.slice(0, 7);
 
@@ -45,15 +55,28 @@ export const AttendancePage = () => {
     setSelectedDate(dateToDateStr(date));
   };
 
+  const openEditModal = useCallback((event: AttendanceEvent) => {
+    setEditEvent(event);
+    setEditTimestamp(isoToLocalDateTime(event.timestamp));
+    setEditAction(event.action);
+    setEditReason("");
+  }, []);
+
   const handleEditSubmit = () => {
     if (!editEvent || !editReason.trim()) return;
+    const timestampChanged = localDateTimeToIso(editTimestamp) !== editEvent.timestamp;
+    const actionChanged = editAction !== editEvent.action;
     editMutation.mutate(
-      { eventId: editEvent, reason: editReason },
+      {
+        eventId: editEvent.id,
+        reason: editReason,
+        ...(timestampChanged ? { timestamp: localDateTimeToIso(editTimestamp) } : {}),
+        ...(actionChanged ? { action: editAction } : {}),
+      },
       {
         onSuccess: () => {
           toast.show(t("attendance.editSaved"), "success");
           setEditEvent(null);
-          setEditReason("");
         },
         onError: () => {
           toast.show(t("common.error"), "danger");
@@ -113,7 +136,7 @@ export const AttendancePage = () => {
                   <SourceBadge>{e.source}</SourceBadge>
                 </TimelineAction>
                 {!isLocked && (
-                  <EditButton onClick={() => { setEditEvent(e.id); setEditReason(""); }}>
+                  <EditButton onClick={() => openEditModal(e)}>
                     {t("attendance.edit")}
                   </EditButton>
                 )}
@@ -132,12 +155,36 @@ export const AttendancePage = () => {
       >
         <EditForm>
           <FormField>
+            <label htmlFor="edit-action">{t("attendance.editAction")}</label>
+            <select
+              id="edit-action"
+              value={editAction}
+              onChange={(e) => setEditAction(e.target.value)}
+            >
+              {ACTION_OPTIONS.map((action) => (
+                <option key={action} value={action}>
+                  {t(`attendance.action.${action}`)}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField>
+            <label htmlFor="edit-timestamp">{t("attendance.editTimestamp")}</label>
+            <input
+              id="edit-timestamp"
+              type="datetime-local"
+              value={editTimestamp}
+              onChange={(e) => setEditTimestamp(e.target.value)}
+            />
+          </FormField>
+          <FormField>
             <label htmlFor="edit-reason">{t("attendance.editReason")}</label>
             <textarea
               id="edit-reason"
               rows={3}
               value={editReason}
               onChange={(e) => setEditReason(e.target.value)}
+              placeholder={t("attendance.editReasonPlaceholder")}
             />
           </FormField>
           <ButtonAccent

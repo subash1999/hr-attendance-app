@@ -1,5 +1,5 @@
 import type { AttendanceAction, AttendanceState } from "@hr-attendance-app/types";
-import { AttendanceActions, AttendanceStates } from "@hr-attendance-app/types";
+import { AttendanceActions, AttendanceStates, ErrorMessages } from "@hr-attendance-app/types";
 
 export type TransitionResult =
   | { success: true; newState: AttendanceState }
@@ -31,7 +31,7 @@ export function validateTransition(
 
   return {
     success: false,
-    error: `Invalid transition: cannot ${action} while in ${currentState} state (last event at ${lastEventTimestamp})`,
+    error: ErrorMessages.INVALID_TRANSITION,
     currentState,
     lastEventTimestamp,
   };

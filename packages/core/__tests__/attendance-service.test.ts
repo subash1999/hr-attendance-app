@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { AttendanceService } from "../src/attendance/service.js";
-import { AttendanceActions, AttendanceStates } from "@hr-attendance-app/types";
+import { AttendanceActions, AttendanceStates, ErrorMessages } from "@hr-attendance-app/types";
 import type { AttendanceRepository, AuditRepository, AttendanceLockRepository, EmployeeRepository } from "../src/repositories/index.js";
 
 function createMockRepos() {
@@ -101,7 +101,7 @@ describe("AttendanceService", () => {
     });
 
     expect(result.success).toBe(false);
-    if (!result.success) expect(result.error).toContain("idempotency");
+    if (!result.success) expect(result.error).toBe(ErrorMessages.TOO_FAST);
   });
 
   it("allows event at exact boundary (60s)", async () => {

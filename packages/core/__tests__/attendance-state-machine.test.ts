@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { validateTransition } from "../src/attendance/state-machine.js";
-import { AttendanceActions, AttendanceStates } from "@hr-attendance-app/types";
+import { AttendanceActions, AttendanceStates, ErrorMessages } from "@hr-attendance-app/types";
 
 describe("Attendance State Machine", () => {
   const ts = "2024-01-15T09:00:00Z";
@@ -38,7 +38,7 @@ describe("Attendance State Machine", () => {
       if (!result.success) {
         expect(result.currentState).toBe(AttendanceStates.IDLE);
         expect(result.lastEventTimestamp).toBe(ts);
-        expect(result.error).toContain(AttendanceStates.IDLE);
+        expect(result.error).toBe(ErrorMessages.INVALID_TRANSITION);
       }
     });
 
