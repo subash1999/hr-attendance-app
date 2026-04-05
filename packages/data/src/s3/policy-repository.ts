@@ -29,6 +29,12 @@ export class S3PolicyRepository implements PolicyRepository {
     return this.getWithCache(S3_KEYS.USER(userId)).catch(() => null);
   }
 
+  async saveCompanyPolicy(policy: RawPolicy): Promise<void> {
+    const key = S3_KEYS.COMPANY;
+    await this.putJson(key, policy);
+    this.cache.delete(key);
+  }
+
   async saveGroupPolicy(groupName: string, policy: RawPolicy): Promise<void> {
     const key = S3_KEYS.GROUP(groupName);
     await this.putJson(key, policy);

@@ -18,6 +18,7 @@ import {
   DynamoHolidayRepository,
   DynamoAttendanceLockRepository,
   DynamoRoleRepository,
+  DynamoPolicyRepository,
 } from "@hr-attendance-app/data";
 import {
   AttendanceService,
@@ -29,12 +30,14 @@ import {
   ReminderService,
   EmployeeService,
   PayrollService,
+  PolicyService,
   FlagQueryService,
   BankService,
   ReportService,
   AuditService,
   RoleService,
   DocumentService,
+  regionRegistry,
 } from "@hr-attendance-app/core";
 import type { AuthProviderAdapter } from "@hr-attendance-app/core";
 import { nowMs, DEFAULT_TENANT_ID } from "@hr-attendance-app/types";
@@ -55,6 +58,7 @@ export interface AppServices {
   readonly reminder: ReminderService;
   readonly role: RoleService;
   readonly document: DocumentService;
+  readonly policy: PolicyService;
 }
 
 export interface AppDeps {
@@ -98,12 +102,15 @@ export function getTenantDeps(tenantId: string): AppDeps {
   const holidayRepo = new DynamoHolidayRepository(client, tableName, tenantId);
   const lockRepo = new DynamoAttendanceLockRepository(client, tableName, tenantId);
   const roleRepo = new DynamoRoleRepository(client, tableName, tenantId);
+  const policyRepo = new DynamoPolicyRepository(client, tableName, tenantId);
+
+  const policyService = new PolicyService({ policyRepo, employeeRepo, regionRegistry });
 
   const services: AppServices = {
     employee: new EmployeeService({ employeeRepo }),
     attendance: new AttendanceService(attendanceRepo, auditRepo, lockRepo, employeeRepo),
     leave: new LeaveService(leaveRepo, auditRepo),
-    payroll: new PayrollService({ salaryRepo }),
+    payroll: new PayrollService({ salaryRepo, policyService }),
     flagQuery: new FlagQueryService({ flagRepo }),
     bank: new BankService({ bankRepo }),
     report: new ReportService({ reportRepo }),
@@ -126,6 +133,7 @@ export function getTenantDeps(tenantId: string): AppDeps {
       employeeRepo, leaveRepo, bankRepo,
     }),
     role: new RoleService({ roleRepo }),
+    policy: policyService,
     document: new DocumentService({ documentRepo: { findByEmployee: async () => [], getUploadUrl: async () => "", getDownloadUrl: async () => "", save: async (d) => d } }),
   };
 

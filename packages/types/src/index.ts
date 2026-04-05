@@ -34,6 +34,9 @@ export type {
   AllowanceItem,
   BlendingDetails,
   PayrollBreakdown,
+  MonthlyPayrollReportEntry,
+  MonthlyPayrollReportTotals,
+  MonthlyPayrollReport,
 } from "./payroll.js";
 
 export type {
@@ -170,14 +173,15 @@ export {
   API_ATTENDANCE_STATE, API_ATTENDANCE_EVENTS, API_ATTENDANCE_SUMMARY,
   API_ATTENDANCE_EVENT_BY_ID, API_ATTENDANCE_TEAM_STATES,
   API_LEAVE_REQUESTS, API_LEAVE_REQUEST_BY_ID, API_LEAVE_BALANCE,
-  API_PAYROLL,
+  API_PAYROLL, API_PAYROLL_REPORT,
+  API_ADMIN_SALARY, API_ADMIN_SALARY_EFFECTIVE,
   API_FLAGS, API_FLAG_BY_ID,
   API_BANK, API_BANK_APPROVE,
   API_REPORTS,
   API_ONBOARD, API_OFFBOARD, API_AUDIT,
   API_HOLIDAYS, API_HOLIDAY_DELETE,
   API_ATTENDANCE_LOCK,
-  API_POLICIES,
+  API_POLICIES, API_POLICY_EFFECTIVE, API_POLICY_COMPANY, API_POLICY_USER,
   API_ROLES, API_ROLE_BY_NAME,
   API_DOCUMENTS, API_DOCUMENT_BY_ID, API_DOCUMENT_UPLOAD_URL,
   API_QUOTAS,
@@ -201,6 +205,7 @@ export type {
   RoleBody,
   DocumentsQueryParams, CreateDocumentBody, DocumentVerifyBody,
   QuotaRedistributionBody,
+  CreateSalaryEntryBody,
 } from "./api-routes.js";
 
 export { calculateDailyHours } from "./hours-calculator.js";

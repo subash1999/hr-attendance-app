@@ -17,6 +17,7 @@ export { DynamoHolidayRepository } from "./dynamo/holiday.js";
 export { DynamoAttendanceLockRepository } from "./dynamo/attendance-lock.js";
 export { DynamoOverrideRepository } from "./dynamo/override.js";
 export { DynamoRoleRepository } from "./dynamo/role.js";
+export { DynamoPolicyRepository } from "./dynamo/policy.js";
 export { DynamoMonthlySummaryRepository } from "./dynamo/monthly-summary.js";
 
 export { S3PolicyRepository } from "./s3/policy-repository.js";

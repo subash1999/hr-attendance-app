@@ -76,7 +76,11 @@ export function attendanceRoutes(getDeps: DepsResolver): RouteDefinition[] {
         const denied = requireCrossUserAccess(auth, employeeId);
         if (denied) return denied;
         const date = query.date ?? todayDate();
-        const summary = await deps.services.attendance.getSummary(employeeId, date);
+        const effectivePolicy = await deps.services.policy.resolveForEmployee(employeeId).catch(() => null);
+        const hoursPolicy = effectivePolicy?.hours
+          ? { dailyMinimum: effectivePolicy.hours.dailyMinimum, weeklyMinimum: effectivePolicy.hours.weeklyMinimum, monthlyMinimum: effectivePolicy.hours.monthlyMinimum }
+          : undefined;
+        const summary = await deps.services.attendance.getSummary(employeeId, date, hoursPolicy);
         return buildResponse(200, summary);
       }),
     },

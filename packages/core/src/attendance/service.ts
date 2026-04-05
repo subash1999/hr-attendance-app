@@ -44,7 +44,7 @@ export class AttendanceService {
     return this.attendanceRepo.getEventsForMonth(employeeId, yearMonth);
   }
 
-  async getSummary(employeeId: string, date: string): Promise<{
+  async getSummary(employeeId: string, date: string, policy?: { dailyMinimum: number; weeklyMinimum: number; monthlyMinimum: number }): Promise<{
     hoursToday: number;
     hoursWeek: number;
     hoursMonth: number;
@@ -97,9 +97,9 @@ export class AttendanceService {
       hoursWeek: Math.round(hoursWeek * 100) / 100,
       hoursMonth: Math.round(hoursMonth * 100) / 100,
       breakMinutesToday,
-      requiredDaily: HOURS.DAILY_MINIMUM,
-      requiredWeekly: HOURS.WEEKLY_MINIMUM,
-      requiredMonthly: HOURS.MONTHLY_FULL_TIME,
+      requiredDaily: policy?.dailyMinimum ?? HOURS.DAILY_MINIMUM,
+      requiredWeekly: policy?.weeklyMinimum ?? HOURS.WEEKLY_MINIMUM,
+      requiredMonthly: policy?.monthlyMinimum ?? HOURS.MONTHLY_FULL_TIME,
     };
   }
 

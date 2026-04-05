@@ -17,22 +17,22 @@ import { attendanceLockRoutes } from "./handlers/attendance-lock.js";
 import { roleRoutes } from "./handlers/roles.js";
 import { documentRoutes } from "./handlers/documents.js";
 import { quotaRoutes } from "./handlers/quotas.js";
+import { salaryAdminRoutes } from "./handlers/salary-admin.js";
 
-export function buildRoutes(getDeps: DepsResolver): readonly RouteDefinition[] {
-  return [
-    ...employeeRoutes(getDeps),
-    ...attendanceRoutes(getDeps),
-    ...leaveRoutes(getDeps),
-    ...payrollRoutes(getDeps),
-    ...flagRoutes(getDeps),
-    ...bankRoutes(getDeps),
-    ...reportRoutes(getDeps),
-    ...adminRoutes(getDeps),
-    ...holidayRoutes(getDeps),
-    ...policyRoutes(getDeps),
-    ...attendanceLockRoutes(getDeps),
-    ...roleRoutes(getDeps),
-    ...documentRoutes(getDeps),
-    ...quotaRoutes(getDeps),
-  ];
-}
+export const buildRoutes = (getDeps: DepsResolver): readonly RouteDefinition[] => [
+  ...employeeRoutes(getDeps),
+  ...attendanceRoutes(getDeps),
+  ...leaveRoutes(getDeps),
+  ...payrollRoutes(getDeps),
+  ...flagRoutes(getDeps),
+  ...bankRoutes(getDeps),
+  ...reportRoutes(getDeps),
+  ...adminRoutes(getDeps),
+  ...holidayRoutes(getDeps),
+  ...policyRoutes(getDeps),
+  ...attendanceLockRoutes(getDeps),
+  ...roleRoutes(getDeps),
+  ...documentRoutes(getDeps),
+  ...quotaRoutes(getDeps),
+  ...salaryAdminRoutes(getDeps),
+];

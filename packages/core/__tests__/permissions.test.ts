@@ -142,8 +142,8 @@ describe("RBAC — Permission checks", () => {
 });
 
 describe("RBAC — Permission constants and role mapping", () => {
-  it("Permissions object contains all 11 permission constants", () => {
-    expect(Object.keys(Permissions)).toHaveLength(11);
+  it("Permissions object contains all 12 permission constants", () => {
+    expect(Object.keys(Permissions)).toHaveLength(12);
   });
 
   it("ROLE_PERMISSIONS maps all five roles", () => {
