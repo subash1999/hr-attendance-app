@@ -47,7 +47,7 @@ export const useClockAction = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.attendance.state() });
       void queryClient.invalidateQueries({ queryKey: queryKeys.attendance.summary() });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.attendance.all });
+      void queryClient.invalidateQueries({ queryKey: [API_ATTENDANCE_EVENTS] });
     },
   });
 };
