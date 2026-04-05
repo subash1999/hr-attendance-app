@@ -180,6 +180,10 @@ const Wrapper = styled.div<{ $status: AttendanceState }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 400px;
+  width: 100%;
+  align-self: center;
+  margin: 0 auto;
   gap: ${({ theme }) => theme.space.md};
   border-top: 3px solid ${({ theme, $status }) =>
     $status === AttendanceStates.CLOCKED_IN ? theme.colors.accent :
