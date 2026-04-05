@@ -5,6 +5,12 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { createTenantKeys } from "@hr-attendance-app/data";
+import {
+  orgPolicy,
+  jpFulltimePolicy, jpContractPolicy, jpOutsourcedPolicy,
+  jpParttimePolicy, jpSalesPolicy, jpInternPolicy,
+  npFulltimePolicy, npPaidInternPolicy, npUnpaidInternPolicy,
+} from "@hr-attendance-app/core";
 
 const ENDPOINT = process.env["DYNAMODB_ENDPOINT"] ?? "http://localhost:8000";
 const TABLE_NAME = process.env["DYNAMODB_TABLE_NAME"] ?? "hr-attendance-app-dev-table";
@@ -226,6 +232,26 @@ const seedRoles = async (): Promise<void> => {
   console.log(`Seeded ${roles.length} roles.`);
 };
 
+const GROUP_POLICIES: Record<string, Record<string, unknown>> = {
+  "jp-fulltime": jpFulltimePolicy,
+  "jp-contract": jpContractPolicy,
+  "jp-gyoumu-itaku": jpOutsourcedPolicy,
+  "jp-parttime": jpParttimePolicy,
+  "jp-sales": jpSalesPolicy,
+  "jp-intern": jpInternPolicy,
+  "np-fulltime": npFulltimePolicy,
+  "np-paid-intern": npPaidInternPolicy,
+  "np-unpaid-intern": npUnpaidInternPolicy,
+};
+
+const seedPolicies = async (): Promise<void> => {
+  await put({ PK: keys.POLICY, SK: keys.POLICY_COMPANY, ...orgPolicy });
+  for (const [groupName, policy] of Object.entries(GROUP_POLICIES)) {
+    await put({ PK: keys.POLICY, SK: keys.POLICY_GROUP(groupName), ...policy });
+  }
+  console.log(`Seeded ${Object.keys(GROUP_POLICIES).length + 1} policy records.`);
+};
+
 const seedAll = async (): Promise<void> => {
   console.log("Seeding local DynamoDB...");
   await Promise.all([
@@ -234,6 +260,7 @@ const seedAll = async (): Promise<void> => {
     seedSalaries(),
     seedLeaveBalances(),
     seedRoles(),
+    seedPolicies(),
   ]);
   console.log("Seed complete.");
 };

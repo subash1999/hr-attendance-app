@@ -160,6 +160,8 @@ export interface AttendanceLockQueryParams {
 // ─── Policies ───
 export const API_POLICIES = "/api/policies/:groupName" as const;
 export const API_POLICY_EFFECTIVE = "/api/policies/effective" as const;
+export const API_POLICY_COMPANY = "/api/policies/company" as const;
+export const API_POLICY_USER = "/api/policies/user/:userId" as const;
 
 // ─── Roles ───
 export const API_ROLES = "/api/roles" as const;

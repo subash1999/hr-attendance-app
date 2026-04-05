@@ -39,6 +39,17 @@ export class DynamoPolicyRepository implements PolicyRepository {
     return (result.Item as RawPolicy | undefined) ?? null;
   }
 
+  async saveCompanyPolicy(policy: RawPolicy): Promise<void> {
+    await this.client.send(new PutCommand({
+      TableName: this.tableName,
+      Item: {
+        PK: this.keys.POLICY,
+        SK: this.keys.POLICY_COMPANY,
+        ...policy,
+      },
+    }));
+  }
+
   async saveGroupPolicy(groupName: string, policy: RawPolicy): Promise<void> {
     await this.client.send(new PutCommand({
       TableName: this.tableName,

@@ -46,4 +46,28 @@ export class PolicyService {
 
     return merged as EffectivePolicy;
   }
+
+  async getGroupPolicy(groupName: string): Promise<RawPolicy | null> {
+    return this.deps.policyRepo.getGroupPolicy(groupName);
+  }
+
+  async getCompanyPolicy(): Promise<RawPolicy> {
+    return this.deps.policyRepo.getCompanyPolicy();
+  }
+
+  async getUserPolicy(userId: string): Promise<RawPolicy | null> {
+    return this.deps.policyRepo.getUserPolicy(userId);
+  }
+
+  async saveCompanyPolicy(policy: RawPolicy): Promise<void> {
+    return this.deps.policyRepo.saveCompanyPolicy(policy);
+  }
+
+  async saveGroupPolicy(groupName: string, policy: RawPolicy): Promise<void> {
+    return this.deps.policyRepo.saveGroupPolicy(groupName, policy);
+  }
+
+  async saveUserPolicy(userId: string, policy: RawPolicy): Promise<void> {
+    return this.deps.policyRepo.saveUserPolicy(userId, policy);
+  }
 }

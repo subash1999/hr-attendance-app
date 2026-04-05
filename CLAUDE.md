@@ -60,6 +60,47 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 - All DynamoDB key patterns use `KeyPatterns` and `KeyPrefixes` from `@hr-attendance-app/types` — never construct keys with inline template literals
 - Prefer querying NotebookLM MCP for requirement, design, or contract lookups to save context tokens — fall back to reading spec files directly only when NotebookLM is unavailable
 
+## Policy System Rules
+
+### Policy Architecture
+The app uses a 4-level cascade: **Region defaults → Company overrides → Group overrides → Employee overrides**. Each level is a `RawPolicy` (partial). The resolved `EffectivePolicy` has all fields filled.
+
+- **Region defaults**: Defined in `packages/core/src/regions/{jp,np}/config.ts` → `defaultPolicy`
+- **Company policy**: Stored in DynamoDB (`PK: POLICY, SK: COMPANY`)
+- **Group policies**: Stored in DynamoDB (`PK: POLICY, SK: GROUP#{groupName}`), seeded from `packages/core/src/policies/seed/`
+- **User policies**: Stored in DynamoDB (`PK: POLICY, SK: USER#{userId}`)
+
+### Policy Field Documentation Requirements
+- Every policy field MUST have a description in `packages/web/src/i18n/en.json` under `admin.policy.fieldDesc.{fieldName}`
+- When adding a new policy field: add the field to the TypeScript interface in `packages/types/src/policy.ts`, add the i18n description, and document its effect on application logic
+- Field descriptions must explain: what the field controls, what values are valid, and which services/calculations consume it
+
+### Policy Deprecation Rules
+- **NEVER delete a policy group or rename a policy field** in production — historical payroll, flags, and leave records depend on the policy that was effective at the time
+- To deprecate a policy: set `deprecated: true` and `deprecatedAt: <ISO date>` on the `RawPolicy`. The UI will show a warning banner and disable editing
+- Deprecated policies remain applied to historical periods (any `yearMonth` before `deprecatedAt`)
+- To migrate to a new policy name: (1) create the new policy group, (2) update affected employees' `employmentType` to point to the new group, (3) deprecate the old group. Never delete the old group
+- Pre-production: deletion is acceptable. Post-production: deprecate + migrate only
+- The `deprecated` and `deprecatedAt` fields are metadata — they do NOT affect the cascade resolution. The PolicyService resolves them the same way; the UI enforces the read-only constraint
+
+### Active Policy Groups
+| Group Name | Region | Description |
+|---|---|---|
+| jp-fulltime | JP | Full-time employees, 160h/mo, deemed OT 45h |
+| jp-contract | JP | Contract workers, 160h/mo, deemed OT 45h, 3mo probation |
+| jp-gyoumu-itaku | JP | Outsourced (gyoumu itaku), no OT tracking, no leave |
+| jp-parttime | JP | Part-time, hourly pay, ~90h/mo |
+| jp-sales | JP | Sales staff, deemed OT 45h, commission tracking |
+| jp-intern | JP | Interns, ~90h/mo, no bonus, no OT |
+| np-fulltime | NP | Nepal full-time, 160h/mo, remote, forfeit leave |
+| np-paid-intern | NP | Nepal paid intern, 80h/mo |
+| np-unpaid-intern | NP | Nepal unpaid intern, 90h/mo, no pay, no leave |
+
+### Seeding
+- `hr-app seed` seeds all data including policies from `packages/core/src/policies/seed/`
+- `hr-app seed-policies` seeds only policy data (company + all group policies)
+- Seed scripts: `scripts/seed-data.ts` (full), `scripts/seed-policies.ts` (policies only)
+
 ## Steering Configuration
 
 - Load entire `.kiro/steering/` as project memory

@@ -29,6 +29,13 @@ export type {
 } from "./repositories/index.js";
 
 export { deepMergePolicy, resolveCascade, resolveCascadeWithRegion } from "./policies/resolver.js";
+export * as policySeed from "./policies/seed/index.js";
+export {
+  orgPolicy,
+  jpFulltimePolicy, jpContractPolicy, jpOutsourcedPolicy,
+  jpParttimePolicy, jpSalesPolicy, jpInternPolicy,
+  npFulltimePolicy, npPaidInternPolicy, npUnpaidInternPolicy,
+} from "./policies/seed/index.js";
 export { PolicyService } from "./policies/service.js";
 export type { PolicyServiceDeps } from "./policies/service.js";
 
