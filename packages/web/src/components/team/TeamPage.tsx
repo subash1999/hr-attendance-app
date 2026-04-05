@@ -12,9 +12,9 @@ import {
   useTeamReports, useTeamAttendanceStates, usePendingCounts,
 } from "../../hooks/queries";
 import { useIsManager } from "../../hooks/useRole";
-import { formatDate, formatDateTime } from "../../utils/date";
+import { formatDate, isoToLocalDate } from "../../utils/date";
 import { ATTENDANCE_STATUS_CONFIG } from "../../utils/attendance-status";
-import { AttendanceStates, BankApprovalStatuses, FlagResolutions, FlagStatuses, LeaveRequestStatuses, isoToDateStr, todayDate } from "@hr-attendance-app/types";
+import { AttendanceStates, BankApprovalStatuses, FlagResolutions, FlagStatuses, LeaveRequestStatuses, isoToDateStr, nowIso } from "@hr-attendance-app/types";
 import type { AttendanceState, LeaveRequest, Flag, BankEntry, DailyReport } from "@hr-attendance-app/types";
 
 const TEAM_TABS = [
@@ -250,9 +250,15 @@ const TeamCalendar = ({ isManager }: { readonly isManager: boolean }) => {
 
 const TeamReports = () => {
   const { t } = useTranslation();
-  const [date, setDate] = useState(() => todayDate());
-
+  const [date, setDate] = useState(() => isoToLocalDate(nowIso()));
+  const { data: members } = useTeamMembers();
   const { data: reports, isLoading } = useTeamReports(date);
+
+  const nameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    members?.forEach((m) => map.set(m.id, m.name));
+    return map;
+  }, [members]);
 
   return (
     <Card>
@@ -268,17 +274,17 @@ const TeamReports = () => {
         </FormField>
       </FilterRow>
 
-      {isLoading ? (
-        <p>{t("common.loading")}</p>
-      ) : !reports?.length ? (
+      {isLoading && <p>{t("common.loading")}</p>}
+      {!isLoading && !reports?.length && (
         <EmptyState message={t("team.reports.none")} />
-      ) : (
+      )}
+      {!isLoading && !!reports?.length && (
         <ReportList>
           {reports.map((report: DailyReport) => (
             <ReportItem key={report.id}>
               <ReportHeader>
-                <ReportAuthor>{report.employeeId}</ReportAuthor>
-                <ReportTime>{formatDateTime(report.createdAt)}</ReportTime>
+                <ReportAuthor>{nameMap.get(report.employeeId) ?? report.employeeId}</ReportAuthor>
+                <ReportDate>{formatDate(report.date)}</ReportDate>
               </ReportHeader>
               <ReportBody>{report.yesterday}</ReportBody>
               {report.references.length > 0 && (
@@ -500,7 +506,7 @@ const ReportAuthor = styled.span`
   font-family: ${({ theme }) => theme.fonts.mono};
 `;
 
-const ReportTime = styled.span`
+const ReportDate = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.textMuted};
 `;
