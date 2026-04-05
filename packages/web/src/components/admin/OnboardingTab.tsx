@@ -71,7 +71,8 @@ export const OnboardingTab = () => {
           </FormField>
           <FormField>
             <label htmlFor="slackId">{t("admin.onboard.slackId")}</label>
-            <input id="slackId" {...form.register("slackId")} />
+            <input id="slackId" placeholder="U0123ABC456" {...form.register("slackId")} />
+            <HelpText>{t("admin.onboard.slackIdHelp")}</HelpText>
           </FormField>
           <FormField>
             <label htmlFor="languagePreference">{t("admin.onboard.language")}</label>
@@ -166,6 +167,13 @@ export const OnboardingTab = () => {
     </Card>
   );
 };
+
+const HelpText = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xxs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+  margin-top: 2px;
+`;
 
 const FormGrid = styled.div`
   display: grid;

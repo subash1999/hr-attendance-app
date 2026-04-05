@@ -53,6 +53,7 @@
   "admin": {
     "onboarding": "भर्ना प्रक्रिया", "onboardingDesc": "नयाँ कर्मचारी रेकर्ड सिर्जना",
     "offboarding": "विदाई प्रक्रिया", "offboardingDesc": "कर्मचारी निकास प्रशोधन",
+    "employees": "कर्मचारीहरू", "employeesDesc": "कर्मचारी विवरण हेर्नुहोस् र सम्पादन गर्नुहोस्",
     "policies": "नीतिहरू", "policiesDesc": "नीति कन्फिगरेसन व्यवस्थापन",
     "roles": "भूमिकाहरू", "rolesDesc": "कस्टम भूमिका र अनुमति व्यवस्थापन",
     "holidays": "बिदाहरू", "holidaysDesc": "क्षेत्रीय बिदा क्यालेन्डर व्यवस्थापन",
@@ -60,7 +61,8 @@
     "selectSection": "व्यवस्थापन गर्न खण्ड चयन गर्नुहोस्",
     "onboardSuccess": "कर्मचारी भर्ना प्रक्रिया सफल भयो",
     "offboardSuccess": "कर्मचारी विदाई प्रक्रिया सफल भयो",
-    "onboard": { "step1": "व्यक्तिगत जानकारी", "step2": "रोजगार", "step3": "तलब", "name": "पूरा नाम", "email": "इमेल", "slackId": "Slack प्रयोगकर्ता ID", "language": "भाषा", "employmentType": "रोजगार प्रकार", "region": "क्षेत्र", "manager": "व्यवस्थापक", "joinDate": "सामेल मिति", "salary": "तलब रकम", "currency": "मुद्रा", "salaryType": "तलब प्रकार", "monthly": "मासिक", "annual": "वार्षिक", "hourly": "घण्टाको" },
+    "employees": { "none": "कुनै कर्मचारी भेटिएन", "edit": "सम्पादन", "editTitle": "कर्मचारी सम्पादन", "updated": "कर्मचारी अपडेट भयो" },
+    "onboard": { "step1": "व्यक्तिगत जानकारी", "step2": "रोजगार", "step3": "तलब", "name": "पूरा नाम", "email": "इमेल", "slackId": "Slack प्रयोगकर्ता ID", "slackIdHelp": "Slack खोल्नुहोस् → प्रोफाइल → थप → सदस्य ID कपी गर्नुहोस्", "language": "भाषा", "employmentType": "रोजगार प्रकार", "region": "क्षेत्र", "manager": "व्यवस्थापक", "joinDate": "सामेल मिति", "salary": "तलब रकम", "currency": "मुद्रा", "salaryType": "तलब प्रकार", "monthly": "मासिक", "annual": "वार्षिक", "hourly": "घण्टाको" },
     "offboard": { "selectEmployee": "कर्मचारी चयन", "employee": "कर्मचारी", "type": "रोजगार प्रकार", "region": "क्षेत्र", "terminationType": "समाप्ति प्रकार", "withoutCause": "कारण बिना", "forCause": "कारणले", "mutual": "आपसी सहमति", "resignation": "राजीनामा", "curePeriod": "सुधार अवधि मिति", "lastDate": "अन्तिम कार्य दिन", "notes": "निकास टिप्पणी", "noticeBuyout": "सूचना अवधि खरिद", "preview": "निपटान पूर्वावलोकन", "settlementPreview": "निपटान पूर्वावलोकन", "settlementNote": "अन्तिम निपटान दिनानुसार तलब, अप्रयुक्त बिदा, र पेन्डिङ कटौतीमा आधारित हुनेछ।", "confirm": "विदाई पुष्टि" },
     "policy": { "groups": "नीति समूह", "hours": "घण्टा", "leave": "बिदा", "overtime": "ओभरटाइम", "compensation": "क्षतिपूर्ति", "probation": "परीक्षण अवधि", "flags": "फ्ल्यागहरू", "payment": "भुक्तानी", "report": "रिपोर्ट", "salaryStatement": "तलब विवरण", "noData": "नीति डाटा छैन", "items": "वस्तु", "saved": "नीति सुरक्षित गरियो" },
     "rolesEditor": { "list": "भूमिकाहरू", "none": "कुनै भूमिका परिभाषित छैन", "selectRole": "व्यवस्थापन गर्न भूमिका चयन गर्नुहोस्", "locked": "लक गरिएको", "saved": "भूमिका अनुमति सुरक्षित", "domain": { "attendance": "हाजिरी", "leave": "बिदा", "flags": "फ्ल्यागहरू", "bank": "बैंक", "admin": "प्रशासन", "employees": "कर्मचारीहरू", "holidays": "बिदाहरू" } },

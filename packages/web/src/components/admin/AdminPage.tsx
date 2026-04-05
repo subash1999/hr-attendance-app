@@ -8,8 +8,9 @@ import { PolicyTab } from "./PolicyTab";
 import { RolesTab } from "./RolesTab";
 import { HolidayTab } from "./HolidayTab";
 import { AttendanceLockTab } from "./AttendanceLockTab";
+import { EmployeesTab } from "./EmployeesTab";
 
-type AdminSection = "onboarding" | "offboarding" | "policies" | "roles" | "holidays" | "locks";
+type AdminSection = "onboarding" | "offboarding" | "employees" | "policies" | "roles" | "holidays" | "locks";
 
 interface SectionConfig {
   readonly id: AdminSection;
@@ -21,6 +22,7 @@ interface SectionConfig {
 const SECTIONS: readonly SectionConfig[] = [
   { id: "onboarding", labelKey: "admin.onboarding", descKey: "admin.onboardingDesc", icon: "+" },
   { id: "offboarding", labelKey: "admin.offboarding", descKey: "admin.offboardingDesc", icon: "→" },
+  { id: "employees", labelKey: "admin.employees", descKey: "admin.employeesDesc", icon: "⊡" },
   { id: "policies", labelKey: "admin.policies", descKey: "admin.policiesDesc", icon: "≡" },
   { id: "roles", labelKey: "admin.roles", descKey: "admin.rolesDesc", icon: "⊕" },
   { id: "holidays", labelKey: "admin.holidays", descKey: "admin.holidaysDesc", icon: "◆" },
@@ -36,6 +38,8 @@ const getSectionContent = (section: AdminSection): ReactNode => {
       return <OnboardingTab />;
     case "offboarding":
       return <OffboardingTab />;
+    case "employees":
+      return <EmployeesTab />;
     case "policies":
       return <PolicyTab />;
     case "roles":

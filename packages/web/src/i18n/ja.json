@@ -53,6 +53,7 @@
   "admin": {
     "onboarding": "入社手続き", "onboardingDesc": "新規社員レコード作成",
     "offboarding": "退社手続き", "offboardingDesc": "退社処理",
+    "employees": "社員管理", "employeesDesc": "社員情報の閲覧・編集",
     "policies": "ポリシー", "policiesDesc": "ポリシー設定管理",
     "roles": "ロール", "rolesDesc": "カスタムロールと権限の管理",
     "holidays": "祝日", "holidaysDesc": "地域別祝日カレンダー管理",
@@ -60,7 +61,8 @@
     "selectSection": "管理するセクションを選択",
     "onboardSuccess": "社員の入社手続きが完了しました",
     "offboardSuccess": "社員の退社手続きが完了しました",
-    "onboard": { "step1": "個人情報", "step2": "雇用情報", "step3": "給与", "name": "氏名", "email": "メール", "slackId": "Slack ユーザーID", "language": "言語", "employmentType": "雇用形態", "region": "地域", "manager": "上司", "joinDate": "入社日", "salary": "給与額", "currency": "通貨", "salaryType": "給与種別", "monthly": "月給", "annual": "年俸", "hourly": "時給" },
+    "employees": { "none": "社員が見つかりません", "edit": "編集", "editTitle": "社員情報編集", "updated": "社員情報を更新しました" },
+    "onboard": { "step1": "個人情報", "step2": "雇用情報", "step3": "給与", "name": "氏名", "email": "メール", "slackId": "Slack ユーザーID", "slackIdHelp": "Slack → プロフィール → その他 → メンバーIDをコピー", "language": "言語", "employmentType": "雇用形態", "region": "地域", "manager": "上司", "joinDate": "入社日", "salary": "給与額", "currency": "通貨", "salaryType": "給与種別", "monthly": "月給", "annual": "年俸", "hourly": "時給" },
     "offboard": { "selectEmployee": "社員を選択", "employee": "社員", "type": "雇用形態", "region": "地域", "terminationType": "退職種別", "withoutCause": "普通解雇", "forCause": "懲戒解雇", "mutual": "合意退職", "resignation": "自己都合退職", "curePeriod": "是正期間日", "lastDate": "最終出勤日", "notes": "退職メモ", "noticeBuyout": "予告手当", "preview": "精算プレビュー", "settlementPreview": "精算プレビュー", "settlementNote": "最終精算は日割り給与、未使用休暇、未精算控除に基づき計算されます。", "confirm": "退社確定" },
     "policy": { "groups": "ポリシーグループ", "hours": "時間", "leave": "休暇", "overtime": "残業", "compensation": "報酬", "probation": "試用期間", "flags": "フラグ", "payment": "支払い", "report": "日報", "salaryStatement": "給与明細", "noData": "ポリシーデータなし", "items": "件", "saved": "ポリシーを保存しました" },
     "rolesEditor": { "list": "ロール", "none": "ロールが定義されていません", "selectRole": "管理するロールを選択", "locked": "ロック済み", "saved": "ロール権限を保存しました", "domain": { "attendance": "勤怠", "leave": "休暇", "flags": "フラグ", "bank": "バンク", "admin": "管理", "employees": "社員", "holidays": "祝日" } },
