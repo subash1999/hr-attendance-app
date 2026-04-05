@@ -44,9 +44,19 @@ export const AttendancePage = () => {
   const status = attState?.state ?? AttendanceStates.IDLE;
   const isLocked = (locks?.length ?? 0) > 0;
   const hoursToday = summary?.hoursToday ?? 0;
+  const hoursWeek = summary?.hoursWeek ?? 0;
   const hoursMonth = summary?.hoursMonth ?? 0;
   const breakMinutesToday = summary?.breakMinutesToday ?? 0;
+  const requiredDaily = summary?.requiredDaily ?? 8;
+  const requiredWeekly = summary?.requiredWeekly ?? 40;
   const requiredMonthly = summary?.requiredMonthly ?? 160;
+
+  const remainingDaily = Math.max(0, requiredDaily - hoursToday);
+  const remainingWeekly = Math.max(0, requiredWeekly - hoursWeek);
+  const remainingMonthly = Math.max(0, requiredMonthly - hoursMonth);
+  const surplusDaily = Math.max(0, hoursToday - requiredDaily);
+  const surplusWeekly = Math.max(0, hoursWeek - requiredWeekly);
+  const surplusMonthly = Math.max(0, hoursMonth - requiredMonthly);
 
   const eventDates = useMemo(() => {
     if (!events) return new Set<string>();
@@ -102,6 +112,75 @@ export const AttendancePage = () => {
         loading={clockAction.isPending}
       />
 
+      {/* Hours Summary */}
+      <Card>
+        <SummaryTitle>{t("attendance.hoursSummary")}</SummaryTitle>
+        <SummaryGrid>
+          <SummaryCard>
+            <SummaryPeriod>{t("attendance.daily")}</SummaryPeriod>
+            <ProgressBar value={hoursToday} max={requiredDaily} variant={surplusDaily > 0 ? "success" : "accent"} />
+            <SummaryRow>
+              <SummaryDetail>
+                <SummaryDetailLabel>{t("attendance.worked")}</SummaryDetailLabel>
+                <SummaryDetailValue>{hoursToday.toFixed(1)}h</SummaryDetailValue>
+              </SummaryDetail>
+              <SummaryDetail>
+                <SummaryDetailLabel>{t("attendance.required")}</SummaryDetailLabel>
+                <SummaryDetailValue>{requiredDaily}h</SummaryDetailValue>
+              </SummaryDetail>
+              <SummaryDetail>
+                <SummaryDetailLabel>{surplusDaily > 0 ? t("attendance.surplus") : t("attendance.remaining")}</SummaryDetailLabel>
+                <SummaryDetailValue $accent={surplusDaily > 0}>
+                  {surplusDaily > 0 ? `+${surplusDaily.toFixed(1)}h` : `${remainingDaily.toFixed(1)}h`}
+                </SummaryDetailValue>
+              </SummaryDetail>
+            </SummaryRow>
+          </SummaryCard>
+
+          <SummaryCard>
+            <SummaryPeriod>{t("attendance.weekly")}</SummaryPeriod>
+            <ProgressBar value={hoursWeek} max={requiredWeekly} variant={surplusWeekly > 0 ? "success" : "accent"} />
+            <SummaryRow>
+              <SummaryDetail>
+                <SummaryDetailLabel>{t("attendance.worked")}</SummaryDetailLabel>
+                <SummaryDetailValue>{hoursWeek.toFixed(1)}h</SummaryDetailValue>
+              </SummaryDetail>
+              <SummaryDetail>
+                <SummaryDetailLabel>{t("attendance.required")}</SummaryDetailLabel>
+                <SummaryDetailValue>{requiredWeekly}h</SummaryDetailValue>
+              </SummaryDetail>
+              <SummaryDetail>
+                <SummaryDetailLabel>{surplusWeekly > 0 ? t("attendance.surplus") : t("attendance.remaining")}</SummaryDetailLabel>
+                <SummaryDetailValue $accent={surplusWeekly > 0}>
+                  {surplusWeekly > 0 ? `+${surplusWeekly.toFixed(1)}h` : `${remainingWeekly.toFixed(1)}h`}
+                </SummaryDetailValue>
+              </SummaryDetail>
+            </SummaryRow>
+          </SummaryCard>
+
+          <SummaryCard>
+            <SummaryPeriod>{t("attendance.monthly")}</SummaryPeriod>
+            <ProgressBar value={hoursMonth} max={requiredMonthly} variant={surplusMonthly > 0 ? "success" : "accent"} />
+            <SummaryRow>
+              <SummaryDetail>
+                <SummaryDetailLabel>{t("attendance.worked")}</SummaryDetailLabel>
+                <SummaryDetailValue>{hoursMonth.toFixed(1)}h</SummaryDetailValue>
+              </SummaryDetail>
+              <SummaryDetail>
+                <SummaryDetailLabel>{t("attendance.required")}</SummaryDetailLabel>
+                <SummaryDetailValue>{requiredMonthly}h</SummaryDetailValue>
+              </SummaryDetail>
+              <SummaryDetail>
+                <SummaryDetailLabel>{surplusMonthly > 0 ? t("attendance.surplus") : t("attendance.remaining")}</SummaryDetailLabel>
+                <SummaryDetailValue $accent={surplusMonthly > 0}>
+                  {surplusMonthly > 0 ? `+${surplusMonthly.toFixed(1)}h` : `${remainingMonthly.toFixed(1)}h`}
+                </SummaryDetailValue>
+              </SummaryDetail>
+            </SummaryRow>
+          </SummaryCard>
+        </SummaryGrid>
+      </Card>
+
       {/* Monthly Calendar */}
       <Card>
         <CalendarHeader>
@@ -113,9 +192,6 @@ export const AttendancePage = () => {
           onDateSelect={handleDateSelect}
           highlightedDates={eventDates}
         />
-        <HoursSummary>
-          <ProgressBar value={hoursMonth} max={requiredMonthly} variant="accent" />
-        </HoursSummary>
       </Card>
 
       {/* Day Detail */}
@@ -212,12 +288,6 @@ const CalendarHeader = styled.div`
   }
 `;
 
-const HoursSummary = styled.div`
-  margin-top: ${({ theme }) => theme.space.md};
-  padding-top: ${({ theme }) => theme.space.md};
-  border-top: 1px solid ${({ theme }) => theme.colors.borderLight};
-`;
-
 const DayHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.space.md};
 
@@ -299,4 +369,63 @@ const EditForm = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space.md};
+`;
+
+const SummaryTitle = styled.h3`
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  margin-bottom: ${({ theme }) => theme.space.md};
+`;
+
+const SummaryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: ${({ theme }) => theme.space.md};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SummaryCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.space.sm};
+  padding: ${({ theme }) => theme.space.md};
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radii.md};
+`;
+
+const SummaryPeriod = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.text};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+const SummaryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.space.xs};
+`;
+
+const SummaryDetail = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+`;
+
+const SummaryDetailLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xxs};
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-transform: uppercase;
+`;
+
+const SummaryDetailValue = styled.span<{ $accent?: boolean }>`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  font-family: ${({ theme }) => theme.fonts.mono};
+  color: ${({ theme, $accent }) => $accent ? theme.colors.success : theme.colors.text};
 `;

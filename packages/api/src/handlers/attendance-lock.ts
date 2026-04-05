@@ -18,10 +18,7 @@ export function attendanceLockRoutes(getDeps: DepsResolver): RouteDefinition[] {
     {
       method: "GET",
       path: API_ATTENDANCE_LOCK,
-      handler: withAuth(getDeps, async ({ auth, deps, queryParams }) => {
-        if (!hasPermission(auth, Permissions.ATTENDANCE_LOCK)) {
-          return handleError(ErrorCodes.FORBIDDEN, ErrorMessages.INSUFFICIENT_PERMISSIONS);
-        }
+      handler: withAuth(getDeps, async ({ deps, queryParams }) => {
         const query = queryParams as unknown as AttendanceLockQueryParams;
         if (!query.yearMonth || !YEAR_MONTH_PATTERN.test(query.yearMonth)) {
           return handleError(ErrorCodes.VALIDATION, ErrorMessages.YEAR_MONTH_QUERY_REQUIRED);
