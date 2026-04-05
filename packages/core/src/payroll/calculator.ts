@@ -72,15 +72,16 @@ export function calculateBlendedSalary(
 
 /**
  * Convert any salary type to monthly equivalent.
+ * monthlyHours: policy-driven monthly hours for HOURLY conversion (defaults to HOURS.MONTHLY_FULL_TIME).
  */
-export function toMonthlySalary(amount: number, salaryType: SalaryType): number {
+export function toMonthlySalary(amount: number, salaryType: SalaryType, monthlyHours?: number): number {
   switch (salaryType) {
     case SalaryTypes.MONTHLY:
       return amount;
     case SalaryTypes.ANNUAL:
       return amount / 12;
     case SalaryTypes.HOURLY:
-      return amount * HOURS.MONTHLY_FULL_TIME;
+      return amount * (monthlyHours ?? HOURS.MONTHLY_FULL_TIME);
     default:
       return amount;
   }

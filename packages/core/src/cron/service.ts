@@ -5,6 +5,7 @@ import type { AttendanceRepository } from "../repositories/attendance.js";
 import type { FlagRepository } from "../repositories/flag.js";
 import type { BankRepository } from "../repositories/bank.js";
 import type { AuditRepository } from "../repositories/audit.js";
+import type { PolicyService } from "../policies/service.js";
 
 export interface CronDeps {
   readonly employeeRepo: EmployeeRepository;
@@ -12,6 +13,7 @@ export interface CronDeps {
   readonly flagRepo: FlagRepository;
   readonly bankRepo: BankRepository;
   readonly auditRepo: AuditRepository;
+  readonly policyService?: PolicyService;
 }
 
 export interface DailyCheckResult {

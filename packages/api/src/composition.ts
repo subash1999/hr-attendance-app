@@ -37,6 +37,7 @@ import {
   AuditService,
   RoleService,
   DocumentService,
+  MonthlyPayrollReportService,
   regionRegistry,
 } from "@hr-attendance-app/core";
 import type { AuthProviderAdapter } from "@hr-attendance-app/core";
@@ -59,6 +60,7 @@ export interface AppServices {
   readonly role: RoleService;
   readonly document: DocumentService;
   readonly policy: PolicyService;
+  readonly monthlyPayrollReport: MonthlyPayrollReportService;
 }
 
 export interface AppDeps {
@@ -126,8 +128,11 @@ export function getTenantDeps(tenantId: string): AppDeps {
       auditRepo,
     }),
     holiday: new HolidayService({ holidayRepo }),
+    monthlyPayrollReport: new MonthlyPayrollReportService({
+      employeeRepo, attendanceRepo, salaryRepo, leaveRepo, policyService,
+    }),
     cron: new CronService({
-      employeeRepo, attendanceRepo, flagRepo, bankRepo, auditRepo,
+      employeeRepo, attendanceRepo, flagRepo, bankRepo, auditRepo, policyService,
     }),
     reminder: new ReminderService({
       employeeRepo, leaveRepo, bankRepo,

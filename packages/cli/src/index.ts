@@ -6,6 +6,7 @@ import { destroyCommand } from "./commands/destroy.js";
 import { statusCommand } from "./commands/status.js";
 import { devCommand } from "./commands/dev.js";
 import { seedCommand } from "./commands/seed.js";
+import { seedPoliciesCommand } from "./commands/seed-policies.js";
 
 const program = new Command();
 
@@ -20,5 +21,6 @@ program.addCommand(destroyCommand);
 program.addCommand(statusCommand);
 program.addCommand(devCommand);
 program.addCommand(seedCommand);
+program.addCommand(seedPoliciesCommand);
 
 program.parse();
