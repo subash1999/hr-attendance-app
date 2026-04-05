@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Tabs, Badge, ButtonAccent, ButtonDanger, DataTable, Card } from "../ui";
 import { useAttendanceLocks, useCreateLock, useDeleteLock, useEmployees } from "../../hooks/queries";
 import { useToast } from "../ui/Toast";
-import { AttendanceLockScopes, isoToYearMonth, nowIso } from "@hr-attendance-app/types";
+import { AttendanceLockScopes, EmploymentTypes, isoToYearMonth, nowIso } from "@hr-attendance-app/types";
 import type { ColumnDef } from "@tanstack/react-table";
 
 type LockScope = "company" | "group" | "employee";
@@ -15,10 +15,7 @@ const SCOPE_TABS = [
   { key: "employee" as const, label: "admin.lock.employee" },
 ];
 
-const EMPLOYMENT_GROUPS = [
-  "jp-fulltime", "jp-contract", "jp-gyoumu-itaku", "jp-parttime",
-  "jp-sales", "jp-intern", "np-fulltime", "np-paid-intern", "np-unpaid-intern",
-] as const;
+const EMPLOYMENT_GROUPS = Object.values(EmploymentTypes);
 
 export const AttendanceLockTab = () => {
   const { t } = useTranslation();

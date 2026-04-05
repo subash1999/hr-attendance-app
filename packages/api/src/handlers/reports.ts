@@ -10,9 +10,16 @@ export function reportRoutes(getDeps: DepsResolver): RouteDefinition[] {
       method: "GET",
       path: API_REPORTS,
       handler: withAuth(getDeps, async ({ auth, deps, queryParams }) => {
-        const query = queryParams as unknown as ReportsQueryParams;
-        const employeeId = query.employeeId ?? auth.actorId;
+        const query = queryParams as unknown as ReportsQueryParams & { team?: string };
         const date = query.date ?? todayDate();
+
+        // team=true returns all reports for the date (manager/admin use)
+        if (query.team === "true") {
+          const reports = await deps.services.report.findAllByDate(date);
+          return buildResponse(200, reports);
+        }
+
+        const employeeId = query.employeeId ?? auth.actorId;
         const reports = await deps.services.report.findByDate(employeeId, date);
         return buildResponse(200, reports);
       }),

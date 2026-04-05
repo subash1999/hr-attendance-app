@@ -36,6 +36,16 @@ export class DynamoReportRepository implements ReportRepository {
     return (result.Items as DailyReport[]) ?? [];
   }
 
+  async findAllByDate(date: string): Promise<readonly DailyReport[]> {
+    const result = await this.client.send(new QueryCommand({
+      TableName: this.tableName,
+      IndexName: "GSI2",
+      KeyConditionExpression: "GSI2PK = :pk",
+      ExpressionAttributeValues: { ":pk": this.keys.GSI2.ORG_REPORT(date) },
+    }));
+    return (result.Items as DailyReport[]) ?? [];
+  }
+
   async findLatestVersion(employeeId: string, date: string): Promise<DailyReport | null> {
     const result = await this.client.send(new QueryCommand({
       TableName: this.tableName,

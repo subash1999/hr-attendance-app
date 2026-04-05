@@ -78,6 +78,15 @@ export class DynamoAttendanceRepository implements AttendanceRepository {
     return (result.Items as AttendanceEvent[]) ?? [];
   }
 
+  async getEventById(eventId: string, employeeId: string): Promise<AttendanceEvent | null> {
+    // eventId format: ATT#<date>#<timestamp> — extract date from the ID
+    const result = await this.client.send(new GetCommand({
+      TableName: this.tableName,
+      Key: { PK: this.keys.EMP(employeeId), SK: eventId },
+    }));
+    return (result.Item as AttendanceEvent) ?? null;
+  }
+
   async getUnclosedSessions(date: string): Promise<readonly AttendanceStateRecord[]> {
     const result = await this.client.send(new QueryCommand({
       TableName: this.tableName,

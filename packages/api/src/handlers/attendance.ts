@@ -3,10 +3,14 @@ import type { DepsResolver } from "../composition.js";
 import { withAuth, buildResponse, handleError } from "../middleware/index.js";
 import {
   AttendanceActions, AuditSources, ErrorCodes,
-  API_ATTENDANCE_STATE, API_ATTENDANCE_EVENTS,
+  API_ATTENDANCE_STATE, API_ATTENDANCE_EVENTS, API_ATTENDANCE_SUMMARY,
+  API_ATTENDANCE_EVENT_BY_ID, API_ATTENDANCE_TEAM_STATES,
   todayDate, nowMs,
 } from "@hr-attendance-app/types";
-import type { ClockActionBody, AttendanceEventsQueryParams } from "@hr-attendance-app/types";
+import type {
+  ClockActionBody, AttendanceEventsQueryParams,
+  AttendanceSummaryQueryParams, EditAttendanceEventBody,
+} from "@hr-attendance-app/types";
 
 export function attendanceRoutes(getDeps: DepsResolver): RouteDefinition[] {
   return [
@@ -58,6 +62,49 @@ export function attendanceRoutes(getDeps: DepsResolver): RouteDefinition[] {
 
         if (!result.success) return handleError(ErrorCodes.CONFLICT, result.error);
         return buildResponse(201, result.data);
+      }),
+    },
+    {
+      method: "GET",
+      path: API_ATTENDANCE_SUMMARY,
+      handler: withAuth(getDeps, async ({ auth, deps, queryParams }) => {
+        const query = queryParams as unknown as AttendanceSummaryQueryParams;
+        const employeeId = query.employeeId ?? auth.actorId;
+        const date = query.date ?? todayDate();
+        const summary = await deps.services.attendance.getSummary(employeeId, date);
+        return buildResponse(200, summary);
+      }),
+    },
+    {
+      method: "PATCH",
+      path: API_ATTENDANCE_EVENT_BY_ID,
+      handler: withAuth(getDeps, async ({ auth, deps, body, pathParams }) => {
+        const input = body as EditAttendanceEventBody | null;
+        if (!input?.reason) return handleError(ErrorCodes.VALIDATION, "reason is required");
+
+        const eventId = pathParams?.id;
+        if (!eventId) return handleError(ErrorCodes.VALIDATION, "event id is required");
+
+        const result = await deps.services.attendance.editEvent(
+          eventId,
+          auth.actorId,
+          { timestamp: input.timestamp, action: input.action, reason: input.reason },
+          auth.actorId,
+          AuditSources.WEB,
+        );
+
+        if (!result.success) return handleError(ErrorCodes.CONFLICT, result.error);
+        return buildResponse(200, result.data);
+      }),
+    },
+    {
+      method: "GET",
+      path: API_ATTENDANCE_TEAM_STATES,
+      handler: withAuth(getDeps, async ({ deps, queryParams }) => {
+        const employeeIds = (queryParams as Record<string, string>).employeeIds?.split(",") ?? [];
+        if (employeeIds.length === 0) return buildResponse(200, []);
+        const states = await deps.services.attendance.getTeamStates(employeeIds);
+        return buildResponse(200, states);
       }),
     },
   ];

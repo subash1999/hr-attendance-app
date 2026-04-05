@@ -6,5 +6,6 @@ export interface AttendanceRepository {
   saveEvent(event: AttendanceEvent): Promise<void>;
   getEventsForDate(employeeId: string, date: string): Promise<readonly AttendanceEvent[]>;
   getEventsForMonth(employeeId: string, yearMonth: string): Promise<readonly AttendanceEvent[]>;
+  getEventById(eventId: string, employeeId: string): Promise<AttendanceEvent | null>;
   getUnclosedSessions(date: string): Promise<readonly AttendanceStateRecord[]>;
 }

@@ -9,12 +9,13 @@ import { useToast } from "../ui/Toast";
 import {
   useTeamMembers, useFlags, usePendingLeaveRequests, useLeaveRequests,
   useApproveLeave, useResolveFlag, useBank, useBankApprove,
-  useReports,
+  useTeamReports, useTeamAttendanceStates,
 } from "../../hooks/queries";
 import { useIsManager } from "../../hooks/useRole";
 import { formatDate, formatDateTime } from "../../utils/date";
-import { FlagResolutions, FlagStatuses, LeaveRequestStatuses, isoToDateStr, todayDate } from "@hr-attendance-app/types";
-import type { LeaveRequest, Flag, BankEntry, DailyReport } from "@hr-attendance-app/types";
+import { ATTENDANCE_STATUS_CONFIG } from "../../utils/attendance-status";
+import { AttendanceStates, FlagResolutions, FlagStatuses, LeaveRequestStatuses, isoToDateStr, todayDate } from "@hr-attendance-app/types";
+import type { AttendanceState, LeaveRequest, Flag, BankEntry, DailyReport } from "@hr-attendance-app/types";
 
 const TEAM_TABS = [
   { key: "overview", label: "team.tab.overview" },
@@ -49,27 +50,41 @@ export const TeamPage = () => {
 const TeamOverview = () => {
   const { t } = useTranslation();
   const { data: members, isLoading } = useTeamMembers();
+  const memberIds = useMemo(() => members?.map((m) => m.id) ?? [], [members]);
+  const { data: teamStates } = useTeamAttendanceStates(memberIds);
+
+  const stateMap = useMemo(() => {
+    const map = new Map<string, string>();
+    teamStates?.forEach((s) => map.set(s.employeeId, s.state));
+    return map;
+  }, [teamStates]);
 
   if (isLoading) return <Card><p>{t("common.loading")}</p></Card>;
   if (!members?.length) return <EmptyState message={t("team.noMembers")} />;
 
   return (
     <MemberGrid>
-      {members.map((m) => (
-        <MemberCard key={m.id}>
-          <Avatar>{m.name.charAt(0).toUpperCase()}</Avatar>
-          <MemberInfo>
-            <MemberName>{m.name}</MemberName>
-            <MemberMeta>
-              <Badge label={t(`team.employmentType.${m.employmentType}`)} variant="info" />
-              <Badge label={t(`team.region.${m.region}`)} variant="info" />
-            </MemberMeta>
-            <StatusBadge>
-              <Badge label={t("team.status.idle")} variant="success" />
-            </StatusBadge>
-          </MemberInfo>
-        </MemberCard>
-      ))}
+      {members.map((m) => {
+        const state: AttendanceState = (stateMap.get(m.id) ?? AttendanceStates.IDLE) as AttendanceState;
+        return (
+          <MemberCard key={m.id}>
+            <Avatar>{m.name.charAt(0).toUpperCase()}</Avatar>
+            <MemberInfo>
+              <MemberName>{m.name}</MemberName>
+              <MemberMeta>
+                <Badge label={t(`team.employmentType.${m.employmentType}`)} variant="info" />
+                <Badge label={t(`team.region.${m.region}`)} variant="info" />
+              </MemberMeta>
+              <StatusBadge>
+                <Badge
+                  label={t(ATTENDANCE_STATUS_CONFIG[state].labelKey)}
+                  variant={ATTENDANCE_STATUS_CONFIG[state].variant}
+                />
+              </StatusBadge>
+            </MemberInfo>
+          </MemberCard>
+        );
+      })}
     </MemberGrid>
   );
 };
@@ -222,7 +237,7 @@ const TeamReports = () => {
   const { t } = useTranslation();
   const [date, setDate] = useState(() => todayDate());
 
-  const { data: reports, isLoading } = useReports(date);
+  const { data: reports, isLoading } = useTeamReports(date);
 
   return (
     <Card>

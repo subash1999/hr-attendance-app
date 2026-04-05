@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { AttendanceStates, ROUTES, HOURS, Regions, currentYear } from "@hr-attendance-app/types";
+import { AttendanceStates, ROUTES, Regions, currentYear } from "@hr-attendance-app/types";
 import { ClockWidget } from "./ClockWidget";
 import { Card, PageLayout, ProgressBar, Badge } from "../ui";
-import { useAttendanceState, useClockAction } from "../../hooks/queries/useAttendance";
+import { useAttendanceState, useAttendanceSummary, useClockAction } from "../../hooks/queries/useAttendance";
 import { useLeaveBalance } from "../../hooks/queries/useLeave";
 import { useHolidays } from "../../hooks/queries";
 import { useIsManager } from "../../hooks/useRole";
@@ -15,30 +14,20 @@ import { formatDate } from "../../utils/date";
 export const DashboardPage = () => {
   const { t } = useTranslation();
   const { data: attState, isLoading: attLoading } = useAttendanceState();
+  const { data: summary } = useAttendanceSummary();
   const clockAction = useClockAction();
   const { data: balance } = useLeaveBalance();
   const { data: holidays } = useHolidays(Regions.JP, currentYear());
   const isManager = useIsManager();
 
   const status = attState?.state ?? AttendanceStates.IDLE;
-
-  // Elapsed timer when clocked in
-  const [elapsed, setElapsed] = useState(0);
-  useEffect(() => {
-    if (status !== AttendanceStates.CLOCKED_IN) {
-      setElapsed(0);
-      return;
-    }
-    const interval = setInterval(() => setElapsed((e) => e + 1), 1000);
-    return () => clearInterval(interval);
-  }, [status]);
-
-  const formatElapsed = useCallback((secs: number) => {
-    const h = Math.floor(secs / 3600);
-    const m = Math.floor((secs % 3600) / 60);
-    const s = secs % 60;
-    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  }, []);
+  const hoursToday = summary?.hoursToday ?? 0;
+  const hoursWeek = summary?.hoursWeek ?? 0;
+  const hoursMonth = summary?.hoursMonth ?? 0;
+  const breakMinutesToday = summary?.breakMinutesToday ?? 0;
+  const requiredDaily = summary?.requiredDaily ?? 8;
+  const requiredWeekly = summary?.requiredWeekly ?? 40;
+  const requiredMonthly = summary?.requiredMonthly ?? 160;
 
   const upcomingHolidays = holidays?.slice(0, 3) ?? [];
 
@@ -48,28 +37,27 @@ export const DashboardPage = () => {
       <ClockSection>
         <ClockWidget
           status={status}
-          hoursToday={0}
+          hoursToday={hoursToday}
+          breakMinutesToday={breakMinutesToday}
+          lastEventTimestamp={attState?.lastEventTimestamp ?? null}
           onAction={(action) => clockAction.mutate(action)}
           loading={clockAction.isPending || attLoading}
         />
-        {status === AttendanceStates.CLOCKED_IN && (
-          <ElapsedTimer>{formatElapsed(elapsed)}</ElapsedTimer>
-        )}
       </ClockSection>
 
       {/* Stats Row */}
       <StatsGrid>
         <StatCard>
           <StatLabel>{t("dashboard.hoursToday")}</StatLabel>
-          <ProgressBar value={0} max={HOURS.DAILY_MINIMUM} variant="accent" />
+          <ProgressBar value={hoursToday} max={requiredDaily} variant="accent" />
         </StatCard>
         <StatCard>
           <StatLabel>{t("dashboard.hoursWeek")}</StatLabel>
-          <ProgressBar value={0} max={HOURS.WEEKLY_MINIMUM} variant="accent" />
+          <ProgressBar value={hoursWeek} max={requiredWeekly} variant="accent" />
         </StatCard>
         <StatCard>
           <StatLabel>{t("dashboard.hoursMonth")}</StatLabel>
-          <ProgressBar value={0} max={HOURS.MONTHLY_FULL_TIME} variant="accent" />
+          <ProgressBar value={hoursMonth} max={requiredMonthly} variant="accent" />
         </StatCard>
         <StatCard>
           <StatLabel>{t("dashboard.leaveBalance")}</StatLabel>
@@ -106,13 +94,6 @@ const ClockSection = styled.div`
   flex-direction: column;
   align-items: center;
   gap: ${({ theme }) => theme.space.sm};
-`;
-
-const ElapsedTimer = styled.span`
-  font-family: ${({ theme }) => theme.fonts.mono};
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.accent};
 `;
 
 const StatsGrid = styled.div`

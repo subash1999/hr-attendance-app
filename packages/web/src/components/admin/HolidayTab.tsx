@@ -11,7 +11,7 @@ export const HolidayTab = () => {
   const toast = useToast();
 
   const [region, setRegion] = useState<string>(Regions.JP);
-  const [year] = useState(() => currentYear());
+  const [year, setYear] = useState(() => currentYear());
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ region: string; date: string; name: string } | null>(null);
 
@@ -70,6 +70,11 @@ export const HolidayTab = () => {
     <>
       <HeaderRow>
         <Tabs tabs={regionTabs} activeKey={region} onChange={setRegion} />
+        <YearNav>
+          <YearButton onClick={() => setYear((y) => y - 1)}>&larr;</YearButton>
+          <YearLabel>{year}</YearLabel>
+          <YearButton onClick={() => setYear((y) => y + 1)}>&rarr;</YearButton>
+        </YearNav>
         <ButtonAccent onClick={() => setShowAddModal(true)}>
           {t("admin.holiday.add")}
         </ButtonAccent>
@@ -156,6 +161,40 @@ const HeaderRow = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.space.md};
   flex-wrap: wrap;
+`;
+
+const YearNav = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space.sm};
+`;
+
+const YearButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  background: ${({ theme }) => theme.colors.background};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.text};
+  transition: all ${({ theme }) => theme.transition};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.accent};
+    color: ${({ theme }) => theme.colors.accent};
+  }
+`;
+
+const YearLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  font-family: ${({ theme }) => theme.fonts.mono};
+  min-width: 48px;
+  text-align: center;
 `;
 
 const CalendarCard = styled(Card)`

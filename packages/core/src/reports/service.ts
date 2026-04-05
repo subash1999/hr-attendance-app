@@ -18,6 +18,10 @@ export class ReportService {
     return this.deps.reportRepo.findByEmployeeAndDate(employeeId, date);
   }
 
+  async findAllByDate(date: string): Promise<readonly DailyReport[]> {
+    return this.deps.reportRepo.findAllByDate(date);
+  }
+
   async create(employeeId: string, text: string, date?: string): Promise<DailyReport> {
     const reportDate = date ?? todayDate();
     const parsed = parseReport(text);

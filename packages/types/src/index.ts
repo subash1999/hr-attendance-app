@@ -166,7 +166,8 @@ export {
 
 export {
   API_EMPLOYEES_ME, API_EMPLOYEES_BY_ID, API_EMPLOYEES,
-  API_ATTENDANCE_STATE, API_ATTENDANCE_EVENTS,
+  API_ATTENDANCE_STATE, API_ATTENDANCE_EVENTS, API_ATTENDANCE_SUMMARY,
+  API_ATTENDANCE_EVENT_BY_ID, API_ATTENDANCE_TEAM_STATES,
   API_LEAVE_REQUESTS, API_LEAVE_REQUEST_BY_ID, API_LEAVE_BALANCE,
   API_PAYROLL,
   API_FLAGS, API_FLAG_BY_ID,
@@ -185,6 +186,8 @@ export {
 } from "./api-routes.js";
 export type {
   EmployeesQueryParams, AttendanceEventsQueryParams, ClockActionBody,
+  AttendanceSummaryQueryParams, AttendanceSummaryResponse,
+  EditAttendanceEventBody,
   LeaveRequestsQueryParams, CreateLeaveBody, LeaveActionBody, LeaveBalanceQueryParams,
   FlagsQueryParams, ResolveFlagBody,
   BankQueryParams, BankApproveBody,

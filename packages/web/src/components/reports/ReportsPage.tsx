@@ -12,6 +12,7 @@ export const ReportsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const [reportText, setReportText] = useState("");
+  const [submitDate, setSubmitDate] = useState(() => isoToLocalDate(nowIso()));
   const [filterDate, setFilterDate] = useState(() => isoToLocalDate(nowIso()));
 
   const { data: reports, isLoading } = useReports(filterDate);
@@ -21,7 +22,7 @@ export const ReportsPage = () => {
     e.preventDefault();
     if (!reportText.trim()) return;
     submitReport.mutate(
-      { text: reportText, date: filterDate },
+      { text: reportText, date: submitDate },
       {
         onSuccess: () => {
           setReportText("");
@@ -47,8 +48,8 @@ export const ReportsPage = () => {
             />
           </FormField>
           <FormField>
-            <label htmlFor="report-date">{t("reports.date")}</label>
-            <input type="date" id="report-date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+            <label htmlFor="submit-date">{t("reports.date")}</label>
+            <input type="date" id="submit-date" value={submitDate} onChange={(e) => setSubmitDate(e.target.value)} />
           </FormField>
           <ButtonAccent type="submit" disabled={submitReport.isPending}>
             {submitReport.isPending ? t("common.submitting") : t("reports.submit")}
@@ -58,7 +59,10 @@ export const ReportsPage = () => {
 
       {/* History */}
       <Card>
-        <HistoryHeader>{t("reports.history")}</HistoryHeader>
+        <HistoryRow>
+          <HistoryHeader>{t("reports.history")}</HistoryHeader>
+          <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
+        </HistoryRow>
         {isLoading && <LoadingSpinner />}
         {!isLoading && !reports?.length && (
           <EmptyState message={t("reports.noReports")} />
@@ -91,9 +95,16 @@ export const ReportsPage = () => {
   );
 };
 
+const HistoryRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.space.md};
+  margin-bottom: ${({ theme }) => theme.space.md};
+`;
+
 const HistoryHeader = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.md}; font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  margin-bottom: ${({ theme }) => theme.space.md};
 `;
 
 const ReportList = styled.div`

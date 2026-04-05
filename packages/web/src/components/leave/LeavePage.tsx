@@ -194,24 +194,36 @@ const LeaveCalendarTab = ({ isManager }: { readonly isManager: boolean }) => {
     [allLeave],
   );
 
+  const pending = useMemo(
+    () => allLeave?.filter((r) => r.status === LeaveRequestStatuses.PENDING) ?? [],
+    [allLeave],
+  );
+
   const highlighted = useMemo(() => {
     const dates = new Set<string>();
     approved.forEach((r) => dates.add(isoToDateStr(r.startDate)));
+    pending.forEach((r) => dates.add(isoToDateStr(r.startDate)));
     return dates;
-  }, [approved]);
+  }, [approved, pending]);
+
+  const displayLeave = [...approved, ...pending];
 
   return (
     <Card>
       <Calendar highlightedDates={highlighted} />
-      {approved.length === 0 ? (
+      {displayLeave.length === 0 ? (
         <EmptyState message={t("leave.noApprovedLeave")} />
       ) : (
         <LeaveList>
-          {approved.map((r) => (
+          {displayLeave.map((r) => (
             <LeaveRow key={r.id}>
               <span>{r.employeeId}</span>
               <DateRange>{formatDate(r.startDate)} → {formatDate(r.endDate)}</DateRange>
               {isManager && <Badge label={t(`leave.type.${r.leaveType}`)} variant="info" />}
+              <Badge
+                label={t(`leave.status.${r.status}`)}
+                variant={r.status === LeaveRequestStatuses.APPROVED ? "success" : "warning"}
+              />
             </LeaveRow>
           ))}
         </LeaveList>

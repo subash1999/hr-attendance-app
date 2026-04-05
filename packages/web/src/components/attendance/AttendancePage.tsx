@@ -1,11 +1,14 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { AttendanceStates, isoToDateStr, dateToDateStr, nowIso, HOURS } from "@hr-attendance-app/types";
+import { AttendanceStates, isoToDateStr, dateToDateStr, nowIso } from "@hr-attendance-app/types";
 import { ClockWidget } from "../dashboard/ClockWidget";
 import { Card, PageLayout, Calendar, Badge, ProgressBar, Modal, FormField, ButtonAccent, EmptyState } from "../ui";
 import { useToast } from "../ui/Toast";
-import { useAttendanceState, useAttendanceEvents, useClockAction } from "../../hooks/queries/useAttendance";
+import {
+  useAttendanceState, useAttendanceEvents, useAttendanceSummary,
+  useClockAction, useEditAttendanceEvent,
+} from "../../hooks/queries/useAttendance";
 import { useAttendanceLocks } from "../../hooks/queries";
 import { formatDateTime, isoToLocalDate } from "../../utils/date";
 
@@ -19,12 +22,18 @@ export const AttendancePage = () => {
   const currentMonth = selectedDate.slice(0, 7);
 
   const { data: attState } = useAttendanceState();
+  const { data: summary } = useAttendanceSummary();
   const { data: events, isLoading: eventsLoading } = useAttendanceEvents(selectedDate);
   const clockAction = useClockAction();
+  const editMutation = useEditAttendanceEvent();
   const { data: locks } = useAttendanceLocks(currentMonth);
 
   const status = attState?.state ?? AttendanceStates.IDLE;
   const isLocked = (locks?.length ?? 0) > 0;
+  const hoursToday = summary?.hoursToday ?? 0;
+  const hoursMonth = summary?.hoursMonth ?? 0;
+  const breakMinutesToday = summary?.breakMinutesToday ?? 0;
+  const requiredMonthly = summary?.requiredMonthly ?? 160;
 
   const eventDates = useMemo(() => {
     if (!events) return new Set<string>();
@@ -35,13 +44,32 @@ export const AttendancePage = () => {
     setSelectedDate(dateToDateStr(date));
   };
 
+  const handleEditSubmit = () => {
+    if (!editEvent || !editReason.trim()) return;
+    editMutation.mutate(
+      { eventId: editEvent, reason: editReason },
+      {
+        onSuccess: () => {
+          toast.show(t("attendance.editSaved"), "success");
+          setEditEvent(null);
+          setEditReason("");
+        },
+        onError: () => {
+          toast.show(t("common.error"), "danger");
+        },
+      },
+    );
+  };
+
   return (
     <PageLayout>
       {/* Clock Widget */}
       <Card>
         <ClockWidget
           status={status}
-          hoursToday={0}
+          hoursToday={hoursToday}
+          breakMinutesToday={breakMinutesToday}
+          lastEventTimestamp={attState?.lastEventTimestamp ?? null}
           onAction={(action) => clockAction.mutate(action)}
           loading={clockAction.isPending}
         />
@@ -59,7 +87,7 @@ export const AttendancePage = () => {
           highlightedDates={eventDates}
         />
         <HoursSummary>
-          <ProgressBar value={0} max={HOURS.MONTHLY_FULL_TIME} variant="accent" />
+          <ProgressBar value={hoursMonth} max={requiredMonthly} variant="accent" />
         </HoursSummary>
       </Card>
 
@@ -110,13 +138,10 @@ export const AttendancePage = () => {
             />
           </FormField>
           <ButtonAccent
-            onClick={() => {
-              toast.show(t("attendance.editSaved"), "success");
-              setEditEvent(null);
-            }}
-            disabled={!editReason.trim()}
+            onClick={handleEditSubmit}
+            disabled={!editReason.trim() || editMutation.isPending}
           >
-            {t("common.submit")}
+            {editMutation.isPending ? t("common.submitting") : t("common.submit")}
           </ButtonAccent>
         </EditForm>
       </Modal>

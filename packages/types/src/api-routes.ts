@@ -16,11 +16,35 @@ export interface EmployeesQueryParams {
 // ─── Attendance ───
 export const API_ATTENDANCE_STATE = "/api/attendance/state" as const;
 export const API_ATTENDANCE_EVENTS = "/api/attendance/events" as const;
+export const API_ATTENDANCE_SUMMARY = "/api/attendance/summary" as const;
+export const API_ATTENDANCE_EVENT_BY_ID = "/api/attendance/events/:id" as const;
+export const API_ATTENDANCE_TEAM_STATES = "/api/attendance/team-states" as const;
 
 export interface AttendanceEventsQueryParams {
   readonly employeeId?: string;
   readonly date?: string;
   readonly month?: string;
+}
+
+export interface AttendanceSummaryQueryParams {
+  readonly date?: string;
+  readonly employeeId?: string;
+}
+
+export interface AttendanceSummaryResponse {
+  readonly hoursToday: number;
+  readonly hoursWeek: number;
+  readonly hoursMonth: number;
+  readonly breakMinutesToday: number;
+  readonly requiredDaily: number;
+  readonly requiredWeekly: number;
+  readonly requiredMonthly: number;
+}
+
+export interface EditAttendanceEventBody {
+  readonly timestamp?: string;
+  readonly action?: string;
+  readonly reason: string;
 }
 
 export interface ClockActionBody {

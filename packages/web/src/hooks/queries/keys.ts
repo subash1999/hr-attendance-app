@@ -5,6 +5,7 @@
 import {
   API_EMPLOYEES, API_EMPLOYEES_ME,
   API_ATTENDANCE_STATE, API_ATTENDANCE_EVENTS, API_ATTENDANCE_LOCK,
+  API_ATTENDANCE_SUMMARY, API_ATTENDANCE_TEAM_STATES,
   API_LEAVE_REQUESTS, API_LEAVE_BALANCE,
   API_PAYROLL, API_FLAGS, API_BANK, API_BANK_APPROVE,
   API_REPORTS, API_HOLIDAYS, API_AUDIT,
@@ -30,6 +31,8 @@ export const queryKeys = {
     state: () => [API_ATTENDANCE_STATE] as const,
     events: (date: string) => [API_ATTENDANCE_EVENTS, date] as const,
     monthEvents: (month: string) => [API_ATTENDANCE_EVENTS, SCOPE.MONTH, month] as const,
+    summary: () => [API_ATTENDANCE_SUMMARY] as const,
+    teamStates: (ids: string) => [API_ATTENDANCE_TEAM_STATES, ids] as const,
   },
   leave: {
     all: [API_LEAVE_REQUESTS] as const,

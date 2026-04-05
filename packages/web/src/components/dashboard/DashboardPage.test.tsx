@@ -6,8 +6,11 @@ import { AttendanceStates } from "@hr-attendance-app/types";
 
 vi.mock("../../hooks/queries/useAttendance", () => ({
   useAttendanceState: () => ({
-    data: { employeeId: "EMP#001", state: AttendanceStates.IDLE, lastEventTimestamp: "" },
+    data: { employeeId: "EMP#001", state: AttendanceStates.IDLE, lastEventTimestamp: null },
     isLoading: false,
+  }),
+  useAttendanceSummary: () => ({
+    data: { hoursToday: 0, hoursWeek: 0, hoursMonth: 0, breakMinutesToday: 0, requiredDaily: 8, requiredWeekly: 40, requiredMonthly: 160 },
   }),
   useClockAction: () => ({ mutate: vi.fn(), isPending: false }),
 }));

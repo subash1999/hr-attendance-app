@@ -1,7 +1,10 @@
 import type { AttendanceAction, AttendanceEvent, AttendanceSource, AttendanceStateRecord, AttendanceLock, AttendanceLockScope, Result, WorkLocation } from "@hr-attendance-app/types";
-import { AuditActions, ATTENDANCE, AttendanceLockScopes, ErrorMessages, KeyPatterns, KeyPrefixes, dateToIso, dateToDateStr, isoToYearMonth, nowIso } from "@hr-attendance-app/types";
+import type { AuditSource } from "@hr-attendance-app/types";
+import { AuditActions, ATTENDANCE, AttendanceLockScopes, ErrorMessages, KeyPatterns, KeyPrefixes, HOURS, dateToIso, dateToDateStr, isoToDateStr, isoToYearMonth, addDays, nowIso, nowMs } from "@hr-attendance-app/types";
 import type { AttendanceRepository, AuditRepository, AttendanceLockRepository, EmployeeRepository } from "../repositories/index.js";
 import { validateTransition } from "./state-machine.js";
+import { calculateDailyHours } from "./hours-calculator.js";
+import type { HoursBreakdown } from "./hours-calculator.js";
 
 export interface ProcessEventInput {
   readonly employeeId: string;
@@ -39,6 +42,126 @@ export class AttendanceService {
 
   async getEventsForMonth(employeeId: string, yearMonth: string): Promise<readonly AttendanceEvent[]> {
     return this.attendanceRepo.getEventsForMonth(employeeId, yearMonth);
+  }
+
+  async getSummary(employeeId: string, date: string): Promise<{
+    hoursToday: number;
+    hoursWeek: number;
+    hoursMonth: number;
+    breakMinutesToday: number;
+    requiredDaily: number;
+    requiredWeekly: number;
+    requiredMonthly: number;
+  }> {
+    const yearMonth = isoToYearMonth(date + "T00:00:00Z");
+    const monthEvents = await this.attendanceRepo.getEventsForMonth(employeeId, yearMonth);
+
+    // Group month events by date
+    const dailyMap = new Map<string, AttendanceEvent[]>();
+    for (const evt of monthEvents) {
+      const evtDate = isoToDateStr(evt.timestamp);
+      const list = dailyMap.get(evtDate) ?? [];
+      list.push(evt);
+      dailyMap.set(evtDate, list);
+    }
+
+    // Today's hours (with open-session elapsed time)
+    const todayEvents = dailyMap.get(date) ?? [];
+    const todayBreakdown = calculateDailyHours(todayEvents, 0);
+    const hoursToday = this.addOpenSessionHours(todayBreakdown);
+    const breakMinutesToday = Math.round(todayBreakdown.breakHours * 60);
+
+    // Week date range (Monday to Sunday containing `date`)
+    const dateObj = new Date(date + "T00:00:00Z");
+    const dayOfWeek = dateObj.getUTCDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const mondayStr = isoToDateStr(addDays(dateObj, mondayOffset).toISOString());
+    const sundayStr = isoToDateStr(addDays(dateObj, mondayOffset + 6).toISOString());
+
+    // Accumulate week + month from the grouped map
+    let hoursWeek = 0;
+    let hoursMonth = 0;
+    for (const [dayDate, dayEvents] of dailyMap) {
+      const dayHours = dayDate === date
+        ? hoursToday
+        : calculateDailyHours(dayEvents, 0).workedHours;
+      hoursMonth += dayHours;
+      // Include days up to today within the week range
+      if (dayDate >= mondayStr && dayDate <= sundayStr && dayDate <= date) {
+        hoursWeek += dayHours;
+      }
+    }
+
+    return {
+      hoursToday: Math.round(hoursToday * 100) / 100,
+      hoursWeek: Math.round(hoursWeek * 100) / 100,
+      hoursMonth: Math.round(hoursMonth * 100) / 100,
+      breakMinutesToday,
+      requiredDaily: HOURS.DAILY_MINIMUM,
+      requiredWeekly: HOURS.WEEKLY_MINIMUM,
+      requiredMonthly: HOURS.MONTHLY_FULL_TIME,
+    };
+  }
+
+  /** Add elapsed time from an open (unclosed) session to worked hours. */
+  private addOpenSessionHours(breakdown: HoursBreakdown): number {
+    let hours = breakdown.workedHours;
+    const openSession = breakdown.sessions.find((s) => !s.clockOut);
+    if (openSession) {
+      const clockInMs = new Date(openSession.clockIn).getTime();
+      const currentMs = nowMs();
+      const openBreakMs = openSession.breaks
+        .filter((b) => !b.end)
+        .reduce((acc, b) => acc + (currentMs - new Date(b.start).getTime()), 0);
+      const closedBreakMs = openSession.breaks
+        .filter((b) => b.end)
+        .reduce((acc, b) => acc + (new Date(b.end!).getTime() - new Date(b.start).getTime()), 0);
+      const elapsedMs = currentMs - clockInMs - openBreakMs - closedBreakMs;
+      hours += Math.round((elapsedMs / 3_600_000) * 100) / 100;
+    }
+    return hours;
+  }
+
+  async getTeamStates(employeeIds: readonly string[]): Promise<readonly AttendanceStateRecord[]> {
+    return Promise.all(employeeIds.map((id) => this.attendanceRepo.getState(id)));
+  }
+
+  async editEvent(
+    eventId: string,
+    employeeId: string,
+    updates: { timestamp?: string; action?: string; reason: string },
+    actorId: string,
+    source: AuditSource,
+  ): Promise<Result<AttendanceEvent, string>> {
+    const event = await this.attendanceRepo.getEventById(eventId, employeeId);
+    if (!event) return { success: false, error: "Event not found" };
+
+    const yearMonth = isoToYearMonth(event.timestamp);
+    const locks = await this.lockRepo.findByYearMonth(yearMonth);
+    if (locks.length > 0) {
+      return { success: false, error: `Period ${yearMonth} is locked` };
+    }
+
+    const updatedEvent: AttendanceEvent = {
+      ...event,
+      ...(updates.timestamp ? { timestamp: updates.timestamp } : {}),
+      ...(updates.action ? { action: updates.action as AttendanceEvent["action"] } : {}),
+    };
+
+    await this.attendanceRepo.saveEvent(updatedEvent);
+    await this.auditRepo.append({
+      id: KeyPatterns.audit(eventId),
+      targetId: employeeId,
+      targetType: KeyPrefixes.ATTENDANCE,
+      action: AuditActions.UPDATE,
+      actorId,
+      source,
+      before: { id: event.id, action: event.action, timestamp: event.timestamp, source: event.source },
+      after: { id: updatedEvent.id, action: updatedEvent.action, timestamp: updatedEvent.timestamp, editReason: updates.reason },
+      timestamp: nowIso(),
+    });
+
+    return { success: true, data: updatedEvent };
   }
 
   async createLock(input: CreateAttendanceLockInput): Promise<Result<AttendanceLock, string>> {

@@ -105,6 +105,13 @@ export function isoToLocalMonth(iso: string): string {
 // ─── Display helpers ───
 
 /** Relative time: "2 hours ago", "in 3 days" */
+export const formatElapsed = (totalSeconds: number): string => {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+};
+
 export function formatRelative(iso: string): string {
   const rtf = new Intl.RelativeTimeFormat(getLocale(), { numeric: "auto" });
   const diffMs = new Date(iso).getTime() - Date.now();

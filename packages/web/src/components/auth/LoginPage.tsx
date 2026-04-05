@@ -42,7 +42,7 @@ export const LoginPage = () => {
         setEmployees(data as DevEmployee[]);
         if (data.length > 0) setSelectedId((data as DevEmployee[])[0]!.id);
       })
-      .catch(console.error);
+      .catch(() => setError("Failed to load employees"));
   }, [mode]);
 
   const handleDevLogin = useCallback(async () => {
@@ -61,7 +61,7 @@ export const LoginPage = () => {
       login(data.token, data.employee.id, data.employee.role);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      console.error("Login failed:", err);
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
@@ -147,7 +147,6 @@ export const LoginPage = () => {
                   required
                 />
               </FieldGroup>
-              {error && <ErrorText>{error}</ErrorText>}
             </>
           ) : (
             <>
@@ -174,6 +173,7 @@ export const LoginPage = () => {
             </>
           )}
 
+          {error && <ErrorText>{error}</ErrorText>}
           <SubmitButton type="submit" disabled={loading || (mode === "dev" && !selectedId)}>
             {loading ? t("auth.loading") : t("auth.loginButton")}
           </SubmitButton>
